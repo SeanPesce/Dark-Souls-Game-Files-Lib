@@ -1,0 +1,120 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Archive">
+      <UniqueIdentifier>{b0ca45fb-1f54-4be6-ac47-a1ce6919c175}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ParamDef">
+      <UniqueIdentifier>{59330031-fb4b-4650-a51b-cfb1504fdd9d}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\GameEnum.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\FileList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Files.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\GameEnum.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ParamDef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ParamDef\BehaviorNPCParamDef.h">
+      <Filter>Header Files\ParamDef</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ParamDef\BehaviorPCParamDef.h">
+      <Filter>Header Files\ParamDef</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ParamDef\BulletParamDef.h">
+      <Filter>Header Files\ParamDef</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ParamDef\CharInitParamDef.h">
+      <Filter>Header Files\ParamDef</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ParamDef\GameParamDef.h">
+      <Filter>Header Files\ParamDef</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ParamDef\ItemLotParamDef.h">
+      <Filter>Header Files\ParamDef</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ParamDef\ItemParamDef.h">
+      <Filter>Header Files\ParamDef</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ParamDef\LockCamParamDef.h">
+      <Filter>Header Files\ParamDef</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ParamDef\MagicParamDef.h">
+      <Filter>Header Files\ParamDef</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ParamDef\MaterialSetParamDef.h">
+      <Filter>Header Files\ParamDef</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ParamDef\MenuColorTableParamDef.h">
+      <Filter>Header Files\ParamDef</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ParamDef\MoveParamDef.h">
+      <Filter>Header Files\ParamDef</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ParamDef\NPCParamDef.h">
+      <Filter>Header Files\ParamDef</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ParamDef\NPCThinkParamDef.h">
+      <Filter>Header Files\ParamDef</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ParamDef\ShopLineupParamDef.h">
+      <Filter>Header Files\ParamDef</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ParamDef\SpecialEffectParamDef.h">
+      <Filter>Header Files\ParamDef</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ParamDef\SpecialEffectVFXParamDef.h">
+      <Filter>Header Files\ParamDef</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ParamDef\ThrowParamDef.h">
+      <Filter>Header Files\ParamDef</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ParamDef\WeaponParamDef.h">
+      <Filter>Header Files\ParamDef</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ParamDef\AIStandardInfoParamDef.h">
+      <Filter>Header Files\ParamDef</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ParamDef\ArmorParamDef.h">
+      <Filter>Header Files\ParamDef</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Archive\Archive.h">
+      <Filter>Header Files\Archive</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Archive\BdtArchive.h">
+      <Filter>Header Files\Archive</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Archive\Bhd5Archive.h">
+      <Filter>Header Files\Archive</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Archive\Bnd3Archive.h">
+      <Filter>Header Files\Archive</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Archive\DcxArchive.h">
+      <Filter>Header Files\Archive</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
