@@ -19,39 +19,67 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Archive\Archive.cpp" />
+    <ClCompile Include="src\Archive\Bdt.cpp" />
+    <ClCompile Include="src\Archive\Bhd5.cpp" />
+    <ClCompile Include="src\Archive\Bnd3.cpp" />
+    <ClCompile Include="src\Archive\Dcx.cpp" />
+    <ClCompile Include="src\FileUtil.cpp" />
     <ClCompile Include="src\GameEnum.cpp" />
+    <ClCompile Include="src\Param\Param.cpp" />
+    <ClCompile Include="src\Save\Sl2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Archive\Archive.h" />
-    <ClInclude Include="include\Archive\BdtArchive.h" />
-    <ClInclude Include="include\Archive\Bhd5Archive.h" />
-    <ClInclude Include="include\Archive\Bnd3Archive.h" />
-    <ClInclude Include="include\Archive\DcxArchive.h" />
+    <ClInclude Include="include\Archive\Bdt.h" />
+    <ClInclude Include="include\Archive\Bhd5.h" />
+    <ClInclude Include="include\Archive\Bnd3.h" />
+    <ClInclude Include="include\Archive\Dcx.h" />
+    <ClInclude Include="include\Archive\Header.h" />
+    <ClInclude Include="include\Ds1GameFileLib.h" />
     <ClInclude Include="include\FileList.h" />
-    <ClInclude Include="include\Files.h" />
+    <ClInclude Include="include\FileUtil.h" />
     <ClInclude Include="include\GameEnum.h" />
-    <ClInclude Include="include\ParamDef.h" />
-    <ClInclude Include="include\ParamDef\AIStandardInfoParamDef.h" />
-    <ClInclude Include="include\ParamDef\ArmorParamDef.h" />
-    <ClInclude Include="include\ParamDef\BehaviorNPCParamDef.h" />
-    <ClInclude Include="include\ParamDef\BehaviorPCParamDef.h" />
-    <ClInclude Include="include\ParamDef\BulletParamDef.h" />
-    <ClInclude Include="include\ParamDef\CharInitParamDef.h" />
-    <ClInclude Include="include\ParamDef\GameParamDef.h" />
-    <ClInclude Include="include\ParamDef\ItemLotParamDef.h" />
-    <ClInclude Include="include\ParamDef\ItemParamDef.h" />
-    <ClInclude Include="include\ParamDef\LockCamParamDef.h" />
-    <ClInclude Include="include\ParamDef\MagicParamDef.h" />
-    <ClInclude Include="include\ParamDef\MaterialSetParamDef.h" />
-    <ClInclude Include="include\ParamDef\MenuColorTableParamDef.h" />
-    <ClInclude Include="include\ParamDef\MoveParamDef.h" />
-    <ClInclude Include="include\ParamDef\NPCParamDef.h" />
-    <ClInclude Include="include\ParamDef\NPCThinkParamDef.h" />
-    <ClInclude Include="include\ParamDef\ShopLineupParamDef.h" />
-    <ClInclude Include="include\ParamDef\SpecialEffectParamDef.h" />
-    <ClInclude Include="include\ParamDef\SpecialEffectVFXParamDef.h" />
-    <ClInclude Include="include\ParamDef\ThrowParamDef.h" />
-    <ClInclude Include="include\ParamDef\WeaponParamDef.h" />
+    <ClInclude Include="include\Param\Accessory.h" />
+    <ClInclude Include="include\Param\AIStandardInfo.h" />
+    <ClInclude Include="include\Param\Armor.h" />
+    <ClInclude Include="include\Param\ArmorReinforcement.h" />
+    <ClInclude Include="include\Param\Attack.h" />
+    <ClInclude Include="include\Param\BehaviorNPC.h" />
+    <ClInclude Include="include\Param\BehaviorPC.h" />
+    <ClInclude Include="include\Param\Bullet.h" />
+    <ClInclude Include="include\Param\CalcCorrect.h" />
+    <ClInclude Include="include\Param\CharInit.h" />
+    <ClInclude Include="include\Param\Draw\DofBank.h" />
+    <ClInclude Include="include\Param\Draw\EnvLightTexBank.h" />
+    <ClInclude Include="include\Param\Draw\FogBank.h" />
+    <ClInclude Include="include\Param\Draw\LightBank.h" />
+    <ClInclude Include="include\Param\Draw\PointLightBank.h" />
+    <ClInclude Include="include\Param\Draw\ToneCorrectBank.h" />
+    <ClInclude Include="include\Param\Draw\ToneMapBank.h" />
+    <ClInclude Include="include\Param\EnemyStandardInfo.h" />
+    <ClInclude Include="include\Param\GameArea.h" />
+    <ClInclude Include="include\Param\Object.h" />
+    <ClInclude Include="include\Param\Param.h" />
+    <ClInclude Include="include\Param\ItemLot.h" />
+    <ClInclude Include="include\Param\Item.h" />
+    <ClInclude Include="include\Param\LockCam.h" />
+    <ClInclude Include="include\Param\Magic.h" />
+    <ClInclude Include="include\Param\MaterialSet.h" />
+    <ClInclude Include="include\Param\MenuColorTable.h" />
+    <ClInclude Include="include\Param\Move.h" />
+    <ClInclude Include="include\Param\NPC.h" />
+    <ClInclude Include="include\Param\NPCThink.h" />
+    <ClInclude Include="include\Param\Params.h" />
+    <ClInclude Include="include\Param\Ragdoll.h" />
+    <ClInclude Include="include\Param\ShopLineup.h" />
+    <ClInclude Include="include\Param\Skeleton.h" />
+    <ClInclude Include="include\Param\SpecialEffect.h" />
+    <ClInclude Include="include\Param\SpecialEffectVFX.h" />
+    <ClInclude Include="include\Param\Throw.h" />
+    <ClInclude Include="include\Param\Weapon.h" />
+    <ClInclude Include="include\Param\WeaponReinforcement.h" />
+    <ClInclude Include="include\Save\Sl2.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{29CC3166-257B-452B-A015-7CB81C320105}</ProjectGuid>
@@ -64,14 +92,14 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
