@@ -1,0 +1,15 @@
+{
+  "SKIP_TABLE": [
+    {"comment": "unknown data", "offset": 0, "size": 16},
+    {"comment": "unknown data", "offset": 28, "size": 4},
+    {"comment": "inspected data", "offset": 108, "size": 12},
+    {"comment": "inspected data", "offset": 140, "size": 68},
+    {"comment": "inspected data", "offset": 216, "size": 32},
+    {"comment": "inspected data", "offset": 252, "size": 44},
+    {"comment": "inspected data", "offset": 344, "size": 22},
+    {"comment": "inspected data", "offset": 616, "size": 12},
+    {"comment": "inspected data", "offset": 644, "size": 84},
+    {"comment": "backpack", "offset": 736, "size": 57344},
+    {"comment": "mp data", "offset": 220728, "size": 20472}
+  ]
+}
