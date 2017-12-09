@@ -1,5 +1,5 @@
 /*
-	DARK SOULS OVERHAUL
+	DARK SOULS GAME FILE C++ LIBRARY
 	
 	Contributors to this file:
 	    HotPocketRemix  -  Reversing and obtaining game enums/constants
@@ -9,7 +9,7 @@
 
 	GameEnum.cpp
 
-	Initializes constant static data that mirrors the data used by the Dark Souls game LUA scripts.
+	Initializes constant static enum data that mirrors the data used by the Dark Souls game LUA scripts.
 
 
 	Sources:

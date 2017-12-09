@@ -1,5 +1,5 @@
 /*
-	DARK SOULS OVERHAUL
+	DARK SOULS GAME FILE C++ LIBRARY
 	
 	Contributors to this file:
 	    HotPocketRemix  -  Reversing and obtaining game enums
@@ -22,8 +22,8 @@
 
 
 
-#ifndef _DS1_OVERHAUL_GAME_ENUMS_H_
-	#define _DS1_OVERHAUL_GAME_ENUMS_H_
+#ifndef _DS1_FILE_LIB_GAME_ENUMS_H_
+	#define _DS1_FILE_LIB_GAME_ENUMS_H_
 
 #include <stdint.h>
 
@@ -967,4 +967,4 @@ class Event_Define_LUA_Constants {
 typedef Event_Define_LUA_Constants LuaEventConst;
 
 
-#endif // _DS1_OVERHAUL_GAME_ENUMS_H_
+#endif // _DS1_FILE_LIB_GAME_ENUMS_H_
