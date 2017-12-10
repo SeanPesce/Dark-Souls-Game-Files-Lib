@@ -1,0 +1,27 @@
+Types of files packed inside .bdt files:
+
+.dcx
+.chrtpfbdt
+.nfd
+.breakobj
+.tpfbdt
+.tpfbhd
+.hkxbdt
+.hkxbhd
+.mcg
+.mcp
+.msb
+.loadlistlist (Unique to /map/MapViewList.loadlistlist)
+.worldloadlistlist (Unique /map/WorldMsbList.worldloadlistlist)
+.sdat
+.drb
+.rumblebnd
+.tpf
+.PNG (some denoted in lowercase: .png)
+.loadlist
+.movtae
+.fev
+.itl
+.mch (Unique to /sound/frpg_multich.mch)
+.mix (Unique to /sound/frpg_multiMix.mix)
+.rpc (Unique to /sound/frpg_multiRPC.rpc)
