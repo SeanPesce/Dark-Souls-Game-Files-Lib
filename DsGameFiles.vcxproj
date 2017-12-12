@@ -36,6 +36,7 @@
     <ClInclude Include="include\Archive\Bnd3.h" />
     <ClInclude Include="include\Archive\Dcx.h" />
     <ClInclude Include="include\Archive\Header.h" />
+    <ClInclude Include="include\Asset\Animation\Tae.h" />
     <ClInclude Include="include\Ds1GameFileLib.h" />
     <ClInclude Include="include\FileList.h" />
     <ClInclude Include="include\FileUtil.h" />

@@ -34,6 +34,12 @@
     <Filter Include="Header Files\Param\Draw">
       <UniqueIdentifier>{244ee3e4-b348-43d8-b1a3-4124ad876306}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Asset">
+      <UniqueIdentifier>{f298df1f-f90d-4443-bece-29c0db1d36c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Asset\Animation">
+      <UniqueIdentifier>{d9e6390a-bc7c-4d38-abc7-8c4b03d78a36}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\GameEnum.cpp">
@@ -214,6 +220,9 @@
     </ClInclude>
     <ClInclude Include="include\Param\Skeleton.h">
       <Filter>Header Files\Param</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Asset\Animation\Tae.h">
+      <Filter>Header Files\Asset\Animation</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
