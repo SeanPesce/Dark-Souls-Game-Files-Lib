@@ -1,0 +1,50 @@
+//--------------------------------------
+//--- 010 Editor v3.1.2 Binary Template
+//
+// File: Dark Souls .BHD (Archive Header)
+// Author: Jed "Nyxojaele" Lang
+// Revision: 1
+//--------------------------------------
+typedef struct {
+    uint NameOffset;
+    local long oldPos = FTell();
+    FSeek(NameOffset);
+    string Text <bgcolor=0xBB9900>;
+    FSeek(oldPos);
+} NameStruct <read=ReadName>;
+string ReadName(NameStruct &name)
+{
+    return name.Text;
+}
+
+
+SetBackColor(cLtBlue);
+local ulong currentTableOffset;
+
+typedef struct {
+    ulong Unknown1;
+    ulong Size1;
+    ulong Offset <format=hex>;
+    ulong Id;
+    NameStruct Name;
+    ulong Size2;
+} EntryStruct <read=ReadEntryStruct>;
+string ReadEntryStruct(EntryStruct& es)
+{
+    string ret;
+    SPrintf(ret, "%s", es.Name.Text);
+    return ret;
+}
+
+byte Signature[12];
+ulong Version;
+
+ulong EntryCount;
+ulong Unknown1;
+ulong Unknown2;
+ulong Unknown3;
+
+struct
+{
+    EntryStruct Entry[EntryCount] <optimize=false>;
+} Entries;

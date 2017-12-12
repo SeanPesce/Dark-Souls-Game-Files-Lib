@@ -1,0 +1,183 @@
+//--------------------------------------
+//--- 010 Editor v3.1.2 Binary Template
+//
+// File: Dark Souls .MTD (Material Definition)
+// Author: Jed "Nyxojaele" Lang
+// Revision: 1
+//--------------------------------------
+typedef struct {
+    byte Marker;
+    local int offset = FTell()%4;
+    if (offset != 0)
+        byte Padding[4 - offset];
+} PaddedMarker <bgcolor=0x00DD00>;
+
+typedef struct {
+    int Length;
+    byte Text[Length];
+    PaddedMarker EOS;
+} StringStruct <read=ReadStringStruct, bgcolor=0xE7EC10>;
+string ReadStringStruct(StringStruct &str)
+{
+    return str.Text;
+}
+
+typedef struct {
+    byte Value;
+} BoolStruct <read=ReadBoolStruct, bgcolor=0xFFFF00>;
+string ReadBoolStruct(BoolStruct &boolStruct)
+{
+    string ret;
+    SPrintf(ret, "%s", boolStruct.Value == 0 ? "false" : "true");
+    return ret;
+}
+
+typedef struct {
+    int Value;
+} IntStruct <read=ReadIntStruct, bgcolor=0xFFFF00>;
+string ReadIntStruct(IntStruct &intStruct)
+{
+    string ret;
+    SPrintf(ret, "%d", intStruct.Value);
+    return ret;
+}
+
+typedef struct {
+    float Value;
+} FloatStruct <read=ReadFloatStruct, bgcolor=0xFFFF00>;
+string ReadFloatStruct(FloatStruct &floatStruct)
+{
+    string ret;
+    SPrintf(ret, "%f", floatStruct.Value);
+    return ret;
+}
+
+typedef struct {
+    float Value1;
+    float Value2;
+} Float2Struct <read=ReadFloat2Struct, bgcolor=0xFFFF00>;
+string ReadFloat2Struct(Float2Struct &float2Struct)
+{
+    string ret;
+    SPrintf(ret, "%f, %f", float2Struct.Value1, float2Struct.Value2);
+    return ret;
+}
+
+typedef struct {
+    float Value1;
+    float Value2;
+    float Value3;
+} Float3Struct <read=ReadFloat3Struct, bgcolor=0xFFFF00>;
+string ReadFloat3Struct(Float3Struct &float3Struct)
+{
+    string ret;
+    SPrintf(ret, "%f, %f, %f", float3Struct.Value1, float3Struct.Value2, float3Struct.Value3);
+    return ret;
+}
+
+typedef struct {
+    float Value1;
+    float Value2;
+    float Value3;
+    float Value4;
+} Float4Struct <read=ReadFloat4Struct, bgcolor=0xFFFF00>;
+string ReadFloat4Struct(Float4Struct &float4Struct)
+{
+    string ret;
+    SPrintf(ret, "%f, %f, %f, %f", float4Struct.Value1, float4Struct.Value2, float4Struct.Value3, float4Struct.Value4);
+    return ret;
+}
+
+typedef struct {
+    int Unknown1[4] <bgcolor=0x0000FF>; //2nd value seems to always match for ExternalParams with the same name in other files, but sometimes matches other ExternalParams in this file
+    PaddedMarker EOD;
+    StringStruct Name;
+    StringStruct Type;
+    byte Unknown2[0x8] <bgcolor=0x0000FF>;
+    int DataSize <bgcolor=0xAAAA00>;    //Size of Unknown4 and Value together
+    byte Unknown4[0x10] <bgcolor=0x0000FF>;
+    if (Type.Text == "bool")
+        BoolStruct Value;
+    else if (Type.Text == "int")
+        IntStruct Value;
+    else if (Type.Text == "float")
+        FloatStruct Value;
+    else if (Type.Text == "float2")
+        Float2Struct Value;
+    else if (Type.Text == "float3")
+        Float3Struct Value;
+    else if (Type.Text == "float4")
+        Float4Struct Value;
+    else
+        Printf("Undocumented Internal Parameter Type: %s", Type.Text);
+    PaddedMarker EOD;
+    byte Unknown5[4] <bgcolor=0x0000FF>;
+} InternalParameterStruct <read=ReadInternalParameterStruct, bgcolor=0x00DEDE>;
+string ReadInternalParameterStruct(InternalParameterStruct &ips)
+{
+    string ret;
+    if (ips.Type.Text == "bool")
+        SPrintf(ret, "%s (%s): %s", ips.Name.Text, ips.Type.Text, ips.Value.Value == 0 ? "false" : "true");
+    else if (ips.Type.Text == "int")
+        SPrintf(ret, "%s (%s): %d", ips.Name.Text, ips.Type.Text, ips.Value.Value);
+    else if (ips.Type.Text == "float")
+        SPrintf(ret, "%s (%s): %f", ips.Name.Text, ips.Type.Text, ips.Value.Value);
+    else if (ips.Type.Text == "float2")
+        SPrintf(ret, "%s (%s): %f, %f", ips.Name.Text, ips.Type.Text, ips.Value.Value1, ips.Value.Value2);
+    else if (ips.Type.Text == "float3")
+        SPrintf(ret, "%s (%s): %f, %f, %f", ips.Name.Text, ips.Type.Text, ips.Value.Value1, ips.Value.Value2, ips.Value.Value3);
+    else if (ips.Type.Text == "float4")
+        SPrintf(ret, "%s (%s): %f, %f, %f, %f", ips.Name.Text, ips.Type.Text, ips.Value.Value1, ips.Value.Value2, ips.Value.Value3, ips.Value.Value4);
+    return ret;
+}
+
+typedef struct {
+    int Unknown1[4] <bgcolor=0x0000FF>; //2nd value seems to always match for ExternalParams with the same name in other files
+    PaddedMarker EOD;
+    StringStruct Name;
+    int Unknown2 <bgcolor=0x0000FF>;
+    PaddedMarker EOD;
+    int ShaderDataOffset;   //Seems unique amongst ExternalParams in this file, but the same for ExternalParams with the same name in other files
+} ExternalParameterStruct <read=ReadExternalParameterStruct, bgcolor=0x00DEDE>;
+string ReadExternalParameterStruct(ExternalParameterStruct &eps)
+{
+    string ret;
+    SPrintf(ret, "%s", eps.Name.Text);
+    return ret;
+}
+
+//Base Header
+int Unknown1 <bgcolor=0x0000FF>;
+int FileSize <bgcolor=0xAAAA00>;    //Size of all data following this point
+
+//Main Header
+int Unknown2 <bgcolor=0x0000FF>;
+int Unknown3 <bgcolor=0x0000FF>;
+int Unknown4[7] <bgcolor=0x0000FF>;
+byte Signature[4] <bgcolor=0x995555>;
+int Unknown5[4] <bgcolor=0x0000FF>;
+
+//Some Data?
+int DataSize <bgcolor=0xAAAA00>;    //Size of all data following this point
+int Unknown9[3] <bgcolor=0x0000FF>;
+StringStruct OriginalFile;
+StringStruct Description;
+
+//Internal Parameters
+byte Unknown6[0x20] <bgcolor=0x0000FF>;
+int InternalParameterCount <bgcolor=0xAAAA00>;
+struct
+{
+    InternalParameterStruct InternalParam[InternalParameterCount] <optimize=false>;
+} InternalParams;
+
+//External Parameters
+byte Unknown7[4] <bgcolor=0x0000FF>;
+int ExternalParameterCount <bgcolor=0xAAAA00>;
+struct
+{
+    ExternalParameterStruct ExternalParam[ExternalParameterCount] <optimize=false>;
+} ExternalParams;
+
+//Some More Data?
+int Unknown8[6] <bgcolor=0x0000FF>;

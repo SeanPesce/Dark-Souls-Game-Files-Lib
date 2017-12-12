@@ -1,0 +1,149 @@
+//--------------------------------------
+//--- 010 Editor v3.1.2 Binary Template
+//
+// File: Dark Souls .HKX (Havok Data)
+// Author: Jed "Nyxojaele" Lang
+// Revision: 1
+//--------------------------------------
+typedef struct
+{
+    int Src;
+    int Dst;
+} LocalFixupStruct <read=ReadLocalFixupStruct, bgcolor=0x88CC99>;
+string ReadLocalFixupStruct(LocalFixupStruct& lfs)
+{
+    string ret;
+    SPrintf(ret, "0x%X -> 0x%X", lfs.Src, lfs.Dst);
+    return ret;
+}
+
+typedef struct
+{
+    int Src;
+    int DstSectionIndex;
+    int Dst;
+} GlobalFixupStruct <read=ReadGlobalFixupStruct, bgcolor=0xAA8899>;
+string ReadGlobalFixupStruct(GlobalFixupStruct& gfs)
+{
+    string ret;
+    SPrintf(ret, "0x%X -> (%d)0x%X", gfs.Src, gfs.DstSectionIndex, gfs.Dst);
+    return ret;
+}
+
+typedef struct
+{
+    int Src;
+    int SectionIndex;
+    int NameOffset;
+} VirtualFixupStruct <read=ReadVirtualFixupStruct, bgcolor=0x99AA88>;
+string ReadVirtualFixupStruct(VirtualFixupStruct& vfs)
+{
+    string ret;
+    string str = ReadString(Sections[vfs.SectionIndex].AbsoluteDataStart + vfs.NameOffset);
+    SPrintf(ret, "0x%X (%d)\"%s\"", vfs.Src, vfs.SectionIndex, str);
+    return ret;
+}
+
+typedef struct
+{
+    char SectionTag[19];
+    byte Null;
+    int AbsoluteDataStart <format=hex>;
+    int LocalFixupsOffset <format=hex>;     //From AbsoluteDataStart
+    int GlobalFixupsOffset <format=hex>;    //From AbsoluteDataStart
+    int VirtualFixupsOffset <format=hex>;   //From AbsoluteDataStart
+    int ExportsOffset <format=hex>;         //From AbsoluteDataStart
+    int ImportsOffset <format=hex>;         //From AbsoluteDataStart
+    int EndOffset <format=hex>;             //Also the section size
+
+    local long oldPos = FTell();
+
+    local int dataSize = LocalFixupsOffset;
+    if (dataSize != 0)
+    {
+        FSeek(AbsoluteDataStart);
+        byte Data[dataSize] <bgcolor=0xCC9988>;
+    }
+
+    dataSize = GlobalFixupsOffset - LocalFixupsOffset;
+    if (dataSize != 0)
+    {
+        FSeek(AbsoluteDataStart + LocalFixupsOffset);
+        LocalFixupStruct LocalFixups[dataSize/8];
+    }
+
+    dataSize = VirtualFixupsOffset - GlobalFixupsOffset;
+    if (dataSize != 0)
+    {
+        FSeek(AbsoluteDataStart + GlobalFixupsOffset);
+        GlobalFixupStruct GlobalFixups[dataSize/0xC];
+    }
+
+    dataSize = ExportsOffset - VirtualFixupsOffset;
+    if (dataSize != 0)
+    {
+        FSeek(AbsoluteDataStart + VirtualFixupsOffset);
+        VirtualFixupStruct VirtualFixups[dataSize/0xC];
+    }
+
+    dataSize = ImportsOffset - ExportsOffset;
+    if (dataSize != 0)
+    {
+        FSeek(AbsoluteDataStart + ImportsOffset);
+        byte Exports[dataSize] <bgcolor=0x8899AA>;
+        Printf("Exports detected! Implement src, name");
+    }
+
+    dataSize = EndOffset - ImportsOffset;
+    if (dataSize != 0)
+    {
+        FSeek(AbsoluteDataStart - ImportsOffset);
+        byte Imports[dataSize] <bgcolor=0x555555, fgcolor=0xFFFFFF>;
+        Printf("Imports detected! Implement src, name");
+    }
+
+    FSeek(oldPos);
+} SectionHeader <bgcolor=0x8899CC>;
+
+/*typedef struct
+{
+    float m0;
+    float m1;
+    float m2;
+    float m3;
+} MatrixRowStruct <read=ReadMatrixRowStruct>;
+string ReadMatrixRowStruct(MatrixRowStruct& mrs)
+{
+    string ret;
+    SPrintf(ret, "%f, %f, %f, %f", mrs.m0, mrs.m1, mrs.m2, mrs.m3);
+    return ret;
+}
+
+typedef struct
+{
+    MatrixRowStruct Row0;
+    MatrixRowStruct Row1;
+    MatrixRowStruct Row2;
+    MatrixRowStruct Row3;
+} MatrixStruct;*/
+
+struct
+{
+    byte Signature[8];
+    int UserTag;
+    int Version;
+    byte LayoutRules;
+    byte LayoutRules;   //0x01 = Little Endian
+    byte LayoutRules;   //0x01 = PS3?
+    byte LayoutRules;
+    int SectionCount;
+    int ContentsSectionIndex;
+    int ContentsSectionOffset <format=hex>;
+    int ContentsClassNameSectionIndex;
+    int ContentsClassNameSectionOffset <format=hex>;
+    char ContentsVersion[16];
+    int Flags <format=hex>;
+    int Padding;
+} Header <bgcolor=0xCCCCCC>;
+
+SectionHeader Sections[Header.SectionCount] <optimize=false>;

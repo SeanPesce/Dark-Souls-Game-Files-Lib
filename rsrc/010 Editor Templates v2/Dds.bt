@@ -1,0 +1,32 @@
+//--------------------------------------
+//--- 010 Editor v5.0 Binary Template
+//
+// File: Dark Souls .DDS (PC Texture)
+// Author: Jed "Nyxojaele" Lang
+// Revision: 1
+//--------------------------------------
+byte Signature[4];
+int HeaderSize;
+byte DDSD_Flags[4] <format=hex>;
+int Height;
+int Width;
+uint PitchOrLinearSize;
+int Depth;
+int MipmapCount;
+int Reserved1[11];
+struct
+{
+    int Pf_Size;
+    byte DDPF_Flags[4] <format=hex>;
+    byte FourCC[4];
+    int RGBBitCount;
+    int RBitMask <format=hex>;
+    int GBitMask <format=hex>;
+    int BBitMask <format=hex>;
+    int ABitMask <format=hex>;
+} PixelFormat;
+byte Caps1[4] <format=hex>;
+byte Caps2[4] <format=hex>;
+byte Caps3[4] <format=hex>;
+byte Caps4[4] <format=hex>;
+int Reserved2;

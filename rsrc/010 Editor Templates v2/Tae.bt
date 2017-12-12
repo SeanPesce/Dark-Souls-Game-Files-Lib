@@ -1,0 +1,398 @@
+//--------------------------------------
+//--- 010 Editor v5.0 Binary Template
+//
+// File: Dark Souls .TAE (Animation Listing)
+// Author: Jed "Nyxojaele" Lang
+// Revision: 1
+//--------------------------------------
+typedef struct
+{
+    int Offset <format=hex, bgcolor=0xBB8800>;
+    if (Offset != 0)
+    {
+        local int oldPos = FTell();
+        FSeek(Offset);
+        wstring Text;
+        FSeek(oldPos);
+    }
+} NameStruct <read=ReadNameStruct, bgcolor=0xCC9900>;
+wstring ReadNameStruct(NameStruct &name)
+{
+    if (exists(name.Text))
+        return name.Text;
+    return "<empty>";
+}
+
+typedef struct
+{
+    int FirstAnimId;
+    int LastAnimId;
+    int FirstAnimIdOffset <format=hex>;
+} AnimGroupStruct;
+
+typedef struct
+{
+    int AnimId;
+    int Offset <format=hex>;
+} AnimIdStruct <read=ReadAnimIdStruct>;
+
+string ReadAnimIdStruct(AnimIdStruct& ais)
+{
+    string ret;
+    SPrintf(ret, "%d", ais.AnimId);
+    return ret;
+}
+
+typedef struct
+{
+    int Type <comment="0 = Has filename, 1 = No filename">;
+    switch (Type)
+    {
+        case 0:
+            int DataOffset <format=hex>;
+            NameStruct Name;
+            int Unknown1 <format=hex>;
+            int Unknown2;
+            int Null;
+            if (Null != 0)
+                Printf("AnimDataStruct.Null != 0 @ 0x%x\n", FTell());
+            break;
+        case 1:
+            int DataOffset <format=hex>;
+            int NextFileOffset <format=hex>;
+            int LinkedAnimId;
+            int Null1;
+            int Null2;
+            int Null3;
+            if (Null1 != 0 || Null2 != 0 || Null3 != 0)
+                Printf("AnimDataStruct.Null != 0 @ 0x%x\n", FTell());
+            break;
+        default:
+            Printf("Unknown AnimFile type @ 0x%x\n", FTell());
+            break;
+    }
+} AnimFileStruct <read=ReadAnimFileStruct>;
+
+wstring ReadAnimFileStruct(AnimFileStruct& afs)
+{
+    wstring ret;
+    if (afs.Type == 0)
+    {
+        //HACK: c5260 has an anomaly of data that I'm assuming is either a bug, or an indication that I'm making an incorrect assumption
+        //It has a single entry that defies the normal logic.
+        //This is why we have the 0x01 check here.
+        string cmp;
+        SPrintf(cmp, "%c", 0x01);
+        if (afs.Name.Text == cmp)
+            ret = "<no text> (0x01)";
+        else
+            ret = afs.Name.Text;
+    }
+    else
+        ret = "<no text>";
+    return ret;
+}
+
+//----------------------------------------------------
+// Event Types
+//----------------------------------------------------
+// 0 - UNKNOWN
+typedef struct
+{
+    int unk1;   // Some low ID, 8, 27, 51, 39, 19
+    float unk2; // Always 0?
+    int unk3;   // Always -1?
+
+} Event_0_Struct <bgcolor=0x55FF55>;
+
+// 1 - UNKNOWN 
+// Parry/Counter Window?
+typedef struct
+{
+    int unk1;
+    int unk2;
+    int unk3;
+
+} Event_1_Struct <bgcolor=0x55FF55>;
+
+// 2 - UNKNOWN
+typedef struct
+{
+    int unk1; //100
+    int unk2;
+    int unk3; //120
+    int unk4;
+
+} Event_2_Struct <bgcolor=0x55FF55>;
+
+// 5 - UNKNOWN
+typedef struct
+{    
+    int unk1; //Always 0?
+    int someID; //Definitely some ID
+
+} Event_5_Struct <bgcolor=0x55FF55>;
+
+// 16 - UNKNOWN
+typedef struct
+{
+    int unk1;
+    int unk2;
+    int unk3;
+    int unk4;
+    //Printf("%d, %d, %d, %d\n", unk1, unk2, unk3, unk4);
+
+} Event_16_Struct <bgcolor=0x55FF55>;
+
+// 32 - UNKNOWN
+typedef struct
+{
+    int unk1;
+
+} Event_32_Struct <bgcolor=0x55FF55>;
+
+// 33 - UNKNOWN
+typedef struct
+{
+    int unk1;
+
+} Event_33_Struct <bgcolor=0x55FF55>;
+
+// 66 - UNKNOWN
+// Engage hit? Counter Window?
+typedef struct
+{
+    int unk1;
+
+} Event_66_Struct <bgcolor=0x55FF55>;
+
+// 112 - UNKNOWN
+typedef struct
+{
+    int unk1; // 3000/3100/3200 - Only ever seen those values
+    int unk2;
+    //Printf("%d, %d\n", unk1, unk2);
+
+} Event_112_Struct <bgcolor=0x55FF55>;
+
+// 128 - UNKNOWN 
+// Super Common, seen on footsteps sometimes, 1 frame
+// always same frame as footstep, sound, IK toggle?
+// Could be something completely different -_-
+typedef struct
+{
+    int unk1;
+    int animID; // Sometimes prefixed with char ID
+
+} Event_128_Struct <bgcolor=0x55FF55>;
+
+// 130 - UNKNOWN
+typedef struct
+{
+    int unk1; // Always 1?
+    int unk2; // Always 99998?
+    int unk3; // Always -1?
+    int unk4; // Always -1?
+    //Printf("%d, %d, %d, %d\n", unk1, unk2, unk3, unk4);
+
+} Event_130_Struct <bgcolor=0x55FF55>;
+
+// 224 - UNKNOWN
+typedef struct
+{
+    int unk1; // Always 0?
+} Event_224_Struct <bgcolor=0x55FF55>;
+
+// 225 - UNKNOWN
+typedef struct
+{
+    int unk1; // 20 or 0?
+    //Printf("%d\n", unk1);
+
+} Event_225_Struct <bgcolor=0x55FF55>;
+
+// 226 - UNKNOWN
+typedef struct
+{
+    int unk1; // Always 0?
+
+} Event_226_Struct <bgcolor=0x55FF55>;
+
+// 228 - UNKNOWN
+typedef struct
+{
+    int unk1;
+    int unk2;
+    int unk3;
+
+} Event_228_Struct <bgcolor=0x55FF55>;
+
+// 229 - UNKNOWN
+typedef struct
+{
+    int unk1;    
+
+} Event_229_Struct <bgcolor=0x55FF55>;
+
+//----------------------------------------------------
+// Event Body
+//----------------------------------------------------
+typedef struct
+{    
+    int EventType <bgcolor=0x5555FF>;    
+    int EventParamOffset <format=hex, bgcolor=0x5555FF>; // Always points right after itself?
+    if (EventParamOffset != FTell()) Printf("EventParamOffset further than usual\n");
+
+    switch (EventType)
+    {
+        case 0: Event_0_Struct Params; break;
+        case 1: Event_1_Struct Params; break;
+        case 2: Event_2_Struct Params; break;
+        case 5: Event_5_Struct Params; break;
+        case 16: Event_16_Struct Params; break;
+        case 32: Event_32_Struct Params; break;
+        case 33: Event_33_Struct Params; break;
+        case 66: Event_66_Struct Params; break;
+        case 112: Event_112_Struct Params; break;
+        case 128: Event_128_Struct Params; break;
+        case 130: Event_130_Struct Params; break;
+        case 224: Event_224_Struct Params; break;
+        case 225: Event_225_Struct Params; break;
+        case 226: Event_226_Struct Params; break;
+        case 228: Event_228_Struct Params; break;
+        case 229: Event_229_Struct Params; break;
+
+        default: 
+            Printf("Unknown Event: %d\n", EventType);
+    }
+
+} EventBodyStruct;
+
+//----------------------------------------------------
+// Event Header
+//----------------------------------------------------
+typedef struct
+{
+    int StartTimeOffset <format=hex>;
+    local long oldPos = FTell();
+    FSeek(StartTimeOffset);
+    float StartTime;
+    FSeek(oldPos);
+
+    int EndTimeOffset <format=hex>;
+    oldPos = FTell();
+    FSeek(EndTimeOffset);
+    float EndTime;
+    FSeek(oldPos);
+
+    int EventBodyOffset <format=hex>;
+    oldPos = FTell();
+    FSeek(EventBodyOffset);
+    EventBodyStruct EventBody;
+    FSeek(oldPos);
+} EventHeaderStruct <read=ReadHeaderStruct, bgcolor=0xFF5555>;
+wstring ReadHeaderStruct(EventHeaderStruct &event)
+{
+    string buffer;
+    return SPrintf(buffer, "Type: %d", event.EventBody.EventType);
+}
+
+//----------------------------------------------------
+// Anim Data
+//----------------------------------------------------
+typedef struct
+{
+    //All values except AnimDataOffset seem to be 0 when AnimFileStruct.Type == 1
+    int EventCount;
+    int EventHeadersOffset <format=hex>;
+    int Null1;
+    if (Null1 != 0)
+        Printf("AnimHeaderStruct.Null1 != 0 @ 0x%x\n", FTell());
+    int Null2;
+    if (Null2 != 0)
+        Printf("AnimHeaderStruct.Null2 != 0 @ 0x%x\n", FTell());    
+    int TimeConstantsCount;
+    int TimeConstantsOffset;
+    int AnimFileOffset <format=hex>;
+
+    // Events
+    local int oldPos = FTell();
+    FSeek(EventHeadersOffset);
+    if (EventCount != 0 && EventHeadersOffset != 0)
+    {
+        struct
+        {
+            EventHeaderStruct EventHeader[EventCount] <optimize=false>;
+        } Events;
+    }
+
+    FSeek(AnimFileOffset);
+    AnimFileStruct AnimFile;
+    FSeek(oldPos);
+
+} AnimDataStruct <read=ReadAnimDataStruct, bgcolor=0xCCCCCC>;
+wstring ReadAnimDataStruct(AnimDataStruct& ads)
+{
+    wstring ret;
+    if (ads.AnimFile.Type == 0)
+    {
+        //HACK: c5260 has an anomaly of data that I'm assuming is either a bug, or an indication that I'm making an incorrect assumption
+        //It has a single entry that defies the normal logic.
+        //This is why we have the 0x01 check here.
+        string cmp;
+        SPrintf(cmp, "%c", 0x01);
+        if (ads.AnimFile.Name.Text == cmp)
+            ret = "<no text> (0x01)";
+        else
+            ret = ads.AnimFile.Name.Text;
+    }
+    else
+        ret = "<no text>";
+    return ret;
+}
+
+struct
+{
+    byte Signature[4] <bgcolor=0xCCCCCC>;
+    int Unknown1 <bgcolor=0x0000FF>;
+    int Unknown2 <bgcolor=0x0000FF>;
+    int FileSize <format=hex, bgcolor=0xCCCCCC>;
+    byte Unknown3[64] <bgcolor=0x0000FF>;    //Always the same?    
+    int UnknownID; // '20' + File ID
+    int AnimIdCount <bgcolor=0xCCCCCC>;
+    int AnimIdsOffset <format=hex, bgcolor=0xCCCCCC>;
+    int AnimGroupsOffset <format=hex, bgcolor=0xCCCCCC>;
+    byte Unknown6[0x4] <bgcolor=0x0000FF>;
+    int AnimDataCount <bgcolor=0xCCCCCC>;
+    int AnimDataOffset <format=hex, bgcolor=0xCCCCCC>;
+    byte Unknown5[0x28] <bgcolor=0x0000FF>;
+    int FilenamesOffset <format=hex, bgcolor=0xCCCCCC>;
+} Header;
+
+struct
+{
+    //From here down, we are seeking to our locations
+    FSeek(Header.FilenamesOffset);
+    NameStruct SkeletonHkxName;
+    NameStruct SibName;
+
+    FSeek(Header.AnimIdsOffset);
+    struct
+    {
+        AnimIdStruct AnimId[Header.AnimIdCount] <bgcolor=0x00CC00>;
+    } AnimIds;
+
+    FSeek(Header.AnimGroupsOffset);
+    int AnimGroupCount <bgcolor=0xCCCCCC>;
+    int AnimGroupDataOffset <bgcolor=0xCCCCCC>;
+    struct
+    {
+        AnimGroupStruct AnimGroup[AnimGroupCount] <bgcolor=0xCCCC00>;
+    } AnimGroups;
+
+    FSeek(Header.AnimDataOffset);
+    struct
+    {
+        AnimDataStruct AnimData[Header.AnimDataCount] <optimize=false>;// bgcolor=0xCCCCCC>;
+    } AnimData;
+} Data;

@@ -1,0 +1,82 @@
+//--------------------------------------
+//--- 010 Editor v5.0 Binary Template
+//
+// File: Dark Souls .TPF (Texture Package)
+// Author: Jed "Nyxojaele" Lang
+// Revision: 1
+//--------------------------------------
+typedef struct
+{
+    int Offset <format=hex>;
+
+    local int oldPos = FTell();
+    FSeek(Offset);
+    string Text;
+    FSeek(oldPos);
+} NameStruct <read=ReadNameStruct>;
+string ReadNameStruct(NameStruct& ns)
+{
+    string ret;
+    SPrintf(ret, "%s", ns.Text);
+    return ret;
+}
+
+typedef struct
+{
+    byte Signature[4];
+    int HeaderSize;
+    int Flags <format=hex>;
+    int Height;
+    int Width;
+    int PitchOrLinearSize;
+    int Depth;
+    int MipMapCount;
+    int Reserved1[11];
+
+    struct
+    {
+        int Size;
+        int Flags <format=hex>;
+        int FourCC;
+        int RgbBitCount;
+        int RBitMask <format=hex>;
+        int GBitMask <format=hex>;
+        int BBitMask <format=hex>;
+        int ABitMask <format=hex>;
+    } PixelFormat;
+
+    int Caps;
+    int Caps2;
+    int Caps3;
+    int Caps4;
+    int Reserved2;
+} DdsStruct;
+
+typedef struct
+{
+    int DataOffset <format=hex>;
+    int DataSize <format=hex>;
+    short Type <format=hex>;
+    short Subtype <format=hex>;
+    NameStruct Name;
+    byte Unknown1[4];
+
+    local int oldPos = FTell();
+    FSeek(DataOffset);
+    DdsStruct Data;
+    //byte Data[DataSize];
+    FSeek(oldPos);
+} TextureStruct <read=ReadTextureStruct, bgcolor=0xCCCCCC>;
+string ReadTextureStruct(TextureStruct& ts)
+{
+    string ret;
+    SPrintf(ret, "%s", ts.Name.Text);
+    return ret;
+}
+
+byte Signature[4];
+int DataSize <format=hex>;
+int TextureCount;
+byte Version;
+byte Unknown1[3];
+TextureStruct Textures[TextureCount] <optimize=false>;

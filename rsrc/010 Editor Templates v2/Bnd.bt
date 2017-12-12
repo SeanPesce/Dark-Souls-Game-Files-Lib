@@ -1,0 +1,241 @@
+//--------------------------------------
+//--- 010 Editor v5.0 Binary Template
+//
+// File: Dark Souls .BND (Archive)
+// Author: Jed "Nyxojaele" Lang
+// Revision: 1
+//--------------------------------------
+typedef struct
+{
+    int Offset;
+    local long oldPos = FTell();
+    FSeek(Offset);
+    string Text;
+    FSeek(oldPos);
+} NameStruct <read=ReadNameStruct>;
+string ReadNameStruct(NameStruct& ns)
+{
+    return ns.Text;
+}
+
+typedef struct
+{
+    int Bits;
+} FlagsStruct <read=ReadFlagsStruct>;
+string ReadFlagsStruct(FlagsStruct& fs)
+{
+    local string bit01 = " _";
+    if (fs.Bits & 0x01)
+        bit01 = " ?";   //always off
+    local string bit02 = " _";
+    if (fs.Bits & 0x02)
+        bit02 = " ?";   //always off
+    local string bit04 = " _";
+    if (fs.Bits & 0x04)
+        bit04 = " EntrySize2";
+    local string bit08 = " _";
+    if (fs.Bits & 0x08)
+        bit08 = " ?";   //always off
+    local string bit10 = " _";
+    if (fs.Bits & 0x10)
+        bit10 = " ?";   //always on
+    local string bit20 = " _";
+    if (fs.Bits & 0x20)
+        bit20 = " VARIOUS"; //Changes sometimes
+    local string bit40 = " _";
+    if (fs.Bits & 0x40)
+        bit40 = " ?";   //always on
+    local string bit80 = " _";
+    if (fs.Bits & 0x80)
+        bit80 = " ?";   //always off
+    string ret;
+    SPrintf(ret, "%s%s%s%s%s%s%s%s", bit80, bit40, bit20, bit10, bit08, bit04, bit02, bit01);
+    return ret;
+}
+
+typedef struct
+{
+    int Id;
+} IdStruct <read=ReadIdStruct>;
+string ReadIdStruct(IdStruct& is)
+{
+    string ext = FileNameGetExtension(GetFileName());
+    string type = SubStr(ext, 1, Strlen(ext) - 4);
+    if (type == "ani")
+    {
+        switch (is.Id)
+        {
+            case 1000000:
+                return "HKX (Skeleton)";
+            case 3000000:
+                return "TAE (Animation Listing)";
+        }
+        return "Animation ID";
+    }
+    else if (type == "chr" ||
+             type == "obj" ||
+             type == "parts")
+    {
+        switch (is.Id)
+        {
+            case 100:
+                return "TPF (Textures)";
+            case 200:
+                return "FLVER (Mesh)";
+            case 201:
+                return "FLVER (Supplemental - broken)";
+            case 300:
+                return "HKX (Mesh Collision)";
+            case 301:
+                return "HKX (Mesh Collision) (Supplemental - broken)";
+            case 400:
+                return "ANIBND (Animations)";
+            case 500:
+                return "HKXPWV (Unknown)";
+            case 600:
+                return "BSIPWV (Unknown)";
+            case 700:
+                return "HKX (Cloth Collision)";
+            case 800:
+                return "TPFBHD (Textures Archive Header)";
+            default:
+                return "<unknown> (chr)";
+        }
+    }
+    else if (type == "fg")
+    {
+        switch (is.Id)
+        {
+            case 103:
+                return "face_m.bmp (Unknown- is this important?)";
+        }
+    }
+    else if (type == "rumble")
+    {
+        switch (is.Id)
+        {
+            case 10000:
+                return "RMB (Pad Rumble)";
+        }
+        return "Camera ID";
+    }
+    else if (type == "remo")
+    {
+        switch (is.Id)
+        {
+            case 10000:
+                return "TAE (Animation Listing)";
+        }
+        if (is.Id%100 == 0)
+        {
+            string shotText;
+            SPrintf(shotText, "Camera (Shot %d)", is.Id/100);
+            return shotText;
+        }
+        else if ((is.Id - 1)%100 == 0)
+        {
+            string shotText;
+            SPrintf(shotText, "HKX (Shot %d) (Unknown content)", (is.Id - 1)/100);
+            return shotText;
+        }
+    }
+    else if (type == "lua")
+    {
+        switch (is.Id)
+        {
+            case 1000000:
+                return "LUAGNL (Unknown)";
+            case 1000001:
+                return "LUAINFO (Unknown)";
+        }
+    }
+    else if (type == "ffx")
+    {
+        //TODO: Check if these IDs mean something!
+        if (is.Id >= 200000)
+            return "FLVER (Mesh)";
+        else if (is.Id >= 100000)
+            return "TPF (Textures)";
+        else
+            return "FFX (Particle Effect)";
+    }
+    string ret;
+    SPrintf(ret, "%d", is.Id);
+    return ret;
+}
+
+typedef struct
+{
+    int Always0x40 <format=hex>;
+    int Size1;
+    int Offset;
+    IdStruct Id;
+    NameStruct Name;
+    int Size2;
+    local long oldPos = FTell();
+    FSeek(Offset);
+    byte Data[Size2];
+    FSeek(oldPos);
+} EntryTypeLong <read=ReadEntryTypeLong>;
+string ReadEntryTypeLong(EntryTypeLong& els)
+{
+    string ret;
+    SPrintf(ret, "%s", els.Name.Text);
+    return ret;
+}
+
+typedef struct
+{
+    int Always0x40 <format=hex>;
+    int Size;
+    int Offset;
+    IdStruct Id;
+    NameStruct Name;
+    local long oldPos = FTell();
+    FSeek(Offset);
+    byte Data[Size];
+    FSeek(oldPos);
+} EntryTypeShort <read=ReadEntryTypeShort>;
+string ReadEntryTypeShort(EntryTypeShort& ess)
+{
+    string ret;
+    SPrintf(ret, "%s", ess.Name.Text);
+    return ret;
+}
+
+typedef struct(int type, int length)
+{
+    switch (type)
+    {
+        case 0:
+            EntryTypeLong Entry[length] <optimize=false>;
+            break;
+        case 1:
+            EntryTypeShort Entry[length] <optimize=false>;
+            break;
+        default:
+            Printf("Unknown Entry Type!\n");
+    }
+} EntriesStruct <read=ReadEntriesStruct>;
+string ReadEntriesStruct(EntriesStruct& e)
+{
+    if (exists(e.Entry[0].Size2))
+        return "Long";
+    return "Short";
+}
+
+byte Signature[4];
+byte Subsig[8];
+FlagsStruct Flags;
+int EntryCount;
+int HeaderSize;
+int Unknown1;   //Always 0?
+int Unknown2;   //Always 0?
+
+local byte isLong = 0;
+if (Flags.Bits & 0x4)
+    isLong = 1;
+if (isLong)
+    EntriesStruct Entries(0, EntryCount);
+else
+    EntriesStruct Entries(1, EntryCount);

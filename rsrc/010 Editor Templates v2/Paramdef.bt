@@ -1,0 +1,50 @@
+//--------------------------------------
+//--- 010 Editor v5.0 Binary Template
+//
+// File: Dark Souls .PARAMDEF (Parameter Definition File)
+// Author: Jed "Nyxojaele" Lang
+// Revision: 1
+//--------------------------------------
+typedef struct
+{
+    char JPName[0x40];
+    char ExternalType[8];
+    char StrFormat[8];
+    int Unknown2 <format=hex>;
+    float DefaultValue;
+    float MaxValue;
+    float MinValue;
+    int Unknown4 <format=hex>;
+    int Size;
+    int DescriptionOffset <format=hex>;
+    if (DescriptionOffset != 0)
+    {
+        local int oldPos = FTell();
+        FSeek(DescriptionOffset);
+        string Description <bgcolor=0xBB9900>;
+        FSeek(oldPos);
+    }
+    char InternalType[0x20];
+    char ENName[0x20];
+    int Unknown7 <format=hex>;
+} ColumnStruct <read=ReadColumnStruct>;
+string ReadColumnStruct(ColumnStruct &cs)
+{
+    string ret;
+    SPrintf(ret, "(%s) %s", cs.ExternalType, cs.ENName);
+    return ret;
+}
+
+SetBackColor(cGray);
+int FileSize;
+short ColumnDataOffset <format=hex>;
+short Unknown1 <format=hex>;
+short ColumnCount;
+short Unknown2 <format=hex>;
+char Name[0x20];
+int Unknown3 <format=hex>;
+
+struct
+{
+    ColumnStruct Column[ColumnCount] <bgcolor=cLtRed, optimize=false>;
+} Columns;

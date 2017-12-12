@@ -1,0 +1,34 @@
+//--------------------------------------
+//--- 010 Editor v5.0 Binary Template
+//
+// File: Dark Souls .BDT (Archive Data)
+// Author: Jed "Nyxojaele" Lang
+// Revision: 1
+//--------------------------------------
+byte Signature[12];
+int Unknown1;
+
+typedef struct
+{
+    byte Signature[4];
+    uint Version;
+    uint HeaderSize;
+    uint Unknown1[3];
+    byte DcsSignature[4];
+    uint UncompressedSize;
+    uint CompressedSize;
+
+    byte DcpSignature[4];
+    byte ZlibCompSignature[4];
+    uint DcpSize;
+    uint DcpLevel;
+    uint Unknown2[3];
+    uint DcpFlags;
+
+    byte DcaSignature[4];
+    uint DcaSize;
+
+    byte Data[CompressedSize] <bgcolor=0xAA5533>;
+} DcxFile;
+
+AddBookmark(0, "Moving Struct", "DcxFile", 1, cNone, 0xFFFFC4, true);

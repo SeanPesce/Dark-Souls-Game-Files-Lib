@@ -1,0 +1,1039 @@
+//--------------------------------------
+//--- 010 Editor v5.0 Binary Template
+//
+// File: Dark Souls .DRB
+// Author: Jed "Nyxojaele" Lang
+// Revision: 1
+//--------------------------------------
+//**************************************
+//
+//               GENERAL
+//
+//**************************************
+typedef struct
+{
+    byte BlockSig[4];
+    int BlockSize <format=hex>;
+    int EntryCount;
+    int Unknown;
+} BlockHeaderStruct;
+
+//**************************************
+//
+//                 STR
+//
+//**************************************
+typedef struct
+{
+    wstring Text;
+} EntryStruct_STR <read=ReadEntryStruct_STR>;
+wstring ReadEntryStruct_STR(EntryStruct_STR& wss)
+{
+    return wss.Text;
+}
+
+typedef struct
+{
+    BlockHeaderStruct Header;
+    struct
+    {
+        EntryStruct_STR Entries[Header.EntryCount] <optimize=false>;
+    } Entries;
+} BlockStruct_STR <read=ReadBlockStruct_STR>;
+string ReadBlockStruct_STR(BlockStruct_STR& bs)
+{
+    string ret;
+    SPrintf(ret, "%d strings", bs.Header.EntryCount);
+    return ret;
+}
+
+typedef struct(int dataOffset)
+{
+    int Offset <format=hex, bgcolor=0xCCCCCC>;
+    local int oldPos = FTell();
+    FSeek(dataOffset + Offset);
+    wstring Str <bgcolor=0xBB8800>;
+    FSeek(oldPos);
+} StrOffsetStruct <read=ReadStrOffsetStruct>;
+wstring ReadStrOffsetStruct(StrOffsetStruct &sos)
+{
+    string ret;
+    SPrintf(ret, "%s", sos.Str);
+    return ret;
+}
+
+//**************************************
+//
+//                TEXI
+//
+//**************************************
+typedef struct(int strPos)
+{
+    StrOffsetStruct Name(strPos);
+    StrOffsetStruct Path(strPos);
+    //Always zeros
+    int Zero1;
+    int Zero2;
+} EntryStruct_TEXI <read=ReadEntryStruct_TEXI>;
+string ReadEntryStruct_TEXI(EntryStruct_TEXI &texi)
+{
+    string ret;
+    SPrintf(ret, "[%s] - %s", texi.Name.Str, texi.Path.Str);
+    return ret;
+}
+
+typedef struct(int strPos)
+{
+    BlockHeaderStruct Header;
+    if (Header.EntryCount > 0)
+    {
+        struct
+        {
+            EntryStruct_TEXI Entries(strPos)[Header.EntryCount] <optimize=false>;
+        } Entries;
+    }
+} BlockStruct_TEXI <read=ReadBlockStruct_TEXI>;
+string ReadBlockStruct_TEXI(BlockStruct_TEXI& bs)
+{
+    string ret;
+    SPrintf(ret, "%d textures", bs.Header.EntryCount);
+    return ret;
+}
+
+//**************************************
+//
+//                SHPR
+//
+//**************************************
+typedef struct
+{
+    BlockHeaderStruct Header;
+    byte Data[Header.BlockSize];    //This is literally a collection of data all clumped together without a constant size
+} BlockStruct_SHPR <read=ReadBlockStruct_SHPR>;
+string ReadBlockStruct_SHPR(BlockStruct_SHPR& bs)
+{
+    string ret;
+    SPrintf(ret, "%d SHAP data blocks", bs.Header.EntryCount);
+    return ret;
+}
+
+typedef struct(int dataOffset, wstring typeName)
+{
+    int Offset <format=hex, bgcolor=0xCCCCCC>;
+    local int oldPos = FTell();
+    FSeek(dataOffset + Offset);
+
+    if (typeName == "Null")
+    {
+        int Unknown1;
+        short Unknown2;
+        short Unknown3;
+    }
+    else if (typeName == "Dialog")
+    {
+        short Unknown1;
+        short Unknown2;
+        short Unknown3;
+        short Unknown4;
+        short Unknown5;
+        short Unknown6;
+        int Unknown7;
+        int Unknown8;
+        int Unknown9;
+    }
+    else if (typeName == "ScrollText")
+    {
+        short Unknown1;
+        short Unknown2;
+        short Unknown3;
+        short Unknown4;
+        int Unknown5;
+        int Unknown6;
+        int Unknown7;
+        int Unknown8;
+        int Unknown9;
+        int Unknown10;
+        int Unknown11;
+        int Unknown12;
+        int Unknown13;
+        int Unknown14;
+        int Unknown15;
+        short Unknown16;
+    }
+    else if (typeName == "Text")
+    {
+        short Unknown1;
+        short Unknown2;
+        short Unknown3;
+        short Unknown4;
+        int Unknown5;
+        int Unknown6;
+        int Unknown7;
+        short Unknown8;
+        short Unknown9;
+        int Unknown10;
+        int Unknown11;
+        int Unknown12;
+        short Unknown13;
+        if (Unknown12 != 0)
+        {
+            short Unknown14;
+            short Unknown15;
+        }
+    }
+    else if (typeName == "Sprite")
+    {
+        short Unknown1;
+        short Unknown2;
+        short Unknown3;
+        short Unknown4;
+        short LeftEdge;
+        short TopEdge;
+        short RightEdge;
+        short BottomEdge;
+        short TexiIndex;
+        ubyte OrientationFlags;    //1=? | 2=? | 4=? | 8=? | 16=RotCW | 32=Rot180 | 64=FlipV | 128=FlipH
+        ubyte Unknown11;
+        int Unknown12;
+        int Unknown13;
+    }
+    else if (typeName == "MonoRect")
+    {
+        short Unknown1;
+        short Unknown2;
+        short Unknown3;
+        short Unknown4;
+        int Unknown5;
+        int Unknown6;
+        short Unknown7;
+        short Unknown8;
+    }
+    else if (typeName == "GouraudRect")
+    {
+        short Unknown1;
+        short Unknown2;
+        short Unknown3;
+        short Unknown4;
+        int Unknown5;
+        int Unknown6;
+        int Unknown7;
+        int Unknown8;
+        int Unknown9;
+    }
+    else if (typeName == "MonoFrame")
+    {
+        short Unknown1;
+        short Unknown2;
+        short Unknown3;
+        short Unknown4;
+        short Unknown5;
+        short Unknown6;
+        int Unknown7;
+        ubyte Unknown8;
+        ubyte Unknown9;
+        ubyte Unknown10;
+        ubyte Unknown11;
+    }
+    else if (typeName == "GouraudSprite")
+    {
+        short Unknown1;
+        short Unknown2;
+        short Unknown3;
+        short Unknown4;
+        int Unknown5;
+        int Unknown6;
+        short Unknown7;
+        short Unknown8;
+        int Unknown9;
+        short Unknown10;
+        short Unknown11;
+        short Unknown12;
+        short Unknown13;
+        int Unknown14;
+    }
+    else if (typeName == "Mask")
+    {
+        short Unknown1;
+        short Unknown2;
+        short Unknown3;
+        short Unknown4;
+        ubyte Unknown5;
+        ubyte Unknown6;
+        short Unknown7;
+        int Unknown8;
+        int Unknown9;
+        short Unknown10;
+        ubyte Unknown11;
+    }
+    else
+    {
+        byte Data;
+        Printf("Unrecognized type %s in SHPR @%X!\n", typeName, FTell());
+    }
+
+    FSeek(oldPos);
+} ShprOffsetStruct <bgcolor=0xDDAAAA>;
+
+//**************************************
+//
+//                CTPR
+//
+//**************************************
+typedef struct
+{
+    int Unknown[6];
+    int UnknownId;
+} EntryStruct_CTPR_Entry <read=ReadEntryStruct_CTPR_Entry>;
+string ReadEntryStruct_CTPR_Entry(EntryStruct_CTPR_Entry &ctpre)
+{
+    string ret;
+    SPrintf(ret, "%d %d, %d, %d, %d, %d, %d", ctpre.Unknown[0], ctpre.Unknown[1], ctpre.Unknown[2], ctpre.Unknown[3], ctpre.Unknown[4], ctpre.Unknown[5], ctpre.UnknownId);
+    return ret;
+}
+typedef struct
+{
+    int Unknown1[6180];
+    EntryStruct_CTPR_Entry Unknown[780];
+} EntryStruct_CTPR;
+
+typedef struct
+{
+    BlockHeaderStruct Header;
+    EntryStruct_CTPR Entries[Header.EntryCount];
+} BlockStruct_CTPR <read=ReadBlockStruct_CTPR>;
+string ReadBlockStruct_CTPR(BlockStruct_CTPR& bs)
+{
+    string ret;
+    SPrintf(ret, "%d CTRL data blocks", bs.Header.EntryCount);
+    return ret;
+}
+
+typedef struct(int dataOffset, wstring typeName)
+{
+    int Offset <format=hex, bgcolor=0xCCCCCC>;
+    local int oldPos = FTell();
+    FSeek(dataOffset + Offset);
+
+    if (typeName == "Static")
+        int Zero;   //Always zero
+    else if (typeName == "DmeCtrlScrollText")
+        int Zero;   //Always zero
+    else if (typeName == "FrpgMenuDlgObjContentsHelpItem")
+    {
+        int Unknown1;
+        int Unknown2;
+        int Unknown3;
+        int Unknown4;
+        int Unknown5;
+        int Unknown6;
+        ubyte Unknown7;
+        ubyte Unknown8;
+        short Unknown9;
+    }
+    else
+    {
+        byte Data;
+        Printf("Unrecognized type %s in CTPR @%X!\n", typeName, FTell());
+    }
+
+    FSeek(oldPos);
+} CtprOffsetStruct <bgcolor=0xDDAAAA>;
+
+//**************************************
+//
+//                ANIP
+//
+//**************************************
+typedef struct
+{
+    short Unknown[944];
+} EntryStruct_ANIP;
+
+typedef struct
+{
+    BlockHeaderStruct Header;
+    EntryStruct_ANIP Entries[Header.EntryCount];
+} BlockStruct_ANIP <read=ReadBlockStruct_ANIP>;
+string ReadBlockStruct_ANIP(BlockStruct_ANIP& bs)
+{
+    string ret;
+    SPrintf(ret, "%d ANIK data blocks", bs.Header.EntryCount);
+    return ret;
+}
+
+typedef struct(int dataOffset)
+{
+    int Offset <format=hex, bgcolor=0xCCCCCC>;
+    local int oldPos = FTell();
+    FSeek(dataOffset + Offset);
+    byte Anip <bgcolor=0xDDAAAA>;   //TODO: Not actually a byte! Figure out what it actually is!
+    FSeek(oldPos);
+} AnipOffsetStruct;
+
+//**************************************
+//
+//                INTP
+//
+//**************************************
+typedef struct
+{
+    float Unknown[28];  //Some of this looks like a matrix?
+} EntryStruct_INTP;
+
+typedef struct
+{
+    BlockHeaderStruct Header;
+    EntryStruct_INTP Entries[Header.EntryCount];
+} BlockStruct_INTP <read=ReadBlockStruct_INTP>;
+string ReadBlockStruct_INTP(BlockStruct_INTP& bs)
+{
+    string ret;
+    SPrintf(ret, "%d entries", bs.Header.EntryCount);   //Interpolations?
+    return ret;
+}
+
+typedef struct(int dataOffset)
+{
+    //NOTE: Some values here cause the data to point at the SCDP header.
+    //      This is likely a bug, but it's what the game does, so we go with it.
+    int Offset <format=hex, bgcolor=0xCCCCCC>;
+    local int oldPos = FTell();
+    FSeek(dataOffset + Offset);
+
+    float Unknown1;
+    float Unknown2;
+    float Unknown3;
+    float Unknown4;
+
+    FSeek(oldPos);
+} IntpOffsetStruct <read=ReadIntpOffsetStruct, bgcolor=0xDDAAAA>;
+string ReadIntpOffsetStruct(IntpOffsetStruct &ios)
+{
+    string ret;
+    SPrintf(ret, "%f, %f, %f, %f", ios.Unknown1, ios.Unknown2, ios.Unknown3, ios.Unknown4);
+    return ret;
+}
+
+//**************************************
+//
+//                SCDP
+//
+//**************************************
+typedef struct
+{
+    int Unknown1;
+    int Unknown2;   //Always 0 or 1
+} EntryStruct_SCDP_Entry <read=ReadEntryStruct_SCDP_Entry>;
+string ReadEntryStruct_SCDP_Entry(EntryStruct_SCDP_Entry &scdpe)
+{
+    string ret;
+    SPrintf(ret, "%d, %d", scdpe.Unknown1, scdpe.Unknown2);
+    return ret;
+}
+typedef struct
+{
+    EntryStruct_SCDP_Entry Entry[339];
+} EntryStruct_SCDP;
+
+typedef struct
+{
+    BlockHeaderStruct Header;
+    EntryStruct_SCDP Entries[Header.EntryCount];
+} BlockStruct_SCDP <read=ReadBlockStruct_SCDP>;
+string ReadBlockStruct_SCDP(BlockStruct_SCDP& bs)
+{
+    string ret;
+    SPrintf(ret, "%d entries", bs.Header.EntryCount);
+    return ret;
+}
+
+typedef struct(int dataOffset)
+{
+    int Offset <format=hex, bgcolor=0xCCCCCC>;
+    local int oldPos = FTell();
+    FSeek(dataOffset + Offset);
+    byte Scdp <bgcolor=0xDDAAAA>;   //TODO: Not actually a byte! Figure out what it actually is!
+    FSeek(oldPos);
+} ScdpOffsetStruct;
+
+//**************************************
+//
+//                SHAP
+//
+//**************************************
+typedef struct(int strOffset, int shprOffset)
+{
+    StrOffsetStruct TypeName(strOffset);
+    ShprOffsetStruct Shpr(shprOffset, TypeName.Str);
+} EntryStruct_SHAP <read=ReadEntryStruct_SHAP>;
+string ReadEntryStruct_SHAP(EntryStruct_SHAP &shap)
+{
+    string ret;
+    SPrintf(ret, "%s", shap.TypeName.Str);
+    return ret;
+}
+
+typedef struct(int strOffset, int shprOffset)
+{
+    BlockHeaderStruct Header;
+    if (Header.EntryCount > 0)
+    {
+        struct(int strOffset, int shprOffset)
+        {
+            EntryStruct_SHAP Entry(strOffset, shprOffset)[Header.EntryCount] <optimize=false>;
+        } Entries(strOffset, shprOffset);
+    }
+} BlockStruct_SHAP <read=ReadBlockStruct_SHAP>;
+string ReadBlockStruct_SHAP(BlockStruct_SHAP& bs)
+{
+    string ret;
+    SPrintf(ret, "%d controls", bs.Header.EntryCount);
+    return ret;
+}
+
+typedef struct(int dataOffset)
+{
+    int Offset <format=hex, bgcolor=0xCCCCCC>;
+    local int oldPos = FTell();
+    FSeek(dataOffset + Offset);
+    byte Shap <bgcolor=0xDDAAAA>;   //TODO: Not actually a byte! Figure out what it actually is!
+    FSeek(oldPos);
+} ShapOffsetStruct;
+
+//**************************************
+//
+//                CTRL
+//
+//**************************************
+typedef struct(int strOffset, int ctprOffset)
+{
+    StrOffsetStruct TypeName(strOffset);     //0 = no texture. Some values crash
+    CtprOffsetStruct Ctpr(ctprOffset, TypeName.Str);  //Changing this seems to have no effect?
+} EntryStruct_CTRL <read=ReadEntryStruct_CTRL>;
+string ReadEntryStruct_CTRL(EntryStruct_CTRL &ctrl)
+{
+    string ret;
+    SPrintf(ret, "%s", ctrl.TypeName.Str);
+    return ret;
+}
+
+typedef struct(int strOffset, int ctprOffset)
+{
+    BlockHeaderStruct Header;
+    if (Header.EntryCount > 0)
+    {
+        struct(int strOffset, int ctprOffset)
+        {
+            EntryStruct_CTRL Entries(strOffset, ctprOffset)[Header.EntryCount] <optimize=false>;
+        } Entries(strOffset, ctprOffset);
+    };
+} BlockStruct_CTRL <read=ReadBlockStruct_CTRL>;
+string ReadBlockStruct_CTRL(BlockStruct_CTRL& bs)
+{
+    string ret;
+    SPrintf(ret, "%d entries", bs.Header.EntryCount);
+    return ret;
+}
+
+typedef struct(int dataOffset)
+{
+    int Offset <format=hex, bgcolor=0xCCCCCC>;
+    local int oldPos = FTell();
+    FSeek(dataOffset + Offset);
+    byte Ctrl <bgcolor=0xDDAAAA>;   //TODO: Not actually a byte! Figure out what it actually is!
+    FSeek(oldPos);
+} CtrlOffsetStruct;
+
+//**************************************
+//
+//                ANIK
+//
+//**************************************
+typedef struct(int strOffset, int intpOffset, int anipOffset)
+{
+    StrOffsetStruct Str(strOffset);
+    int Unknown2;
+    int Unknown3;
+    IntpOffsetStruct Intp(intpOffset);
+    AnipOffsetStruct Anip(anipOffset);
+    int Unknown6;
+    int Unknown7;
+    int Unknown8;
+} EntryStruct_ANIK <read=ReadEntryStruct_ANIK>;
+string ReadEntryStruct_ANIK(EntryStruct_ANIK &anik)
+{
+    string ret;
+    SPrintf(ret, "%s", anik.Str.Str);
+    return ret;
+}
+
+typedef struct(int strOffset, int intpOffset, int anipOffset)
+{
+    BlockHeaderStruct Header;
+    if (Header.EntryCount > 0)
+    {
+        struct(int strOffset, int intpOffset, int anipOffset)
+        {
+            EntryStruct_ANIK Entries(strOffset, intpOffset, anipOffset)[Header.EntryCount] <optimize=false>;
+        } Entries(strOffset, intpOffset, anipOffset);
+    }
+} BlockStruct_ANIK <read=ReadBlockStruct_ANIK>;
+string ReadBlockStruct_ANIK(BlockStruct_ANIK& bs)
+{
+    string ret;
+    SPrintf(ret, "%d anim keys", bs.Header.EntryCount);
+    return ret;
+}
+
+typedef struct(int dataOffset)
+{
+    int Offset <format=hex, bgcolor=0xCCCCCC>;
+    local int oldPos = FTell();
+    FSeek(dataOffset + Offset);
+    byte Anik <bgcolor=0xDDAAAA>;   //TODO: Not actually a byte! Figure out what it actually is!
+    FSeek(oldPos);
+} AnikOffsetStruct;
+
+//**************************************
+//
+//                ANIO
+//
+//**************************************
+typedef struct(int anikOffset)
+{
+    int Unknown1;
+    int Unknown2;
+    AnikOffsetStruct Anik(anikOffset);
+    int Unknown4;
+} EntryStruct_ANIO;
+
+typedef struct(int anikOffset)
+{
+    BlockHeaderStruct Header;
+    if (Header.EntryCount > 0)
+    {
+        struct(int anikOffset)
+        {
+            EntryStruct_ANIO Entries(anikOffset)[Header.EntryCount] <optimize=false>;
+        } Entries(anikOffset);
+    }
+} BlockStruct_ANIO <read=ReadBlockStruct_ANIO>;
+string ReadBlockStruct_ANIO(BlockStruct_ANIO& bs)
+{
+    string ret;
+    SPrintf(ret, "%d entries", bs.Header.EntryCount);
+    return ret;
+}
+
+typedef struct(int dataOffset)
+{
+    int Offset <format=hex, bgcolor=0xCCCCCC>;
+    local int oldPos = FTell();
+    FSeek(dataOffset + Offset);
+    byte Anio <bgcolor=0xDDAAAA>;   //TODO: Not actually a byte! Figure out what it actually is!
+    FSeek(oldPos);
+} AnioOffsetStruct;
+
+//**************************************
+//
+//                ANIM
+//
+//**************************************
+typedef struct(int strOffset, int anioOffset)
+{
+    StrOffsetStruct Str(strOffset);
+    int Unknown2;
+    AnioOffsetStruct Anio(anioOffset);
+    int Unknown4;
+    int Unknown5;
+    int Unknown6;
+    int Type;   //Not sure if this is used for anything else
+    int Unknown8;
+    if (Type > 0)
+    {
+        int Unknown9;
+        int Unknown10;
+        int Unknown11;
+        int Unknown12;
+    }
+} EntryStruct_ANIM <read=ReadEntryStruct_ANIM>;
+string ReadEntryStruct_ANIM(EntryStruct_ANIM &anim)
+{
+    string ret;
+    SPrintf(ret, "%s", anim.Str.Str);
+    return ret;
+}
+
+typedef struct(int strOffset, int anioOffset)
+{
+    BlockHeaderStruct Header;
+    struct(int strOffset, int anioOffset)
+    {
+        EntryStruct_ANIM Entries(strOffset, anioOffset)[Header.EntryCount] <optimize=false>;
+    } Entries(strOffset, anioOffset);
+} BlockStruct_ANIM <read=ReadBlockStruct_ANIM>;
+string ReadBlockStruct_ANIM(BlockStruct_ANIM& bs)
+{
+    string ret;
+    SPrintf(ret, "%d entries", bs.Header.EntryCount);
+    return ret;
+}
+
+//**************************************
+//
+//                SCDK
+//
+//**************************************
+typedef struct(int strOffset, int scdpOffset)
+{
+    StrOffsetStruct Str(strOffset);
+    int Unknown2;
+    int Unknown3;
+    int Unknown4;
+    ScdpOffsetStruct Scdp(scdpOffset);
+    int Unknown6;
+    int Unknown7;
+    int Unknown8;
+} EntryStruct_SCDK <read=ReadEntryStruct_SCDK>;
+string ReadEntryStruct_SCDK(EntryStruct_SCDK &scdk)
+{
+    string ret;
+    SPrintf(ret, "%s", scdk.Str.Str);
+    return ret;
+}
+
+typedef struct(int strOffset, int scdpOffset)
+{
+    BlockHeaderStruct Header;
+    if (Header.EntryCount > 0)
+    {
+        struct(int strOffset, int scdpOffset)
+        {
+            EntryStruct_SCDK Entries(strOffset, scdpOffset)[Header.EntryCount] <optimize=false>;
+        } Entries(strOffset, scdpOffset);
+    }
+} BlockStruct_SCDK <read=ReadBlockStruct_SCDK>;
+string ReadBlockStruct_SCDK(BlockStruct_SCDK& bs)
+{
+    string ret;
+    SPrintf(ret, "%d SCDL Keys", bs.Header.EntryCount);
+    return ret;
+}
+
+typedef struct(int dataOffset)
+{
+    int Offset <format=hex, bgcolor=0xCCCCCC>;
+    local int oldPos = FTell();
+    FSeek(dataOffset + Offset);
+    byte Scdk <bgcolor=0xDDAAAA>;   //TODO: Not actually a byte! Figure out what it actually is!
+    FSeek(oldPos);
+} ScdkOffsetStruct;
+
+//**************************************
+//
+//                SCDO
+//
+//**************************************
+typedef struct(int strOffset, int scdkOffset)
+{
+    StrOffsetStruct Str(strOffset);
+    int Unknown2;
+    ScdkOffsetStruct Scdk(scdkOffset);
+    int Unknown4;
+} EntryStruct_SCDO <read=ReadEntryStruct_SCDO>;
+string ReadEntryStruct_SCDO(EntryStruct_SCDO &scdo)
+{
+    string ret;
+    SPrintf(ret, "%s", scdo.Str.Str);
+    return ret;
+}
+
+typedef struct(int strOffset, int scdkOffset)
+{
+    BlockHeaderStruct Header;
+    if (Header.EntryCount > 0)
+    {
+        struct(int strOffset, int scdkOffset)
+        {
+            EntryStruct_SCDO Entries(strOffset, scdkOffset)[Header.EntryCount] <optimize=false>;
+        } Entries(strOffset, scdkOffset);
+    }
+} BlockStruct_SCDO <read=ReadBlockStruct_SCDO>;
+string ReadBlockStruct_SCDO(BlockStruct_SCDO& bs)
+{
+    string ret;
+    SPrintf(ret, "%d entries", bs.Header.EntryCount);
+    return ret;
+}
+
+typedef struct(int dataOffset)
+{
+    int Offset <format=hex, bgcolor=0xCCCCCC>;
+    local int oldPos = FTell();
+    FSeek(dataOffset + Offset);
+    byte Scdo <bgcolor=0xDDAAAA>;   //TODO: Not actually a byte! Figure out what it actually is!
+    FSeek(oldPos);
+} ScdoOffsetStruct;
+
+//**************************************
+//
+//                SCDL
+//
+//**************************************
+typedef struct(int strOffset, int scdoOffset)
+{
+    StrOffsetStruct Str(strOffset);
+    int Unknown2;
+    ScdoOffsetStruct Scdo(scdoOffset);
+    int Unknown4;
+} EntryStruct_SCDL <read=ReadEntryStruct_SCDL>;
+string ReadEntryStruct_SCDL(EntryStruct_SCDL &scdl)
+{
+    string ret;
+    SPrintf(ret, "%s", scdl.Str.Str);
+    return ret;
+}
+
+typedef struct(int strOffset, int scdoOffset)
+{
+    BlockHeaderStruct Header;
+    if (Header.EntryCount > 0)
+    {
+        struct(int strOffset, int scdoOffset)
+        {
+            EntryStruct_SCDL Entries(strOffset, scdoOffset)[Header.EntryCount] <optimize=false>;
+        } Entries(strOffset, scdoOffset);
+    }
+} BlockStruct_SCDL <read=ReadBlockStruct_SCDL>;
+string ReadBlockStruct_SCDL(BlockStruct_SCDL& bs)
+{
+    string ret;
+    SPrintf(ret, "%d entries", bs.Header.EntryCount);
+    return ret;
+}
+
+//**************************************
+//
+//                DLGO
+//
+//**************************************
+typedef struct(int strOffset, int shapOffset, int ctrlOffset)
+{
+    StrOffsetStruct Str(strOffset);
+    ShapOffsetStruct Shap(shapOffset);
+    CtrlOffsetStruct Ctrl(ctrlOffset);
+    int Unknown4;   //If this isn't 0 to begin with, it gets set to 0 when it's loaded
+    if (Unknown4 != 0)
+        Printf("Non-zero value but expected 0 in DLGO @%X\n", FTell());
+    int Unknown5;
+    int Unknown6;
+    int Unknown7;
+    int Unknown8;
+} EntryStruct_DLGO <read=ReadEntryStruct_DLGO>;
+string ReadEntryStruct_DLGO(EntryStruct_DLGO &dlgo)
+{
+    string ret;
+    SPrintf(ret, "%s", dlgo.Str.Str);
+    return ret;
+}
+
+typedef struct(int strOffset, int shapOffset, int ctrlOffset)
+{
+    BlockHeaderStruct Header;
+    if (Header.EntryCount > 0)
+    {
+        struct(int strOffset, int shapOffset, int ctrlOffset)
+        {
+            EntryStruct_DLGO Entries(strOffset, shapOffset, ctrlOffset)[Header.EntryCount] <optimize=false>;
+        } Entries(strOffset, shapOffset, ctrlOffset);
+    }
+} BlockStruct_DLGO <read=ReadBlockStruct_DLGO>;
+string ReadBlockStruct_DLGO(BlockStruct_DLGO& bs)
+{
+    string ret;
+    SPrintf(ret, "%d entries", bs.Header.EntryCount);
+    return ret;
+}
+
+typedef struct(int dataOffset)
+{
+    int Offset <format=hex, bgcolor=0xCCCCCC>;
+    local int oldPos = FTell();
+    FSeek(dataOffset + Offset);
+    byte Dlgo <bgcolor=0xDDAAAA>;   //TODO: Not actually a byte! Figure out what it actually is!
+    FSeek(oldPos);
+} DlgoOffsetStruct;
+
+//**************************************
+//
+//                 DLG
+//
+//**************************************
+typedef struct(int strOffset, int shapOffset, int ctrlOffset, int dlgoOffset)
+{
+    StrOffsetStruct Str(strOffset);
+    ShapOffsetStruct Shap(shapOffset);
+    CtrlOffsetStruct Ctrl(ctrlOffset);
+    int Unknown4;   //If this isn't 0 to begin with, it gets set to 0 when it's loaded
+    if (Unknown4 != 0)
+        Printf("Non-zero value but expected 0 in DLG @ %X\n", FTell());
+    int Unknown5;
+    int Unknown6;
+    int Unknown7;
+    int Unknown8;
+    int Unknown9;
+    DlgoOffsetStruct Dlgo(dlgoOffset);  //TopEdge? Some sort of translate(and scale?) on Y. Some values cause crash
+    int LeftEdge;       //Higher numbers moves it left, causes strange stretching as well
+    short RightEdge;    //Higher numbers moves it left, causes strange stretching as well
+    short BottomEdge;   //Higher numbers moves it down, causes strange stretching as well
+    short Unknown14;
+    short Unknown15;
+    short Unknown16;
+    short Unknown17;
+    int Unknown18;
+    int Unknown19;
+} EntryStruct_DLG <read=ReadEntryStruct_DLG>;
+string ReadEntryStruct_DLG(EntryStruct_DLG &dlg)
+{
+    string ret;
+    SPrintf(ret, "%s", dlg.Str.Str);
+    return ret;
+}
+
+typedef struct(int strOffset, int shapOffset, int ctrlOffset, int dlgoOffset)
+{
+    BlockHeaderStruct Header;
+    if (Header.EntryCount > 0)
+    {
+        struct(int strOffset, int shapOffset, int ctrlOffset, int dlgoOffset)
+        {
+            EntryStruct_DLG Entries(strOffset, shapOffset, ctrlOffset, dlgoOffset)[Header.EntryCount] <optimize=false>;
+        } Entries(strOffset, shapOffset, ctrlOffset, dlgoOffset);
+    }
+} BlockStruct_DLG <read=ReadBlockStruct_DLG>;
+string ReadBlockStruct_DLG(BlockStruct_DLG& bs)
+{
+    string ret;
+    SPrintf(ret, "%d entries", bs.Header.EntryCount);
+    return ret;
+}
+
+//**************************************
+//
+//                END
+//
+//**************************************
+typedef struct
+{
+    
+} EntryStruct_END;
+
+typedef struct
+{
+    BlockHeaderStruct Header;
+    if (Header.EntryCount != 0)
+        EntryStruct_END Entries[Header.EntryCount];
+} BlockStruct_END <read=ReadBlockStruct_END>;
+string ReadBlockStruct_END(BlockStruct_END& bs)
+{
+    string ret;
+    SPrintf(ret, "%d entries", bs.Header.EntryCount);
+    return ret;
+}
+
+
+//**************************************
+//
+//                MAIN
+//
+//**************************************
+byte Signature[4];
+int DataOffsetAfterHeader <bgcolor=0xCCCCCC>;
+byte Unknown1[8];
+
+//Technically there could be data here, of the size DataOffsetAfterHeader
+
+local int strPos = FTell() + 0x10;
+local int blockStart = FTell();
+BlockStruct_STR STR;
+FSeek(blockStart + sizeof(STR.Header) + STR.Header.BlockSize);
+
+blockStart = FTell();
+BlockStruct_TEXI TEXI(strPos);
+FSeek(blockStart + sizeof(TEXI.Header) + TEXI.Header.BlockSize);
+
+local int shprPos = FTell() + 0x10;
+blockStart = FTell();
+BlockStruct_SHPR SHPR;
+FSeek(blockStart + sizeof(SHPR.Header) + SHPR.Header.BlockSize);
+
+local int ctprPos = FTell() + 0x10;
+blockStart = FTell();
+BlockStruct_CTPR CTPR;
+FSeek(blockStart + sizeof(CTPR.Header) + CTPR.Header.BlockSize);
+
+local int anipPos = FTell() + 0x10;
+blockStart = FTell();
+BlockStruct_ANIP ANIP;
+FSeek(blockStart + sizeof(ANIP.Header) + ANIP.Header.BlockSize);
+
+local int intpPos = FTell() + 0x10;
+blockStart = FTell();
+BlockStruct_INTP INTP;
+FSeek(blockStart + sizeof(INTP.Header) + INTP.Header.BlockSize);
+
+local int scdpPos = FTell() + 0x10;
+blockStart = FTell();
+BlockStruct_SCDP SCDP;
+FSeek(blockStart + sizeof(SCDP.Header) + SCDP.Header.BlockSize);
+
+local int shapPos = FTell() + 0x10;
+blockStart = FTell();
+BlockStruct_SHAP SHAP(strPos, shprPos);
+FSeek(blockStart + sizeof(SHAP.Header) + SHAP.Header.BlockSize);
+
+local int ctrlPos = FTell() + 0x10;
+blockStart = FTell();
+BlockStruct_CTRL CTRL(strPos, ctprPos);
+FSeek(blockStart + sizeof(CTRL.Header) + CTRL.Header.BlockSize);
+
+local int anikPos = FTell() + 0x10;
+blockStart = FTell();
+BlockStruct_ANIK ANIK(strPos, intpPos, anipPos);
+FSeek(blockStart + sizeof(ANIK.Header) + ANIK.Header.BlockSize);
+
+local int anioPos = FTell() + 0x10;
+blockStart = FTell();
+BlockStruct_ANIO ANIO(anikPos);
+FSeek(blockStart + sizeof(ANIO.Header) + ANIO.Header.BlockSize);
+
+blockStart = FTell();
+BlockStruct_ANIM ANIM(strPos, anioPos);
+FSeek(blockStart + sizeof(ANIM.Header) + ANIM.Header.BlockSize);
+
+local int scdkPos = FTell() + 0x10;
+blockStart = FTell();
+BlockStruct_SCDK SCDK(strPos, scdpPos);
+FSeek(blockStart + sizeof(SCDK.Header) + SCDK.Header.BlockSize);
+
+local int scdoPos = FTell() + 0x10;
+blockStart = FTell();
+BlockStruct_SCDO SCDO(strPos, scdkPos);
+FSeek(blockStart + sizeof(SCDO.Header) + SCDO.Header.BlockSize);
+
+blockStart = FTell();
+BlockStruct_SCDL SCDL(strPos, scdoPos);
+FSeek(blockStart + sizeof(SCDL.Header) + SCDL.Header.BlockSize);
+
+local int dlgoPos = FTell() + 0x10;
+blockStart = FTell();
+BlockStruct_DLGO DLGO(strPos, shapPos, ctrlPos);
+FSeek(blockStart + sizeof(DLGO.Header) + DLGO.Header.BlockSize);
+
+blockStart = FTell();
+BlockStruct_DLG DLG(strPos, shapPos, ctrlPos, dlgoPos);
+FSeek(blockStart + sizeof(DLG.Header) + DLG.Header.BlockSize);
+
+blockStart = FTell();
+BlockStruct_END END;
+FSeek(blockStart + sizeof(END.Header) + END.Header.BlockSize);

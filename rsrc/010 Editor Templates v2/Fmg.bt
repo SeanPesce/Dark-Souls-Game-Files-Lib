@@ -1,0 +1,41 @@
+//--------------------------------------
+//--- 010 Editor v5.0 Binary Template
+//
+// File: Dark Souls .FMG (Text Archive)
+// Author: Jed "Nyxojaele" Lang
+// Revision: 1
+//--------------------------------------
+typedef struct
+{
+    int StringIndex;
+    int IDStartIndex;
+    int IDEndIndex;
+} IDGroupStruct;
+typedef struct
+{
+    uint Offset;
+    local long oldPos = FTell();
+    FSeek(Offset);  //The zero at the start of the file allows this to work with null strings
+    wstring Text <bgcolor=0xBB9900>;
+    FSeek(oldPos);
+} StringStruct <read=ReadStringStruct>;
+string ReadStringStruct(StringStruct &ss)
+{
+    return ss.Text;
+}
+
+SetBackColor(0xCCCCCC);
+byte Zero1[2];
+short One1;
+int FileLength;
+int One2;
+int GroupCount;
+int StringCount;
+int StringsOffset <format=hex>;
+byte Zero2[4];
+
+IDGroupStruct IDGroup[GroupCount] <bgcolor=cLtRed>;
+struct
+{
+    StringStruct String[StringCount] <bgcolor=cLtBlue, optimize=false>;
+} Strings;

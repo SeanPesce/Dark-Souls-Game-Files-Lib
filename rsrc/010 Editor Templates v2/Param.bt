@@ -1,0 +1,55 @@
+//--------------------------------------
+//--- 010 Editor v5.0 Binary Template
+//
+// File: Dark Souls .PARAM (Parameter File)
+// Author: Jed "Nyxojaele" Lang
+// Revision: 1
+//--------------------------------------
+typedef struct(int dataSize)
+{
+    int Id <format=hex>;
+
+    int DataOffset <format=hex>;
+    if (DataOffset == 0)
+        Printf("Null pointer for DataOffset!\n");
+    else
+    {
+        local long oldPos = FTell();
+        FSeek(DataOffset);
+        char Data[dataSize];
+        FSeek(oldPos);
+    }
+
+    int NameOffset <format=hex>;
+    if (NameOffset != 0)
+    {
+        oldPos = FTell();
+        FSeek(NameOffset);
+        string Name <bgcolor=0xBB9900>;
+        FSeek(oldPos);
+    }
+} RowStruct <read=ReadRowStruct>;
+string ReadRowStruct(RowStruct &rs)
+{
+    if (exists(rs.Name))
+    {
+        string ret;
+        SPrintf(ret, "%d: %s", rs.Id, rs.Name);
+        return ret;
+    }
+    else
+        return "<empty>";
+}
+
+int StringsOffset <format=hex>;
+short FirstRowDataOffset <format=hex>;
+short Unknown1[2];
+short RowCount;
+char Name[0x20];
+int Unknown2;
+
+local int dataSize = (StringsOffset - FirstRowDataOffset)/RowCount;
+struct
+{
+    RowStruct Row(dataSize)[RowCount] <optimize=false>;
+} Rows;

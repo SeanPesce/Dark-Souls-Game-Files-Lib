@@ -1,0 +1,37 @@
+//--------------------------------------
+//--- 010 Editor v3.1.2 Binary Template
+//
+// File: Dark Souls .BHD5 (Archive Header)
+// Author: Jed "Nyxojaele" Lang
+// Revision: 1
+//--------------------------------------
+SetBackColor(cLtBlue);
+local ulong currentBucketOffset;
+
+typedef struct {
+    ulong Hash <format=hex>;
+    ulong Size <format=hex>;
+    quad Offset <format=hex>;
+} Entry;
+
+typedef struct {
+    FSeek(currentBucketOffset);
+    ulong EntryCount;
+    ulong EntriesOffset <format=hex>;
+    currentBucketOffset = FTell();
+    FSeek(EntriesOffset);
+    Entry Entries[EntryCount] <optimize=false>;
+} BucketStruct;
+
+ulong Signature;
+ulong EndianCheck;
+if (EndianCheck == 0x00)
+    BigEndian();
+ulong Version;
+
+ulong ArchiveSize;
+ulong BucketCount;
+ulong BucketsOffset <format=hex>;
+
+currentBucketOffset = BucketsOffset;
+BucketStruct Bucket[BucketCount] <optimize=false>;

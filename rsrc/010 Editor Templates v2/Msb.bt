@@ -1,0 +1,1099 @@
+//--------------------------------------
+//--- 010 Editor v5.0 Binary Template
+//
+// File: Dark Souls .MSB (Map Zone Layout)
+// Author: Jed "Nyxojaele" Lang
+// Revision: 1
+//--------------------------------------
+//***************************************
+//
+//          BASE STRUCTS
+//
+//***************************************
+typedef struct(long offset)
+{
+    int Offset <format=hex>;
+    local long oldPos = FTell();
+    FSeek(offset + Offset);
+    string Text;
+    FSeek(oldPos);
+} NameStruct <read=ReadNameStruct, bgcolor=0xEEAA33>;
+string ReadNameStruct(NameStruct& ns)
+{
+    string ret;
+    SPrintf(ret, "%s", ns.Text);
+    return ret;
+}
+typedef struct
+{
+    float X;
+    float Y;
+    float Z;
+} Vector3Struct <read=ReadVector3Struct>;
+string ReadVector3Struct(Vector3Struct& v3s)
+{
+    string ret;
+    SPrintf(ret, "%f, %f, %f", v3s.X, v3s.Y, v3s.Z);
+    return ret;
+}
+typedef struct
+{
+    int Bits <format=hex>;
+} FlagStruct <read=ReadFlagStruct>;
+string ReadFlagStruct(FlagStruct &fs)
+{
+    local string byte1 = ReadFlagByte((fs.Bits >> 24) & 0xFF);
+    local string byte2 = ReadFlagByte((fs.Bits >> 16) & 0xFF);
+    local string byte3 = ReadFlagByte((fs.Bits >> 8) & 0xFF);
+    local string byte4 = ReadFlagByte(fs.Bits & 0xFF);
+
+    string ret;
+    SPrintf(ret, "%s | %s | %s | %s", byte1, byte2, byte3, byte4);
+    return ret;
+}
+string ReadFlagByte(byte b)
+{
+    local string bit01 = "-";
+    if (b & 0x01)
+        bit01 = "+";
+    local string bit02 = "-";
+    if (b & 0x02)
+        bit02 = "+";
+    local string bit04 = "-";
+    if (b & 0x04)
+        bit04 = "+";
+    local string bit08 = "-";
+    if (b & 0x08)
+        bit08 = "+";
+    local string bit10 = "-";
+    if (b & 0x10)
+        bit10 = "+";
+    local string bit20 = "-";
+    if (b & 0x20)
+        bit20 = "+";
+    local string bit40 = "-";
+    if (b & 0x40)
+        bit40 = "+";
+    local string bit80 = "-";
+    if (b & 0x80)
+        bit80 = "+";
+    string ret;
+    SPrintf(ret, "%s %s %s %s %s %s %s %s", bit80, bit40, bit20, bit10, bit08, bit04, bit02, bit01);
+    return ret;
+}
+typedef struct
+{
+    int Offset <format=hex>;
+    if (Offset != 0)
+    {
+        local long oldPos = FTell();
+        FSeek(structRoot + Offset);
+        float Radius;
+        FSeek(oldPos);
+    }
+        
+} SphereDimsStruct <read=ReadSphereDimsStruct>;
+string ReadSphereDimsStruct(SphereDimsStruct& sds)
+{
+    if (sds.Offset != 0)
+    {
+        string ret;
+        SPrintf(ret, "%f", sds.Radius);
+        return ret;
+    }
+    return "<empty>";
+}
+typedef struct
+{
+    int Offset <format=hex>;
+    if (Offset != 0)
+    {
+        local long oldPos = FTell();
+        FSeek(structRoot + Offset);
+        float Range;
+        FSeek(oldPos);
+    }
+} CylinderRangeStruct <read=ReadCylinderRangeStruct>;
+string ReadCylinderRangeStruct(CylinderRangeStruct &crs)
+{
+    string ret;
+    SPrintf(ret, "%f", crs.Range);
+    return ret;
+}
+typedef struct
+{
+    int Offset <format=hex>;
+    if (Offset != 0)
+    {
+        local long oldPos = FTell();
+        FSeek(structRoot + Offset);
+        float Height;
+        FSeek(oldPos);
+    }
+} CylinderHeightStruct <read=ReadCylinderHeightStruct>;
+string ReadCylinderHeightStruct(CylinderHeightStruct &chs)
+{
+    string ret;
+    SPrintf(ret, "%f", chs.Height);
+    return ret;
+}
+typedef struct
+{
+    int Offset <format=hex>;
+    if (Offset != 0)
+    {
+        local long oldPos = FTell();
+        FSeek(structRoot + Offset);
+        Vector3Struct Dimensions;
+        FSeek(oldPos);
+    }
+        
+} BoxDimsStruct <read=ReadBoxDimsStruct>;
+string ReadBoxDimsStruct(BoxDimsStruct& bds)
+{
+    if (bds.Offset != 0)
+    {
+        string ret;
+        SPrintf(ret, "%f, %f, %f", bds.Dimensions.X, bds.Dimensions.Y, bds.Dimensions.Z);
+        return ret;
+    }
+    return "<empty>";
+}
+typedef struct
+{
+    int Offset <format=hex>;
+    if (Offset != 0)
+    {
+        local long oldPos = FTell();
+        FSeek(structRoot + Offset);
+        int ID;
+        FSeek(oldPos);
+    }
+} EventIDStruct <read=ReadEventIDStruct>;
+string ReadEventIDStruct(EventIDStruct &eis)
+{
+    if (eis.Offset != 0)
+    {
+        string ret;
+        SPrintf(ret, "%d", eis.ID);
+        return ret;
+    }
+    return "<empty>";
+}
+
+//***************************************
+//
+//            DATA STRUCTS
+//
+//***************************************
+typedef struct
+{
+    int Offset <format=hex>;
+    if (Offset != 0)
+    {
+        local long oldPos = FTell();
+        FSeek(structRoot + Offset);
+        int Unknown1 <format=hex>;
+        int Unknown2 <format=hex>;
+        FSeek(oldPos);
+    }
+} MapPieceDataStruct <read=ReadMapPieceData>;
+string ReadMapPieceData(MapPieceDataStruct& mpd)
+{
+    if (mpd.Offset != 0)
+    {
+        string ret;
+        SPrintf(ret, "%X, %X", mpd.Unknown1, mpd.Unknown2);
+        return ret;
+    }
+    return "<empty>";
+}
+typedef struct
+{
+    int Offset <format=hex>;
+    if (Offset != 0)
+    {
+        local long oldPos = FTell();
+        FSeek(structRoot + Offset);
+        int Unknown1 <format=hex>;
+        int Unknown2 <format=hex>;
+        int Unknown3 <format=hex>;
+        int Unknown4 <format=hex>;
+        int Unknown5 <format=hex>;
+        int Unknown6 <format=hex>;
+        FSeek(oldPos);
+    }
+} ObjectDataStruct <read=ReadObjectData>;
+string ReadObjectData(ObjectDataStruct& od)
+{
+    if (od.Offset != 0)
+    {
+        string ret;
+        SPrintf(ret, "%X, %X, %X, %X, %X, %X", od.Unknown1, od.Unknown2, od.Unknown3, od.Unknown4, od.Unknown5, od.Unknown6);
+        return ret;
+    }
+    return "<empty>";
+}
+typedef struct
+{
+    int Offset <format=hex>;
+    if (Offset != 0)
+    {
+        local long oldPos = FTell();
+        FSeek(structRoot + Offset);
+        int Unknown1 <format=hex>;
+        int Unknown2 <format=hex>;
+        int AI;             //Determines how the entity acts - Tails seem to have this set to 1
+        int SetID;          //Determines what weapon/attack set is used by entities with multiple weapons - What does this reference?
+        int TalkID;
+        int Unknown6 <format=hex>;
+        int EquipmentID;    //References CharaInitParam - Starting Equipment/Skills/Stats
+        int Unknown8 <format=hex>;
+        int Unknown9 <format=hex>;
+        int Unknown10 <format=hex>;
+        int Unknown11 <format=hex>;
+        int Unknown12 <format=hex>;
+        int Unknown13 <format=hex>;
+        int Unknown14 <format=hex>;
+        int InitialAnimID;
+        int Unknown16 <format=hex>;
+        FSeek(oldPos);
+    }
+} EntityDataStruct <read=ReadEntityData>;
+string ReadEntityData(EntityDataStruct& ed)
+{
+    if (ed.Offset != 0)
+    {
+        string ret;
+        SPrintf(ret, "%X, %X, %d, %d, %d, %X, %d, %X, %X, %X, %X, %X, %X, %X, %d, %X", ed.Unknown1, ed.Unknown2, ed.AI, ed.SetID, ed.TalkID, ed.Unknown6, ed.EquipmentID, ed.Unknown8, ed.Unknown9, ed.Unknown10, ed.Unknown11, ed.Unknown12, ed.Unknown13, ed.Unknown14, ed.InitialAnimID, ed.Unknown16);
+        return ret;
+    }
+    return "<empty>";
+}
+typedef struct
+{
+    int Offset <format=hex>;
+    if (Offset != 0)
+    {
+        local long oldPos = FTell();
+        FSeek(structRoot + Offset);
+        int Unknown1 <format=hex>;
+        int Unknown2 <format=hex>;
+        int Unknown3 <format=hex>;
+        int Unknown4 <format=hex>;
+        FSeek(oldPos);
+    }
+} PartsDataStruct <read=ReadPartsData>;
+string ReadPartsData(PartsDataStruct& pd)
+{
+    if (pd.Offset != 0)
+    {
+        string ret;
+        SPrintf(ret, "%X, %X, %X, %X", pd.Unknown1, pd.Unknown2, pd.Unknown3, pd.Unknown4);
+        return ret;
+    }
+    return "<empty>";
+}
+typedef struct
+{
+    int Offset <format=hex>;
+    if (Offset != 0)
+    {
+        local long oldPos = FTell();
+        FSeek(structRoot + Offset);
+        int Unknown1 <format=hex>;
+        int Unknown2 <format=hex>;
+        int Unknown3 <format=hex>;
+        int Unknown4 <format=hex>;
+        int Unknown5 <format=hex>;
+        int Unknown6 <format=hex>;
+        int Unknown7 <format=hex>;
+        int Unknown8 <format=hex>;
+        int Unknown9 <format=hex>;
+        int Unknown10 <format=hex>;
+        int Unknown11 <format=hex>;
+        int Unknown12 <format=hex>;
+        int Unknown13 <format=hex>;
+        int Unknown14 <format=hex>;
+        int Unknown15 <format=hex>;
+        int Unknown16 <format=hex>;
+        int Unknown17 <format=hex>;
+        int Unknown18 <format=hex>;
+        int Unknown19 <format=hex>;
+        int Unknown20 <format=hex>;
+        FSeek(oldPos);
+    }
+} CollisionDataStruct <read=ReadCollisionData>;
+string ReadCollisionData(CollisionDataStruct& cd)
+{
+    if (cd.Offset != 0)
+    {
+        string ret;
+        SPrintf(ret, "%X, %X, %X, %X, %X, %X, %X, %X, %X, %X, %X, %X, %X, %X, %X, %X, %X, %X, %X, %X", cd.Unknown1, cd.Unknown2, cd.Unknown3, cd.Unknown4, cd.Unknown5, cd.Unknown6, cd.Unknown7, cd.Unknown8, cd.Unknown9, cd.Unknown10, cd.Unknown11, cd.Unknown12, cd.Unknown13, cd.Unknown14, cd.Unknown15, cd.Unknown16, cd.Unknown17, cd.Unknown18, cd.Unknown19, cd.Unknown20);
+        return ret;
+    }
+    return "<empty>";
+}
+typedef struct
+{
+    int Offset <format=hex>;
+    if (Offset != 0)
+    {
+        local long oldPos = FTell();
+        FSeek(structRoot + Offset);
+        FlagStruct DrawGroup1 <format=hex>;
+        FlagStruct DrawGroup2 <format=hex>;
+        int Unknown3 <format=hex>;
+        int Unknown4 <format=hex>;
+        int Unknown5 <format=hex>;
+        int Unknown6 <format=hex>;
+        int Unknown7 <format=hex>;
+        int Unknown8 <format=hex>;
+        FSeek(oldPos);
+    }
+} NavimeshDataStruct <read=ReadNavimeshData>;
+string ReadNavimeshData(NavimeshDataStruct& nd)
+{
+    if (nd.Offset != 0)
+    {
+        string ret;
+        SPrintf(ret, "%X, %X, %X, %X, %X, %X, %X, %X", nd.DrawGroup1, nd.DrawGroup2, nd.Unknown3, nd.Unknown4, nd.Unknown5, nd.Unknown6, nd.Unknown7, nd.Unknown8);
+        return ret;
+    }
+    return "<empty>";
+}
+typedef struct
+{
+    int Offset <format=hex>;
+    if (Offset != 0)
+    {
+        local long oldPos = FTell();
+        FSeek(structRoot + Offset);
+        int Unknown1 <format=hex>;
+        int Unknown2 <format=hex>;
+        int Unknown3 <format=hex>;
+        int Unknown4 <format=hex>;
+        int Unknown5 <format=hex>;
+        int Unknown6 <format=hex>;
+        FSeek(oldPos);
+    }
+} InteractableDataStruct <read=ReadInteractableData>;
+string ReadInteractableData(InteractableDataStruct& id)
+{
+    if (id.Offset != 0)
+    {
+        string ret;
+        SPrintf(ret, "%X, %X, %X, %X, %X, %X", id.Unknown1, id.Unknown2, id.Unknown3, id.Unknown4, id.Unknown5, id.Unknown6);
+        return ret;
+    }
+    return "<empty>";
+}
+typedef struct
+{
+    int Offset <format=hex>;
+    if (Offset != 0)
+    {
+        local long oldPos = FTell();
+        FSeek(structRoot + Offset);
+        int Unknown1 <format=hex>;
+        int Unknown2 <format=hex>;
+        int Unknown3 <format=hex>;
+        int Unknown4 <format=hex>;
+        int Unknown5 <format=hex>;
+        int Unknown6 <format=hex>;
+        int Unknown7 <format=hex>;
+        int Unknown8 <format=hex>;
+        int Unknown9 <format=hex>;
+        int Unknown10 <format=hex>;
+        int Unknown11 <format=hex>;
+        int Unknown12 <format=hex>;
+        int Unknown13 <format=hex>;
+        int Unknown14 <format=hex>;
+        int Unknown15 <format=hex>;
+        int Unknown16 <format=hex>;
+        FSeek(oldPos);
+    }
+} Unknown1DataStruct <read=ReadUnknown1Data>;
+string ReadUnknown1Data(Unknown1DataStruct& ud)
+{
+    if (ud.Offset != 0)
+    {
+        string ret;
+        SPrintf(ret, "%X, %X, %X, %X, %X, %X, %X, %X, %X, %X, %X, %X, %X, %X, %X, %X", ud.Unknown1, ud.Unknown2, ud.Unknown3, ud.Unknown4, ud.Unknown5, ud.Unknown6, ud.Unknown7, ud.Unknown8, ud.Unknown9, ud.Unknown10, ud.Unknown11, ud.Unknown12, ud.Unknown13, ud.Unknown14, ud.Unknown15, ud.Unknown16);
+        return ret;
+    }
+    return "<empty>";
+}
+typedef struct
+{
+    int Offset <format=hex>;
+    if (Offset != 0)
+    {
+        local long oldPos = FTell();
+        FSeek(structRoot + Offset);
+        int Unknown1 <format=hex>;
+        int Unknown2 <format=hex>;
+        int Unknown3 <format=hex>;
+        int Unknown4 <format=hex>;
+        FSeek(oldPos);
+    }
+} Unknown2DataStruct <read=ReadUnknown2Data>;
+string ReadUnknown2Data(Unknown2DataStruct& ud)
+{
+    if (ud.Offset != 0)
+    {
+        string ret;
+        SPrintf(ret, "%X, %X, %X, %X", ud.Unknown1, ud.Unknown2, ud.Unknown3, ud.Unknown4);
+        return ret;
+    }
+    return "<empty>";
+}
+
+//***************************************
+//
+//          UNKNOWN STRUCTS
+//
+//***************************************
+typedef struct
+{
+    int Offset <format=hex>;
+    if (Offset != 0)
+    {
+        local long oldPos = FTell();
+        FSeek(structRoot + Offset);
+        int Data;
+        FSeek(oldPos);
+    }
+} UnknownPtrStruct <read=ReadUnknownPtrStruct>;
+string ReadUnknownPtrStruct(UnknownPtrStruct &ups)
+{
+    if (ups.Offset != 0)
+    {
+        string ret;
+        SPrintf(ret, "%d", ups.Data);
+        return ret;
+    }
+    return "<empty>";
+}
+typedef struct
+{
+    int Offset <format=hex>;
+    if (Offset != 0)
+    {
+        local long oldPos = FTell();
+        FSeek(structRoot + Offset);
+        int GUID;   //c1000_#### entities seem to be bonfire (spawn?) positions, but their GUIDs are always exactly 2000 lower than expected from the Cheat Engine Table
+        int Data2 <format=hex>;
+        int Data3 <format=hex>;
+        int Data4 <format=hex>;
+        int Data5 <format=hex>;
+        int Data6 <format=hex>;
+        FSeek(oldPos);
+    }
+} UnknownPtr6 <read=ReadUnknownPtr6>;
+string ReadUnknownPtr6(UnknownPtr6& up)
+{
+    if (up.Offset != 0)
+    {
+        string ret;
+        SPrintf(ret, "%d, %X, %X, %X, %X, %X", up.GUID, up.Data2, up.Data3, up.Data4, up.Data5, up.Data6);
+        return ret;
+    }
+    return "<empty>";
+}
+
+//***************************************
+//
+//           MODEL PARAMS
+//
+//***************************************
+typedef struct
+{
+    int Offset <format=hex>;
+    local long oldPos = FTell();
+    FSeek(Offset);
+
+    local long structRoot = FTell();
+    NameStruct Name(structRoot);
+    int Type;                       //0 = Map Piece, 1 = Object, 2 = Enemy, 4 = Player?, 5 = Collision, 6 = Navimesh
+    int LocalId;
+    NameStruct Filename(structRoot);
+    int InstanceCount;
+
+    FSeek(oldPos);
+} ModelStruct <read=ReadModelStruct, bgcolor=0x0000BB>;
+string ReadModelStruct(ModelStruct& mpss)
+{
+    string ret;
+    SPrintf(ret, "%s", mpss.Name.Text);
+    return ret;
+}
+
+typedef struct
+{
+    NameStruct Signature(0);
+    int EntryCount;
+    local int ptr2Struct;
+    local int data;
+    local int i;
+    struct
+    {
+        for (i = 0; i < EntryCount; ++i)
+        {
+            ptr2Struct = ReadInt(FTell());
+            if (ptr2Struct == 0)
+            {
+                int EndMarker;
+                continue;
+            }
+            data = ReadInt(ptr2Struct);
+            if (data == 0)
+            {
+                int EndPtr;
+                FSeek(EndPtr);
+                int EndMarker;
+                FSeek(ptr2Struct + 4);
+                continue;
+            }
+    
+            ModelStruct Model;
+        }
+    } Models;
+} ModelParamStStruct <read=ReadModelParamStStruct, bgcolor=0x009900>;
+string ReadModelParamStStruct(ModelParamStStruct& ps)
+{
+    string ret;
+    SPrintf(ret, "%s", ps.Signature.Text);
+    return ret;
+}
+
+//***************************************
+//
+//           EVENT PARAMS
+//
+//***************************************
+typedef struct
+{
+    int Offset <format=hex>;
+    local long oldPos = FTell();
+    FSeek(Offset);
+
+    local long structRoot = FTell();
+    NameStruct Name(structRoot);
+    int Id;
+
+    //0 = Point Light
+    //1 = Audio
+    //2 = Particle Effects
+    //3 = Wind (Physics? Global?)
+    //4 = Treasure (Global?)
+    //5 = ??? (Crow nest to return to Asylum.., Item exchange point in nest?)
+    //6 = "Blood Magic Character"
+    //7 = Interactable (Door/Chest/Lever)
+    //8 = "Resurrection Event"
+    //9 = ???
+    //10 = Navimesh helper? (for doors)
+    //11 = Collision Mesh?
+    //12 = ???
+    //more?
+    int Type;
+    int LocalId;
+
+    struct
+    {
+        int Op1Offset <format=hex>;
+        local long preOp1Pos = FTell();
+        FSeek(structRoot + Op1Offset);
+        int Element1;   //For torch: 00,FF,9301 cause no render, 01,02,A801 cause no change?
+        int PointIndex;
+        int Element3;
+        int Element4;
+        FSeek(preOp1Pos);
+    } Op1Data;
+
+    struct
+    {
+        int Op2Offset <format=hex>;
+        local long preOp2Pos = FTell();
+        FSeek(structRoot + Op2Offset);
+        switch (Type)
+        {
+            case 0: //Light
+                int Element1;
+                break;
+            case 1: //Audio
+                int Element1;
+                int Element2;
+                break;
+            case 2: //Particle Effect
+                int ParticleEffectId;
+                break;
+            case 3: //Wind (Physics? Global?)
+                float Element1;
+                int Element2;
+                int Element3;
+                float Element4;
+                float Element5;
+                int Element6;
+                int Element7;
+                int Element8;
+                float Element9;
+                float Element10;
+                float Element11;
+                float Element12;
+                int Element13;
+                int Element14;
+                int Element15;
+                int Element16;
+                break;
+            case 4: //Treasure (Global?)
+                int Element1;
+                int PartIndex;
+                int ItemLotParamId;
+                int Element4;
+                int Element5;
+                int Element6;
+                int Element7;
+                int Element8;
+                int Element9;
+                int Element10;
+                int Element11;
+                int Element12;
+                int Element13;
+                break;
+            case 5: //???
+                int Element1;
+                int Element2;
+                int Element3;
+                int Element4;
+                int Element5;
+                int Element6;
+                int Element7;
+                int Element8;
+                int Element9;
+                int Element10;
+                int Element11;
+                int Element12;
+                int Element13;
+                int Element14;
+                int Element15;
+                int Element16;
+                int Element17;
+                int Element18;
+                int Element19;
+                int Element20;
+                int Element21;
+                int Element22;
+                int Element23;
+                int Element24;
+                int Element25;
+                int Element26;
+                int Element27;
+                int Element28;
+                int Element29;
+                int Element30;
+                int Element31;
+                int Element32;
+                int Element33;
+                int Element34;
+                int Element35;
+                int Element36;
+                int Element37;
+                int Element38;
+                int Element39;
+                int Element40;
+                int Element41;
+                int Element42;
+                int Element43;
+                int Element44;
+                int Element45;
+                int Element46;
+                int Element47;
+                int Element48;
+                int Element49;
+                int Element50;
+                int Element51;
+                int Element52;
+                int Element53;
+                int Element54;
+                int Element55;
+                int Element56;
+                int Element57;
+                int Element58;
+                int Element59;
+                int Element60;
+                int Element61;
+                int Element62;
+                int Element63;
+                int Element64;
+                break;
+            case 6: //"Blood Magic Character"
+                int Element1;
+                int Element2;
+                break;
+            case 7: //Openable (Door/Chest)
+                int Element1;
+                int PartIndex;
+                int Element3;
+                int Element4;
+                break;
+            case 8: //"Resurrection Event"
+                int Element1;
+                int Element2;
+                int Element3;
+                int Element4;
+                break;
+            case 9: //???
+                int Element1;
+                int Element2;
+                int Element3;
+                int Element4;
+                break;
+            case 10:    //Navimesh helper? (for doors)
+                int Element1;
+                int Element2;
+                int Element3;
+                int Element4;
+                break;
+            case 11:    //11 = Collision Mesh?
+                int Element1;
+                int Element2;
+                int Element3;
+                int Element4;
+                int Element5;
+                int Element6;
+                int Element7;
+                int Element8;
+                break;
+            case 12:    //???
+                int Element1;
+                int Element2;
+                int Element3;
+                int Element4;
+                break;
+            default:
+                Printf("Unknown event type %d @ %X", Type, FTell());
+                break;
+        }
+        FSeek(preOp2Pos);
+    } Op2Data;
+
+    int Null;
+
+    FSeek(oldPos);
+} EventStruct <read=ReadEventStruct, bgcolor=0x00BB00>;
+string ReadEventStruct(EventStruct& epss)
+{
+    string ret;
+    SPrintf(ret, "[%d] %s", epss.Type, epss.Name.Text);
+    return ret;
+}
+
+typedef struct
+{
+    NameStruct Signature(0);
+    int EntryCount;
+    local int ptr2Struct;
+    local int data;
+    local int i;
+    struct
+    {
+        for (i = 0; i < EntryCount; ++i)
+        {
+            ptr2Struct = ReadInt(FTell());
+            if (ptr2Struct == 0)
+            {
+                int EndMarker;
+                continue;
+            }
+            data = ReadInt(ptr2Struct);
+            if (data == 0)
+            {
+                int EndPtr;
+                FSeek(EndPtr);
+                int EndMarker;
+                FSeek(ptr2Struct + 4);
+                continue;
+            }
+    
+            EventStruct Event;
+        }
+    } Events;
+} EventParamStStruct <read=ReadEventParamStStruct, bgcolor=0x009900>;
+string ReadEventParamStStruct(EventParamStStruct& ps)
+{
+    string ret;
+    SPrintf(ret, "%s", ps.Signature.Text);
+    return ret;
+}
+
+//***************************************
+//
+//           POINT PARAMS
+//
+//***************************************
+typedef struct
+{
+    int Offset <format=hex>;
+    local long oldPos = FTell();
+    FSeek(Offset);
+
+    local long structRoot = FTell();
+    NameStruct Name(structRoot);
+    int Unknown1;
+    int Id;
+    int Type;   //2 = Sphere, 3 = Cylinder, 5 = Box
+    Vector3Struct Position;
+    Vector3Struct Rotation; //Debug Menu: "Ang"
+
+    switch (Type)
+    {
+        case 0:
+            UnknownPtrStruct Unknown2;
+            UnknownPtrStruct Unknown3;
+            int Null1;
+            EventIDStruct EventID;
+            int Null2;
+            break;
+        case 2: //Sphere
+            UnknownPtrStruct Unknown2;
+            UnknownPtrStruct Unknown3;
+            SphereDimsStruct SphereDimensions;
+            UnknownPtrStruct Unknown5;
+            int Null;
+            break;
+        case 3: //Cylinder
+            UnknownPtrStruct Unknown2;
+            UnknownPtrStruct Unknown3;
+            CylinderRangeStruct CylinderRange;
+            CylinderHeightStruct CylinderHeight;
+            break;
+        case 5: //Box
+            UnknownPtrStruct Unknown2;
+            UnknownPtrStruct Unknown3;
+            BoxDimsStruct BoxDimensions;
+            EventIDStruct EventID;
+            int Null;
+            break;
+        default:
+            Printf("Unknown point type %d @ %X\n", Type, FTell());
+            UnknownPtrStruct Unknown2;
+            UnknownPtrStruct Unknown3;
+            UnknownPtrStruct Unknown5;
+            UnknownPtrStruct Unknown6;
+            break;
+    }
+
+    FSeek(oldPos);
+} PointStruct <read=ReadPointStruct, bgcolor=0x00BBBB, fgcolor=0xFFFFFF>;
+string ReadPointStruct(PointStruct& ppss)
+{
+    string type;
+    switch (ppss.Type)
+    {
+        case 0:
+            type = "Type0";
+            break;
+        case 2:
+            type = "Sphere";
+            break;
+        case 3:
+            type = "Cylinder";
+            break;
+        case 5:
+            type = "Box";
+            break;
+        default:
+            type = "Unknown";
+            break;
+    }
+    string ret;
+    SPrintf(ret, "%s : %s", ppss.Name.Text, type);
+    return ret;
+}
+
+typedef struct
+{
+    NameStruct Signature(0);
+    int EntryCount;
+    local int ptr2Struct;
+    local int data;
+    local int i;
+    struct
+    {
+        for (i = 0; i < EntryCount; ++i)
+        {
+            ptr2Struct = ReadInt(FTell());
+            if (ptr2Struct == 0)
+            {
+                int EndMarker;
+                continue;
+            }
+            data = ReadInt(ptr2Struct);
+            if (data == 0)
+            {
+                int EndPtr;
+                FSeek(EndPtr);
+                int EndMarker;
+                FSeek(ptr2Struct + 4);
+                continue;
+            }
+    
+            PointStruct Point;
+        }
+    } Points;
+} PointParamStStruct <read=ReadPointParamStStruct, bgcolor=0x009900>;
+string ReadPointParamStStruct(PointParamStStruct& ps)
+{
+    string ret;
+    SPrintf(ret, "%s", ps.Signature.Text);
+    return ret;
+}
+
+//***************************************
+//
+//           PARTS PARAMS
+//
+//***************************************
+typedef struct
+{
+    int Offset <format=hex>;
+    local long oldPos = FTell();
+    FSeek(Offset);
+
+    local long structRoot = FTell();
+    NameStruct Name(structRoot);
+    //Note that there is a type 2 and type 4 that use the modelparam ID associated with c0000 - why?
+    int Type;                       //0 = Map Piece, 1 = Object, 2 = Entity, 4 = Player?, 5 = Collision, 8 = Navimesh, 9 = Interactable? (bonfire, body?), 10 = Unknown (Bone-only FLVER?, Basilisk), 11 = Unknown (More collision?)
+    int LocalId;
+    int ModelParamIndex;
+    NameStruct LayoutFilename(structRoot);
+    Vector3Struct Translation;
+    Vector3Struct Euler;
+    Vector3Struct Scale;
+    FlagStruct DispGroup1;
+    FlagStruct DispGroup2;
+    FlagStruct DispGroup3;
+    FlagStruct DispGroup4;
+    int Unknown6;
+    int Unknown7;
+    int Unknown8;
+    int Unknown9;
+    UnknownPtr6 Unknown10;
+    switch (Type)
+    {
+        case 0:
+            MapPieceDataStruct MapPieceData;
+            break;
+        case 1:
+            ObjectDataStruct ObjectData;
+            break;
+        case 2:
+            EntityDataStruct EntityData;
+            break;
+        case 4:
+            PartsDataStruct PartsData;
+            break;
+        case 5:
+            CollisionDataStruct CollisionData;
+            break;
+        case 8:
+            NavimeshDataStruct NavimeshData;
+            break;
+        case 9:
+            InteractableDataStruct InteractableData;
+            break;
+        case 10:
+            Unknown1DataStruct Unknown1Data;
+            break;
+        case 11:
+            Unknown2DataStruct Unknown2Data;
+            break;
+        default:
+            Printf("PART Type %d Found!\n", Type);
+    }
+    int Unknown12;
+
+    FSeek(oldPos);
+} PartStruct <read=ReadPartStruct>;
+string ReadPartStruct(PartStruct& ps)
+{
+    string type = "";
+    switch (ps.Type)
+    {
+        case 0:
+            type = "Map Piece";
+            break;
+        case 1:
+            type = "Object";
+            break;
+        case 2:
+            type = "Entity";
+            break;
+        case 4:
+            type = "NPC?";
+            break;
+        case 5:
+            type = "Collision";
+            break;
+        case 8:
+            type = "Navimesh";
+            break;
+        case 9:
+            type = "Interactable?";
+            break;
+        case 10:
+            type = "Unknown10";     //Bone-only FLVER?, Basilisk
+            break;
+        case 11:
+            type = "Unknown11";     //More collision?;
+            break;
+    }
+
+    string ret;
+    SPrintf(ret, "%s - %s", type, ps.Name.Text);
+    return ret;
+}
+
+typedef struct
+{
+    NameStruct Signature(0);
+    int EntryCount;
+    local int ptr2Struct;
+    local int data;
+    local int i;
+    struct
+    {
+        for (i = 0; i < EntryCount; ++i)
+        {
+            ptr2Struct = ReadInt(FTell());
+            if (ptr2Struct == 0)
+            {
+                int EndMarker;
+                continue;
+            }
+            data = ReadInt(ptr2Struct);
+            if (data == 0)
+            {
+                int EndPtr;
+                FSeek(EndPtr);
+                int EndMarker;
+                FSeek(ptr2Struct + 4);
+                continue;
+            }
+            PartStruct Part;
+        }
+    } Parts;
+} PartsParamStStruct <read=ReadPartsParamStStruct, bgcolor=0xBB00BB>;
+string ReadPartsParamStStruct(PartsParamStStruct& ppss)
+{
+    string ret;
+    SPrintf(ret, "%s", ppss.Signature.Text);
+    return ret;
+}
+
+int Unknown1;
+ModelParamStStruct Models;
+EventParamStStruct Events;
+PointParamStStruct Points;
+PartsParamStStruct Parts;

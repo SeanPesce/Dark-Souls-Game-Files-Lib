@@ -1,0 +1,51 @@
+//--------------------------------------
+//--- 010 Editor v5.0 Binary Template
+//
+// File: Dark Souls .CCM (Font Definition)
+// Author: Jed "Nyxojaele" Lang
+// Revision: 1
+//--------------------------------------
+typedef struct
+{
+    int FirstCode;
+    int LastCode;
+    int FirstGlyphIndex;
+} CodeGroup <read=ReadCodeGroup>;
+string ReadCodeGroup(CodeGroup &cg)
+{
+    string ret;
+    SPrintf(ret, "%d-%d @ %d", cg.FirstCode, cg.LastCode, cg.FirstGlyphIndex);
+    return ret;
+}
+
+typedef struct
+{
+    float U1;
+    float V1;
+    float U2;
+    float V2;
+    short PreSpace;
+    short Width;
+    short Advance;
+    short ImageIndex;
+} GlyphStruct <optimize=false>;
+
+
+byte Signature[4] <format=hex>;
+int FileSize <format=hex>;
+short HorizontalStretch;    //Lower number = stretched more
+short ImageWidth;   //Not sure if width or height, since they all use 512x512
+short ImageHeight;  //Not sure if width or height, since they all use 512x512
+short Unknown2 <format=hex>;
+short CodeGroupCount;
+short GlyphCount;
+int CodeGroupsOffset <format=hex>;
+int GlyphsOffset <format=hex>;
+short Unknown3 <format=hex>;
+byte ImageCount;
+byte Unknown5 <format=hex>;
+CodeGroup CodeGroups[CodeGroupCount];
+struct
+{
+    GlyphStruct Glyph[GlyphCount];
+} Glyphs;

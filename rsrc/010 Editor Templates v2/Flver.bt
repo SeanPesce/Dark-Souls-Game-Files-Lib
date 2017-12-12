@@ -1,0 +1,544 @@
+//--------------------------------------
+//--- 010 Editor v3.1.2 Binary Template
+//
+// File: Dark Souls .FLVER (Mesh)
+// Author: Jed "Nyxojaele" Lang
+// Revision: 1
+//--------------------------------------
+typedef struct {
+    byte r;
+    byte g;
+    byte b;
+    byte a;
+} Color32 <read=ReadColor32>;
+string ReadColor32(Color32 &color)
+{
+    string s;
+    SPrintf(s, "R:%X G:%X B:%X A:%X", color.r, color.g, color.b, color.a);
+    return s;
+}
+
+typedef struct {
+    ushort x;
+    ushort y;
+} Vector2_UShort <read=ReadVector2_UShort>;
+string ReadVector2_UShort(Vector2_UShort &vector)
+{
+    string s;
+    SPrintf(s, "%d, %d", vector.x, vector.y);
+    return s;
+}
+
+typedef struct {
+    float x;
+    float y;
+    float z;
+} Vector3_Float <read=ReadVector3_Float>;
+string ReadVector3_Float(Vector3_Float &vector)
+{
+    string s;
+    SPrintf(s, "%f, %f, %f", vector.x, vector.y, vector.z);
+    return s;
+}
+
+typedef struct {
+    unsigned byte x;
+    unsigned byte y;
+    unsigned byte z;
+    byte padding;
+} PackedNormal <read=ReadPackedNormal>;
+string ReadPackedNormal(PackedNormal &nvector)
+{
+    string s;
+    SPrintf(s, "%f, %f, %f", (nvector.x - 127.0f) / 127.0f, (nvector.y - 127.0f) / 127.0f, (nvector.z - 127.0f) / 127.0f);
+    return s;
+}
+
+typedef struct {
+    unsigned byte x;
+    unsigned byte y;
+    unsigned byte z;
+    unsigned byte w;
+} PackedTangent <read=ReadPackedTangent>;
+string ReadPackedTangent(PackedTangent &nvector)
+{
+    string s;
+    SPrintf(s, "%f, %f, %f, %f", (nvector.x - 127.0f) / 127.0f, (nvector.y - 127.0f) / 127.0f, (nvector.z - 127.0f) / 127.0f, (nvector.w - 127.0f) / 127.0f);
+    return s;
+}
+
+typedef struct {
+    uint NameOffset;
+    local long oldPos = FTell();
+    FSeek(NameOffset);
+    wstring Name <bgcolor=0xBB9900>;
+    FSeek(oldPos);
+} NameStruct <read=ReadName>;
+wstring ReadName(NameStruct &name)
+{
+    return name.Name;
+}
+
+typedef struct {
+    //This struct also seems to contain information used to subtract stamina when a weapon is swung
+    Vector3_Float Row1;
+    byte Unknown1;  //Always 0xFF
+    if (Unknown1 != -1)
+        Printf("HitboxStruct.Unknown1: Unexpected Value @ %d!\n", FTell());
+    byte UnknownID1;
+    short Unknown2; //Always 0xFFFF or 0x0000
+    if (Unknown2 != 0 && Unknown2 != -1)
+        Printf("HitboxStruct.Unknown2: Unexpected Value @ %d!\n", FTell());
+    Vector3_Float Row2;
+    short UnknownID2;
+    short UnknownID3;
+    Vector3_Float Row3;
+    short Unknown3;
+    short Unknown4;
+    byte Null[16];
+} HitboxStruct <optimize=false>;
+
+typedef struct {
+    NameStruct Name;
+    NameStruct MTDName;
+    uint ParamCount;
+    uint ParamStartIndex;
+    uint Flags; //One of these values: 0000 0000 xxxx 00x0 means to use texture transparency
+    uint Unknown2;
+    uint Unknown3;
+    uint Unknown4;
+} MaterialStruct;
+
+typedef struct {
+    Vector3_Float Translation;
+    NameStruct Name;
+    Vector3_Float EulerRadian;  //When generating a quaternion: y * z * x (order matters!)
+    ushort ParentIndex;
+    ushort FirstChildIndex;
+    Vector3_Float Scale;
+    ushort FirstSiblingIndex;
+    ushort CopyOfIndex;    //LCalfTwist -> LCalf, LTare -> RTare, L_Clavicle -> Neck, LFinger1 -> LFinger0, LFinger2 -> LFinger1, MovePoint_01 -> LFinger2 - Some sort of IK?
+    Vector3_Float BBLower;
+    ushort IsNub;
+    ushort Unknown6;
+    Vector3_Float BBUpper;
+    ushort Unknown7;
+    ushort Unknown8;
+    uint Unknown9[12];
+} BoneStruct <read=ReadBoneStruct>;
+wstring ReadBoneStruct(BoneStruct &bone)
+{
+    //TODO: Use wstring equivalent of Sprintf when it's implemented
+    return bone.Name.Name;
+
+    string ret;
+    SPrintf(ret, "%s - Parent: %d", bone.Name.Name, bone.ParentIndex);
+    return ret;
+}
+
+string ReadIndexBufferOffset(int &offset) {
+    string s;
+    SPrintf(s, "%d", offset + Header.DataOffset);
+    return s;
+}
+typedef struct {
+    //Flags affects the "rainbow texture" glitch I see sometimes
+    uint Flags; //0x00=Normal, 0x01/0x02/0x04/0x08=Not Visible, 0x10=Normal?, 0x80="Reptile" Transparency
+    byte Topology;  //0=Triangles, 1=Tristrip
+    byte CullBackfaces;
+    byte Unknown5[2];    //Always 0?
+    if (Unknown5[0] != 0 || Unknown5[1] != 0)
+        Printf("FacesetStruct.Unknown5: Unexpected value @ %d!\n", FTell());
+    uint IndexCount;
+    int IndexBufferOffset <read=ReadIndexBufferOffset>;
+    uint IndexBufferSize;
+    uint Unknown2;  //Always 0?
+    if (Unknown2 != 0)
+        Printf("FacesetStruct.Unknown2: Unexpected value @ %d!\n", FTell());
+    uint Unknown3;  //Always 0?
+    if (Unknown3 != 0)
+        Printf("FacesetStruct.Unknown3: Unexpected value @ %d!\n", FTell());
+    uint Unknown4;  //Always 0?
+    if (Unknown4 != 0)
+        Printf("FacesetStruct.Unknown4: Unexpected value @ %d!\n", FTell());
+} FacesetStruct;
+
+typedef struct {
+    uint Index;
+} BoneIndexStruct <read=ReadBoneIndexStruct, bgcolor=0x33AA77>;
+string ReadBoneIndexStruct(BoneIndexStruct &bis)
+{
+    string ret;
+    if (bis.Index >= Header.BoneCount)
+        SPrintf(ret, "<invalid>: %d", bis.Index);
+    else
+        SPrintf(ret, "%s", Data.Bones.Bone[bis.Index].Name.Name);
+    return ret;
+}
+
+typedef struct {
+    int IsDynamic; //Seems to apply to anything only in it's T-Pose (maybe this is everything that has an animation that affects it?)
+    uint MaterialIndex;
+    byte Unknown1[2*4]; //Always 0?
+    local int i = 0;
+    for (i = 0; i < 8; ++i)
+    {
+        if (Unknown1[i] != 0)
+            Printf("MeshStruct.Unknown1: Unexpected value @ %d!\n", FTell());
+    }
+    BoneIndexStruct DefaultBoneIndex;  //Indices with no bone weights are fully weighted to this bone
+
+    uint BoneIndexCount;
+    uint Unknown2;  //Always 0?
+    if (Unknown2 != 0)
+        Printf("MeshStruct.Unknown2: Unexpected value @ %d!\n", FTell());
+    uint BoneIndicesOffset <format=hex>;
+    local int oldPos = FTell();
+    FSeek(BoneIndicesOffset);
+    BoneIndexStruct BoneIndices[BoneIndexCount];
+    FSeek(oldPos);
+
+    uint FacesetCount;
+    uint FacesetIndexOffset;
+    oldPos = FTell();
+    FSeek(FacesetIndexOffset);
+    uint FacesetIndex[FacesetCount];
+    FSeek(oldPos);
+
+    uint VertexInfoCount;
+    if (VertexInfoCount != 1)
+        Printf("MeshStruct.VertexInfoCount: Unexpected value @ %d!\n", FTell());
+    uint VertexInfoOffset;
+    oldPos = FTell();
+    FSeek(VertexInfoOffset);
+    uint VertexInfoIndex[VertexInfoCount];
+    FSeek(oldPos);
+} MeshStruct;
+
+string ReadVertexBufferOffset(uint &vbo)
+{
+    string ret;
+    SPrintf(ret, "%d", vbo + Header.DataOffset);
+    return ret;
+}
+typedef struct {
+    uint Unknown6;  //Always 0?
+    if (Unknown6 != 0)
+        Printf("VertexInfoStruct.Unknown6: Unexpected value @ %d!\n", FTell());
+    uint VertexDescriptorIndex;
+    uint VertexSize <format=hex>;
+    uint VertexCount;
+    uint Unknown7;  //Always 0?
+    if (Unknown7 != 0)
+        Printf("VertexInfoStruct.Unknown7: Unexpected value @ %d!\n", FTell());
+    uint Unknown8;  //Always 0?
+    if (Unknown8 != 0)
+        Printf("VertexInfoStruct.Unknown8: Unexpected value @ %d!\n", FTell());
+    uint VertexBufferSize;
+    uint VertexBufferOffset <read=ReadVertexBufferOffset>;
+} VertexInfoStruct;
+
+typedef struct {
+    uint Unknown1;  //Always 0?
+    if (Unknown1 != 0)
+        Printf("StreamDescriptorStruct.Unknown1: Unexpected Value @ %d!\n", FTell());
+    uint Offset;
+    uint DataType;
+    uint Semantic;
+    uint Index;
+} StreamDescriptorStruct <read=ReadStreamDescriptorStruct>;
+string ReadStreamDescriptorStruct(StreamDescriptorStruct &sd)
+{
+    switch (sd.DataType)
+    {
+        case 0x2:
+            return "Position";
+        case 0x11:
+            return "Bone Index";
+        case 0x13:
+            {
+                switch (sd.Semantic)
+                {
+                    case 0x3:
+                        return "Normal";
+                    case 0x6:
+                        return "Bitangent";
+                    case 0xA:
+                        return "Vertex Color";
+                }
+            }
+        case 0x15:
+            return "Diffuse UV Coordinates";
+        case 0x16:
+            return "Diffuse & Lightmap UV Coordinates";
+        case 0x1A:
+            return "Bone Weight";
+    }
+    Printf("Unknown Vertex Info!\n");
+    return "Unknown";
+}
+
+typedef struct {
+    uint StreamDescriptorCount;
+    uint Unknown1;
+    if (Unknown1 != 0)
+        Printf("VertexDescriptorStruct.Unknown1: Unexpected Value @ %d!\n", FTell());
+    uint Unknown2;
+    if (Unknown2 != 0)
+        Printf("VertexDescriptorStruct.Unknown2: Unexpected Value @ %d!\n", FTell());
+    uint Offset;
+
+    local long oldPos = FTell();
+    FSeek(Offset);
+    StreamDescriptorStruct StreamDescriptors[StreamDescriptorCount] <optimize=false, bgcolor=0x00BBBB>;
+    local byte hasUv1 = false;
+    local byte hasUv2 = false;
+    local int i;
+    for (i = 0; i < StreamDescriptorCount; ++i)
+    {
+        if (StreamDescriptors[i].DataType == 0x15)
+            hasUv1 = true;
+        else if (StreamDescriptors[i].DataType == 0x16)
+            hasUv2 = true;
+    }
+    if (hasUv1 && hasUv2)
+        Printf("Both UV Descriptors found in a single VertexDescriptor!\n");
+    FSeek(oldPos);
+} VertexDescriptorStruct <bgcolor=0x00CCCC>;
+
+typedef struct
+{
+    byte BoneIndex1;
+    byte BoneIndex2;
+    byte BoneIndex3;
+    byte BoneIndex4;
+} BoneIndicesStruct <read=ReadBoneIndicesStruct>;
+string ReadBoneIndicesStruct(BoneIndicesStruct &bis)
+{
+    string ret;
+    SPrintf(ret, "%d, %d, %d, %d", bis.BoneIndex1, bis.BoneIndex2, bis.BoneIndex3, bis.BoneIndex4);
+    return ret;
+}
+typedef struct
+{
+    ushort BoneWeight1;
+    ushort BoneWeight2;
+    ushort BoneWeight3;
+    ushort BoneWeight4;
+} BoneWeightsStruct <read=ReadBoneWeightsStruct>;
+string ReadBoneWeightsStruct(BoneWeightsStruct &bws)
+{
+    string ret;
+    SPrintf(ret, "%d, %d, %d, %d", bws.BoneWeight1, bws.BoneWeight2, bws.BoneWeight3, bws.BoneWeight4);
+    return ret;
+}
+
+typedef struct (VertexDescriptorStruct &vertexDescriptor) {
+    local long basePos = FTell();
+    local int i;
+    for (i = 0; i < vertexDescriptor.StreamDescriptorCount; ++i)
+    {
+        FSeek(basePos + vertexDescriptor.StreamDescriptors[i].Offset);
+        switch (vertexDescriptor.StreamDescriptors[i].DataType)
+        {
+            case 0x02:
+            {
+                Vector3_Float Position;
+                break;
+            }
+            case 0x15:
+            {
+                Vector2_UShort UV;
+                break;
+            }
+            case 0x13:
+            {
+                switch (vertexDescriptor.StreamDescriptors[i].Semantic)
+                {
+                    case 0x3:
+                        PackedNormal Normal;
+                        break;
+                    case 0x6:
+                        PackedTangent BiTangent;
+                        break;
+                    case 0xA:
+                        Color32 VertexColor;
+                        break;
+                }
+                break;
+            }
+            case 0x11:
+            {
+                BoneIndicesStruct BoneIndices;
+                break;
+            }
+            case 0x16:
+            {
+                Vector2_UShort UV1;
+                Vector2_UShort UV2;
+                break;
+            }
+            case 0x1A:
+            {
+                BoneWeightsStruct BoneWeights;
+                break;
+            }
+        }
+    }
+} VertexStruct;
+
+typedef struct {
+    NameStruct Value;
+    NameStruct Name;
+    float Unknown1; //Always 1?
+    if (Unknown1 != 1)
+        Printf("MaterialParameterStruct.Unknown1: Unexpected Value @ %d!\n", FTell());
+    float Unknown2; //Always 1?
+    if (Unknown2 != 1)
+        Printf("MaterialParameterStruct.Unknown2: Unexpected Value @ %d!\n", FTell());
+    uint Unknown3;  //Some sort of flags? One might be "use this parameter"?
+    uint Unknown4[3];   //Always 0?
+    if (Unknown4[0] != 0)
+        Printf("MaterialParameterStruct.Unknown4[0]: Unexpected Value @ %d!\n", FTell());
+    if (Unknown4[1] != 0)
+        Printf("MaterialParameterStruct.Unknown4[1]: Unexpected Value @ %d!\n", FTell());
+    if (Unknown4[2] != 0)
+        Printf("MaterialParameterStruct.Unknown4[2]: Unexpected Value @ %d!\n", FTell());
+} MaterialParameterStruct <read=ReadMaterialParameterStruct, bgcolor=0x00AA77>;
+string ReadMaterialParameterStruct(MaterialParameterStruct &mps)
+{
+    string ret;
+    SPrintf(ret, "%s = %s", mps.Name.Name, mps.Value.Name);
+    return ret;
+}
+
+
+struct {
+    byte Signature[6];
+    byte Endianness;
+    FSeek(FTell() + 1); //Padding
+    ushort VersionMinor;
+    ushort VersionMajor;
+    uint DataOffset <format=hex>;
+    uint DataSize <format=hex>;
+    
+    uint HitboxCount;
+    uint MaterialCount;
+    uint BoneCount;
+    uint MeshCount;
+    uint VertexInfoCount;
+    
+    Vector3_Float BBa;  //Not tested!
+    Vector3_Float BBb;  //Not tested!
+    
+    uint Unknown5;  //Optional? Setting to 0 doesn't seem to do anything!
+    uint Unknown6;  //Optional? Setting to 0 doesn't seem to do anything!
+    uint Unknown7;  //Setting to 0 makes weapon invisible
+    uint Unknown8;
+    uint FacesetCount;
+    uint VertexDescriptorCount;
+    uint MaterialParameterCount;
+    
+    uint Unknown4[9];  //Always 0?
+    if (Unknown4[0] != 0)
+        Printf("Header.Unknown4[0]: Unexpected Value!\n");
+    if (Unknown4[1] != 0)
+        Printf("Header.Unknown4[1]: Unexpected Value!\n");
+    if (Unknown4[2] != 0)
+        Printf("Header.Unknown4[2]: Unexpected Value!\n");
+    if (Unknown4[3] != 0)
+        Printf("Header.Unknown4[3]: Unexpected Value!\n");
+    if (Unknown4[4] != 0)
+        Printf("Header.Unknown4[4]: Unexpected Value!\n");
+    if (Unknown4[5] != 0)
+        Printf("Header.Unknown4[5]: Unexpected Value!\n");
+    if (Unknown4[6] != 0)
+        Printf("Header.Unknown4[6]: Unexpected Value!\n");
+    if (Unknown4[7] != 0)
+        Printf("Header.Unknown4[7]: Unexpected Value!\n");
+    if (Unknown4[8] != 0)
+        Printf("Header.Unknown4[8]: Unexpected Value!\n");
+
+} Header <bgcolor=0xA86872>;
+struct {
+    if (Header.HitboxCount != 0)
+    {
+        struct {
+            HitboxStruct Hitbox[Header.HitboxCount] <bgcolor=0x00AA00>;
+        } Hitboxes;
+    }
+    if (Header.MaterialCount != 0)
+    {
+        struct {
+            MaterialStruct Materials[Header.MaterialCount] <bgcolor=0x009900, optimize=false>;
+        } Materials;
+    }
+    if (Header.BoneCount != 0)
+    {
+        struct {
+            BoneStruct Bone[Header.BoneCount] <bgcolor=0x008800, optimize=false>;
+        } Bones;
+    }
+    if (Header.MeshCount != 0)
+    {
+        struct {
+            MeshStruct Mesh[Header.MeshCount] <optimize=false, bgcolor=0x0000CC>;
+        } Meshes;
+        local int i;
+        local int j;
+        struct {
+            for (i = 0; i < Header.MeshCount; ++i)
+            {
+                struct {
+                    for (j = 0; j < Data.Meshes.Mesh[i].FacesetCount; ++j)
+                    {
+                        FacesetStruct Faceset;
+                    }
+                } Mesh;
+            }
+        } MeshFacesets <bgcolor=0x0000BB>;
+        struct
+        {
+            VertexInfoStruct MeshVertexInfo[Header.MeshCount] <optimize=false, bgcolor=0x0000AA>;
+        } MeshVertexInfos;
+    }
+    if (Header.VertexDescriptorCount != 0)
+    {
+        struct {
+            VertexDescriptorStruct VertexDescriptors[Header.VertexDescriptorCount] <optimize=false>;
+        } VertexDescriptors;
+    }
+    if (Header.MaterialParameterCount != 0)
+    {
+        struct {
+            MaterialParameterStruct MaterialParameters[Header.MaterialParameterCount] <optimize=false>;
+        } MaterialParameters;
+    }
+
+    //From here on, everything is self-seeking
+    if (exists(Data.MeshFacesets) && exists(Data.MeshVertexInfos))
+    {
+        FSeek(Header.DataOffset + Data.MeshFacesets.Mesh[0].Faceset[0].IndexBufferOffset);    //This is only done so highlighting is done correctly in the viewer
+        struct {
+            for (i = 0; i < Header.MeshCount; ++i)
+            {
+                FSeek(Header.DataOffset + Data.MeshFacesets.Mesh[i].Faceset[0].IndexBufferOffset);    //This is only done so highlighting is done correctly in the viewer
+                struct {
+                    local int j;
+                    for (j = 0; j < Data.Meshes.Mesh[i].FacesetCount; ++j)
+                    {
+                        FSeek(Header.DataOffset + Data.MeshFacesets.Mesh[i].Faceset[j].IndexBufferOffset);
+                        struct {
+                            ushort Indices[Data.MeshFacesets.Mesh[i].Faceset[j].IndexCount] <bgcolor=0x222222, fgcolor=0xFFFFFF>;
+                        } Faceset;
+                    }
+
+                    FSeek(Header.DataOffset + Data.MeshVertexInfos.MeshVertexInfo[i].VertexBufferOffset);   //This is only done so highlighting is done correctly in the viewer
+                    struct {
+                        VertexStruct Vertex(Data.VertexDescriptors.VertexDescriptors[Data.MeshVertexInfos.MeshVertexInfo[i].VertexDescriptorIndex])[Data.MeshVertexInfos.MeshVertexInfo[i].VertexCount] <optimize=false, bgcolor=0x777777, fgcolor=0xFFFFFF>;
+                    } Vertices;
+                } Mesh;
+            }
+        } IndicesAndVertices;
+    }
+} Data;
