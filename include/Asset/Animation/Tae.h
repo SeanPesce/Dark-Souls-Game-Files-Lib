@@ -30,8 +30,7 @@
 #include <vector>
 #include <fstream>
 #include "Archive/Header.h"
-
-
+#include "SP_AoB_Scan.hpp"
 
 
 
@@ -47,9 +46,20 @@ enum TaeAnimFileStructType {
 typedef class TimeActionEventFile {
 private:
     // Maps animation IDs to animation data indices
-    std::map<uint32_t, int> id_to_index;
+    std::map<uint32_t, int> id_to_index = std::map<uint32_t, int>();
+    bool initialized = false;
     // @TODO: Loading from file
     const bool from_file;
+
+    /*
+        When the game loads the file, addresses are resolved from the offsets before we access it.
+        This means most member data that ends in "offset" is actually an absolute address when loading
+        from game memory.
+        
+        When we manually load from a file, however, offset_base should be set to the address of header,
+        because we haven't calculated the final addresses yet.
+    */
+    uint32_t offset_base = 0;
 
 public:
 
@@ -57,7 +67,7 @@ public:
     struct Header {
         const uint32_t magic32_0 = 0x20454154; // "TAE "
         const uint32_t magic32_1 = 0x00000000;
-        const uint32_t magic32_1 = 0x0001000B;
+        const uint32_t magic32_2 = 0x0001000B;
         uint32_t file_size = 0; // Total size of the TAE file (in bytes)
         const uint32_t const32b_0[16] = { // Constant 64 bytes
             0x00000040, 0x00000001, 0x00000050, 0x00000070,
@@ -106,15 +116,19 @@ public:
     typedef struct AnimationEvent {
         struct Header {
             uint32_t start_time_offset = 0;
-            float start_time = 0.0f;
             uint32_t end_time_offset = 0;
-            float end_time = 0.0f;
             uint32_t body_offset = 0; // Note: Event body is not contiguous with EventHeader
         };
 
+        struct Body {
+            uint32_t type;
+            uint32_t params_offset;
+        };
+
+        float start_time = 0.0f;
+        float end_time = 0.0f;
         Header header;
-        uint32_t type;
-        uint32_t params_offset;
+        Body body;
         std::vector<uint32_t> params;
     } Event;
 
@@ -137,7 +151,8 @@ public:
     // Animation data structure
     typedef struct AnimationData {
         struct Header {
-            uint32_t event_count = 0; // Number of events in this animation
+            uint16_t event_count = 0; // Number of events in this animation
+            uint16_t unknown = 0; // Filled in when file is loaded by the game
             uint32_t events_offset = 0; // Offset (from start of file) of the TaeEvent array for this animation
             const uint32_t const32b_0[2] = { 0x00000000, 0x00000000 };
             uint32_t time_constant_count = 0; // Number of time constants in this animation (a time constant is a 32-bit value; events_offset = time_constants_offset + (time_constants_count * 4) )
@@ -166,47 +181,103 @@ public:
 
 
     // Constructor (reading from game memory)
-    TimeActionEventFile(void *new_header_start) : header((Header*)new_header_start), from_file(false)
+    TimeActionEventFile(void *new_header_start) : from_file(false)
     {
-        if (new_header_start != NULL)
-        {
-            uint32_t file_start = (uint32_t)header;
-            subheader = (SubHeader*)(file_start + header->subheader_offset);
-            skeleton_name = (wchar_t*)(file_start + subheader->skeleton_name_offset);
-            sib_name = (wchar_t*)(file_start + subheader->sib_name_offset);
-            ids = (AnimId*)(file_start + header->anim_ids_offset);
-            group_count = (uint32_t*)(file_start + header->groups_section_offset);
-            groups_offset = &group_count[1];
-            groups = (AnimGroup*)(file_start + (*groups_offset));
-            data = (AnimData::Header*)(file_start + header->anim_data_offset);
+        init_from_memory((Header*)new_header_start);
+    }
 
-            // Map animation IDs to indices
-            for (int i = 0; i < header->anim_id_count; i++) {
-                id_to_index.insert(std::make_pair(ids[i].id, i));
-            }
-        }
-        else
-        {
-            header = NULL;
-            subheader = NULL;
-            skeleton_name = NULL;
-            sib_name = NULL;
-            ids = NULL;
-            group_count = NULL;
-            groups_offset = NULL;
-            groups = NULL;
-            SetLastError(ERROR_CANNOT_MAKE);
-        }
+    // Empty constructor (object is not initialized, but from_file must be specified if the user plans to read TAE data from a file)
+    TimeActionEventFile(bool will_load_from_file = false) : from_file(will_load_from_file)
+    {
     }
 
     // Destructor
     ~TimeActionEventFile()
     {
     }
+
+    
+    Header* init_from_memory(Header *new_header_start) {
+        if (!from_file) {
+            if (new_header_start != NULL)
+            {
+                offset_base = 0;
+                id_to_index.clear();
+                header = (Header*)new_header_start;
+                subheader = (SubHeader*)(offset_base + header->subheader_offset);
+                skeleton_name = (wchar_t*)(file_start() + subheader->skeleton_name_offset);
+                sib_name = (wchar_t*)(file_start() + subheader->sib_name_offset);
+                ids = (AnimId*)(offset_base + header->anim_ids_offset);
+                group_count = (uint32_t*)(offset_base + header->groups_section_offset);
+                groups_offset = &group_count[1];
+                groups = (AnimGroup*)(offset_base + (*groups_offset));
+                data = (AnimData::Header*)(file_start() + header->anim_data_offset);
+
+                // Map animation IDs to indices
+                for (int i = 0; i < (int)header->anim_id_count; i++) {
+                    id_to_index.insert(std::make_pair(ids[i].id, i));
+                }
+                initialized = true;
+                return header;
+            }
+            else
+            {
+                header = NULL;
+                subheader = NULL;
+                skeleton_name = NULL;
+                sib_name = NULL;
+                ids = NULL;
+                group_count = NULL;
+                groups_offset = NULL;
+                groups = NULL;
+                SetLastError(ERROR_CANNOT_MAKE);
+                return NULL;
+            }
+        }
+        SetLastError(ERROR_BAD_ENVIRONMENT);
+        return NULL;
+    }
+
+    Header *init_from_file(char *file) {
+        // @TODO: Set offset_base = header after loading file into memory (and before initializing member data)
+
+        initialized = true;
+        return NULL;
+    }
+
+    /*
+        Initializes (or re-initializes) a TAE instance using data from a TAE file in memory that starts with the given unique byte pattern.
+
+        If from_file is true or the byte pattern is not found, the function fails and the Tae object is not modified.
+
+        Returns the address of the header structure on success, or NULL on failure.
+    */
+    Header* init_from_aob_scan(char *scan_pattern) {
+        if (scan_pattern == NULL) {
+            SetLastError(ERROR_INVALID_PARAMETER);
+            return NULL;
+        }
+
+        if (!from_file) {
+            Header *new_header_start = (Header*)aob_scan(scan_pattern);
+            if (new_header_start) {
+                return init_from_memory(new_header_start);
+            }
+            // Byte pattern was not found
+            SetLastError(ERROR_FILE_NOT_FOUND);
+            return NULL;
+        }
+        SetLastError(ERROR_BAD_ENVIRONMENT);
+        return NULL;
+    }
     
     // Returns whether this TAE object was loaded from a file (if not, it was already loaded into memory, probably by the game)
     bool loaded_from_file() {
         return from_file;
+    }
+
+    bool is_initialized() {
+        return initialized;
     }
 
     // Header data getters
@@ -270,7 +341,8 @@ public:
     // Returns pointer to animation data structure at index i
     inline AnimData::Header* get_data(int unsigned i) {
         if (i < anim_id_count())
-            return (AnimData::Header*)(ids[i].offset + file_start());
+            //return (AnimData::Header*)(ids[i].offset + offset_base);
+            return &data[i];
         else
             return NULL;
     }
@@ -302,8 +374,8 @@ public:
 
     // Returns time constant value at index tci of the time constant array for animation at index i
     inline float get_time_constant(int unsigned i, int unsigned tci) {
-        float* constants = get_data(i) == NULL ? NULL : (float*)(file_start() + get_data(i)->time_constants_offset);
-        if (constants != NULL && tci < get_time_constant_count(i)) {
+        float* constants = get_data(i) == NULL ? NULL : (float*)(offset_base + get_data(i)->time_constants_offset);
+        if (constants != NULL && (int)tci < get_time_constant_count(i)) {
             return constants[tci];
         }
         return -1.0f;
@@ -316,8 +388,8 @@ public:
 
     // Returns time constant value at index tci of the time constant array for animation with the specified ID
     inline float get_time_constant_by_id(uint32_t id, int unsigned tci) {
-        float* constants = get_data_by_id(id) == NULL ? NULL : (float*)(file_start() + get_data_by_id(id)->time_constants_offset);
-        if (constants != NULL && tci < get_time_constant_count_by_id(id)) {
+        float* constants = get_data_by_id(id) == NULL ? NULL : (float*)(offset_base + get_data_by_id(id)->time_constants_offset);
+        if (constants != NULL && (int)tci < get_time_constant_count_by_id(id)) {
             return constants[tci];
         }
         return -1.0f;
@@ -325,42 +397,42 @@ public:
 
     // Returns pointer to animation file structure for animation at index i
     inline AnimFile::Header* get_anim_file_header(int unsigned i) {
-        return get_data(i) == NULL ? NULL : (AnimFile::Header*)(get_data(i)->anim_file_offset + file_start());
+        return get_data(i) == NULL ? NULL : (AnimFile::Header*)(get_data(i)->anim_file_offset + offset_base);
     }
 
     // Returns pointer to animation file structure for animation with the specified animation ID
     inline AnimFile::Header* get_anim_file_header_by_id(uint32_t id) {
-        return get_data_by_id(id) == NULL ? NULL : (AnimFile::Header*)(get_data_by_id(id)->anim_file_offset + file_start());
+        return get_data_by_id(id) == NULL ? NULL : (AnimFile::Header*)(get_data_by_id(id)->anim_file_offset + offset_base);
     }
 
     // Returns animation type for animation at index i
     inline int get_anim_file_type(int unsigned i) {
-        AnimFile::Header* fsh = get_data(i) == NULL ? NULL : (AnimFile::Header*)(get_data(i)->anim_file_offset + file_start());
+        AnimFile::Header* fsh = get_data(i) == NULL ? NULL : (AnimFile::Header*)(get_data(i)->anim_file_offset + offset_base);
         return fsh == NULL ? -1 : fsh->type;
     }
 
     // Returns animation type for animation with the specified animation ID
     inline int get_anim_file_type_by_id(uint32_t id) {
-        AnimFile::Header* fsh = get_data_by_id(id) == NULL ? NULL : (AnimFile::Header*)(get_data_by_id(id)->anim_file_offset + file_start());
+        AnimFile::Header* fsh = get_data_by_id(id) == NULL ? NULL : (AnimFile::Header*)(get_data_by_id(id)->anim_file_offset + offset_base);
         return fsh == NULL ? -1 : fsh->type;
     }
 
     // Returns animation file name for animation at index i
     inline wchar_t* get_anim_file_name(int unsigned i) {
-        AnimFile::Header* fsh = get_data(i) == NULL ? NULL : (AnimFile::Header*)(get_data(i)->anim_file_offset + file_start());
+        AnimFile::Header* fsh = get_data(i) == NULL ? NULL : (AnimFile::Header*)(get_data(i)->anim_file_offset + offset_base);
         if (fsh != NULL) {
-            uint32_t name_offset = *((uint32_t*)(file_start() + fsh->data_offset));
-            return (wchar_t*)(file_start() + name_offset);
+            uint32_t name_offset = *((uint32_t*)(offset_base + fsh->data_offset));
+            return (wchar_t*)(offset_base + name_offset);
         }
         return NULL;
     }
 
     // Returns animation file name for animation with the specified animation ID
     inline wchar_t* get_anim_file_name_by_id(uint32_t id) {
-        AnimFile::Header* fsh = get_data_by_id(id) == NULL ? NULL : (AnimFile::Header*)(get_data_by_id(id)->anim_file_offset + file_start());
+        AnimFile::Header* fsh = get_data_by_id(id) == NULL ? NULL : (AnimFile::Header*)(get_data_by_id(id)->anim_file_offset + offset_base);
         if (fsh != NULL) {
-            uint32_t name_offset = *((uint32_t*)(file_start() + fsh->data_offset));
-            return (wchar_t*)(file_start() + name_offset);
+            uint32_t name_offset = *((uint32_t*)(offset_base + fsh->data_offset));
+            return (wchar_t*)(offset_base + name_offset);
         }
         return NULL;
     }
@@ -369,7 +441,7 @@ public:
     inline Event::Header* get_event_header(int unsigned i, int unsigned ei) {
         AnimData::Header* d = get_data(i);
         if (d != NULL && ei < d->event_count) {
-            return &((Event::Header*)(file_start() + d->events_offset))[ei];
+            return &((Event::Header*)(offset_base + d->events_offset))[ei];
         }
         return NULL;
     }
@@ -378,7 +450,7 @@ public:
     inline Event::Header* get_event_header_by_id(uint32_t id, int unsigned ei) {
         AnimData::Header* d = get_data_by_id(id);
         if (d != NULL && ei < d->event_count) {
-            return &((Event::Header*)(file_start() + d->events_offset))[ei];
+            return &((Event::Header*)(offset_base + d->events_offset))[ei];
         }
         return NULL;
     }
@@ -387,7 +459,10 @@ public:
     inline float get_event_start(int unsigned i, int unsigned ei) {
         AnimData::Header* d = get_data(i);
         if (d != NULL && ei < d->event_count) {
-            return *(float*)(file_start() + ((Event::Header*)(file_start() + d->events_offset))[ei].start_time_offset);
+            if (from_file)
+                return *(float*)(offset_base + ((Event::Header*)(offset_base + d->events_offset))[ei].start_time_offset);
+            else
+                return *(float*)&(((Event::Header*)(offset_base + d->events_offset))[ei].start_time_offset);
         }
         return -1.0f;
     }
@@ -396,16 +471,33 @@ public:
     inline float get_event_start_by_id(uint32_t id, int unsigned ei) {
         AnimData::Header* d = get_data_by_id(id);
         if (d != NULL && ei < d->event_count) {
-            return *(float*)(file_start() + ((Event::Header*)(file_start() + d->events_offset))[ei].start_time_offset);
+            if (from_file)
+                return *(float*)(offset_base + ((Event::Header*)(offset_base + d->events_offset))[ei].start_time_offset);
+            else
+                return *(float*)&(((Event::Header*)(offset_base + d->events_offset))[ei].start_time_offset);
         }
         return -1.0f;
+    }
+
+    // Sets animation start time of event with index ei in event header array for animation with the specified ID
+    void set_event_start_by_id(uint32_t id, int unsigned ei, float new_start) {
+        AnimData::Header* d = get_data_by_id(id);
+        if (d != NULL && ei < d->event_count) {
+            if (from_file)
+                *(float*)(offset_base + ((Event::Header*)(offset_base + d->events_offset))[ei].start_time_offset) = new_start;
+            else
+                *(float*)&(((Event::Header*)(offset_base + d->events_offset))[ei].start_time_offset) = new_start;
+        }
     }
 
     // Returns animation end time of event with index ei in event header array for animation at index i
     inline float get_event_end(int unsigned i, int unsigned ei) {
         AnimData::Header* d = get_data(i);
         if (d != NULL && ei < d->event_count) {
-            return *(float*)(file_start() + ((Event::Header*)(file_start() + d->events_offset))[ei].end_time_offset);
+            if(from_file)
+                return *(float*)(offset_base + ((Event::Header*)(offset_base + d->events_offset))[ei].end_time_offset);
+            else
+                return *(float*)&(((Event::Header*)(offset_base + d->events_offset))[ei].end_time_offset);
         }
         return -1.0f;
     }
@@ -414,7 +506,10 @@ public:
     inline float get_event_end_by_id(uint32_t id, int unsigned ei) {
         AnimData::Header* d = get_data_by_id(id);
         if (d != NULL && ei < d->event_count) {
-            return *(float*)(file_start() + ((Event::Header*)(file_start() + d->events_offset))[ei].end_time_offset);
+            if (from_file)
+                return *(float*)(offset_base + ((Event::Header*)(offset_base + d->events_offset))[ei].end_time_offset);
+            else
+                return *(float*)&(((Event::Header*)(offset_base + d->events_offset))[ei].end_time_offset);
         }
         return -1.0f;
     }
@@ -423,7 +518,10 @@ public:
     inline int get_event_type(int unsigned i, int unsigned ei) {
         AnimData::Header* d = get_data(i);
         if (d != NULL && ei < d->event_count) {
-            return *(uint32_t*)(file_start() + ((Event::Header*)(file_start() + d->events_offset))[ei].body_offset);
+            if (from_file)
+                return *(uint32_t*)(offset_base + ((Event::Header*)(offset_base + d->events_offset))[ei].body_offset);
+            else
+                return *(uint32_t*)(((Event::Header*)(offset_base + d->events_offset))[ei].body_offset);
         }
         return -1;
     }
@@ -432,7 +530,10 @@ public:
     inline int get_event_type_by_id(uint32_t id, int unsigned ei) {
         AnimData::Header* d = get_data_by_id(id);
         if (d != NULL && ei < d->event_count) {
-            return *(uint32_t*)(file_start() + ((Event::Header*)(file_start() + d->events_offset))[ei].body_offset);
+            if (from_file)
+                return *(uint32_t*)(offset_base + ((Event::Header*)(offset_base + d->events_offset))[ei].body_offset);
+            else
+                return *(uint32_t*)(((Event::Header*)(offset_base + d->events_offset))[ei].body_offset);
         }
         return -1;
     }
@@ -441,7 +542,7 @@ public:
     inline uint32_t* get_event_params(int unsigned i, int unsigned ei) {
         AnimData::Header* d = get_data(i);
         if (d != NULL && ei < d->event_count) {
-            return (uint32_t*)(file_start() + (((uint32_t*)(file_start() + ((Event::Header*)(file_start() + d->events_offset))[ei].body_offset))[1]));
+            return (uint32_t*)(offset_base + (((uint32_t*)(offset_base + ((Event::Header*)(offset_base + d->events_offset))[ei].body_offset))[1]));
         }
         return NULL;
     }
@@ -450,7 +551,7 @@ public:
     inline uint32_t* get_event_params_by_id(uint32_t id, int unsigned ei) {
         AnimData::Header* d = get_data_by_id(id);
         if (d != NULL && ei < d->event_count) {
-            return (uint32_t*)(file_start() + (((uint32_t*)(file_start() + ((Event::Header*)(file_start() + d->events_offset))[ei].body_offset))[1]));
+            return (uint32_t*)(offset_base + (((uint32_t*)(offset_base + ((Event::Header*)(offset_base + d->events_offset))[ei].body_offset))[1]));
         }
         return NULL;
     }
@@ -468,7 +569,7 @@ public:
     // Returns animation parameter value at index pi for event with index ei in event header array for animation at index i (or INT_MIN on failure)
     inline int32_t get_event_param(int unsigned i, int unsigned ei, int unsigned pi) {
         int count = TimeActionEventFile::event_param_count_from_type(get_event_type(i, ei));
-        if (count > -1 && pi < count) {
+        if (count > -1 && (int)pi < count) {
             return get_event_params(i, ei)[pi];
         }
         return INT_MIN;
@@ -477,7 +578,7 @@ public:
     // Returns animation parameter value at index pi for event with index ei in event header array for animation with the specified ID (or INT_MIN on failure)
     inline int32_t get_event_param_by_id(uint32_t id, int unsigned ei, int unsigned pi) {
         int count = TimeActionEventFile::event_param_count_from_type(get_event_type_by_id(id, ei));
-        if (count > -1 && pi < count) {
+        if (count > -1 && (int)pi < count) {
             return get_event_params_by_id(id, ei)[pi];
         }
         return INT_MIN;
