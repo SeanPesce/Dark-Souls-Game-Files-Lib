@@ -1,5 +1,8 @@
 # 010 Editor Templates for Dark Souls Game Files  
-**Author: [nyxojaele](https://github.com/nyxojaele)**  
+**Authors:  
+ * [Tarvitz](https://github.com/tarvitz)  
+ * [nyxojaele](https://github.com/nyxojaele)**  
+
 [Original source](https://dl.dropboxusercontent.com/content_link/wd8jBOsCqMIaO2ibj1ICwHjyIZY72AQjkSK7YFLSTXFIlxckp1I1or3w9oYj5zDz/file?dl=1)  
 
 [Binary data templates](https://www.sweetscape.com/010editor/templates.html) that map out data structures and sections inside the different Dark Souls game file types.  
