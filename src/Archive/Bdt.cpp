@@ -14,5 +14,5 @@
 const char *BdtArchive::FILE_NAME_DEFAULT = "dvdbnd";
 
 // BDT file extension
-const char    *BdtArchive::FILE_EXT   =  ".bdt"; // (char)
+const char    *BdtArchive::FILE_EXT = ".bdt"; // (char)
 const wchar_t *BdtArchive::FILE_EXT_W = L".bdt"; // (wide char)

@@ -9,12 +9,12 @@
 
 
 #ifdef _MSC_VER
-	#pragma warning( push )
-	#pragma warning( disable : 4521 4800 4244 4996 4503) // Disable "multiple copy constructors", "data loss", and "name truncated" warnings from SeQan library
+    #pragma warning( push )
+    #pragma warning( disable : 4521 4800 4244 4996 4503) // Disable "multiple copy constructors", "data loss", and "name truncated" warnings from SeQan library
 #endif // _MSC_VER
-    #include "Archive/Archive.h"
+#include "Archive/Archive.h"
 #ifdef _MSC_VER
-	#pragma warning( pop )
+    #pragma warning( pop )
 #endif // _MSC_VER
 
 

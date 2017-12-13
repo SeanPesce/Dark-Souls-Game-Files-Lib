@@ -12,11 +12,11 @@
 
 
 // File extension for parameter definition files
-const char    *ParamDef::FILE_EXT   =  ".paramdef"; // char
+const char    *ParamDef::FILE_EXT = ".paramdef"; // char
 const wchar_t *ParamDef::FILE_EXT_W = L".paramdef"; // wide char
 
 // File extension for parameter data files
-const char    *Param::FILE_EXT   =  ".param"; // char
+const char    *Param::FILE_EXT = ".param"; // char
 const wchar_t *Param::FILE_EXT_W = L".param"; // wide char
 
 // Name string for GameParam.parambnd

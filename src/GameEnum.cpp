@@ -1,21 +1,21 @@
 /*
-	DARK SOULS GAME FILE C++ LIBRARY
-	
-	Contributors to this file:
-	    HotPocketRemix  -  Reversing and obtaining game enums/constants
-		Meowmaritus     -  Reversing and obtaining game enums/constants
-		Sean Pesce	    -  Converting the data to C++ formatting
+    DARK SOULS GAME FILE C++ LIBRARY
+
+    Contributors to this file:
+        HotPocketRemix  -  Reversing and obtaining game enums/constants
+        Meowmaritus     -  Reversing and obtaining game enums/constants
+        Sean Pesce	    -  Converting the data to C++ formatting
 
 
-	GameEnum.cpp
+    GameEnum.cpp
 
-	Initializes constant static enum data that mirrors the data used by the Dark Souls game LUA scripts.
+    Initializes constant static enum data that mirrors the data used by the Dark Souls game LUA scripts.
 
 
-	Sources:
-	    https://github.com/HotPocketRemix/DSEventScriptTools/blob/master/documentation/enums_doc.txt
-		https://gist.github.com/Meowmaritus/2087819c36bdbcf7d160a6683a01beae
-		https://gist.github.com/Meowmaritus/c3de22d05b694b227ae1f371cfb45242
+    Sources:
+        https://github.com/HotPocketRemix/DSEventScriptTools/blob/master/documentation/enums_doc.txt
+        https://gist.github.com/Meowmaritus/2087819c36bdbcf7d160a6683a01beae
+        https://gist.github.com/Meowmaritus/c3de22d05b694b227ae1f371cfb45242
 
 */
 
