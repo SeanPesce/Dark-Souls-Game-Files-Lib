@@ -219,7 +219,21 @@ typedef struct {
 
 
 typedef struct {
+    local string header_hash_start = "";
+    local string footer_hash_start = "";
+    local string header_hash_calculated = "";
+    local string footer_hash_calculated = "";
+    local string header_hash_recalculated = "";
+    local ubyte hash_verified[2] = GetChecksumStrings(FTell() + 20, (uint64)ReadUInt(FTell() + 16),
+                                    meta.chunks[slots+1].start - (16 + meta.chunks[slots].space_size),
+                                    header_hash_start, footer_hash_start, header_hash_calculated,
+                                    footer_hash_calculated, header_hash_recalculated);
+
+    if (hash_verified[0] == 0) {
+        SetForeColor(cRed);
+    }
     Checksum header;
+    SetForeColor(cNone);
     uint length <fgcolor=cWhite, bgcolor=cLtBlue>;
     ubyte data[8+4+0x4C];
     Stats stats;
@@ -238,10 +252,14 @@ typedef struct {
     byte unknownSections[72*0x500];
     byte zerofill[10] <bgcolor=cWhite,fgcolor=cGreen>;
     ubyte onlinedata[131242]<bgcolor=cLtPurple>;
-    UnknownArea areadata[2578] <fgcolor=cGray>;
-    Checksum secondary;
+    UnknownArea areadata[2578] <fgcolor=cGray, bgcolor=cWhite>;
+    if (hash_verified[1] == 0) {
+        SetForeColor(cRed);
+    }
+    Checksum footer;
+    SetForeColor(cNone);
     ubyte offset[12] <bgcolor=cWhite>;
-} EmptySlot;
+} EmptySlot <read=GetEmptySlotChecksumStatus, comment=GetEmptySlotChecksumCorrection>;
 
 
 string GetChecksumStatus(SaveSlot &last_slot) {
@@ -257,6 +275,30 @@ string GetChecksumStatus(SaveSlot &last_slot) {
 }
 
 string GetChecksumCorrection(SaveSlot &last_slot) {
+    local string return_string = "";
+    if (last_slot.hash_verified[0] == 1 && last_slot.hash_verified[1] == 1) {
+        SPrintf(return_string, "Footer: %s (Valid)", last_slot.footer_hash_calculated);
+    } else if (last_slot.hash_verified[1] != 1) {
+        SPrintf(return_string, "Corrected footer: %s", last_slot.footer_hash_calculated);
+    } else {
+        SPrintf(return_string, "Corrected header: %s", last_slot.header_hash_calculated);
+    }
+    return return_string;
+}
+
+string GetEmptySlotChecksumStatus(EmptySlot &last_slot) {
+    local string return_string = "";
+    if (last_slot.hash_verified[0] == 1 && last_slot.hash_verified[1] == 1) {
+        SPrintf(return_string, "Header: %s (Valid)", last_slot.header_hash_calculated);
+    } else if (last_slot.hash_verified[1] != 1) {
+        SPrintf(return_string, "Header: %s (INVALID: Footer checksum is incorrect)", last_slot.header_hash_start);
+    } else {
+        SPrintf(return_string, "Header: %s (INVALID: Header checksum is incorrect)", last_slot.header_hash_start);
+    }
+    return return_string;
+}
+
+string GetEmptySlotChecksumCorrection(EmptySlot &last_slot) {
     local string return_string = "";
     if (last_slot.hash_verified[0] == 1 && last_slot.hash_verified[1] == 1) {
         SPrintf(return_string, "Footer: %s (Valid)", last_slot.footer_hash_calculated);
