@@ -5,14 +5,24 @@
 // Author: Jed "Nyxojaele" Lang
 // Revision: 1
 //--------------------------------------
+#ifndef _DS1_BHD5_BT
+    #define _DS1_BHD5_BT
+
+#include "BhdDefaultFileNames.bt"
+
 SetBackColor(cLtBlue);
+InitializeFileNameMappingPrecalculated();
 local ulong currentBucketOffset;
 
 typedef struct {
     ulong Hash <format=hex>;
     ulong Size <format=hex>;
     quad Offset <format=hex>;
-} Entry;
+} Entry <read=GetEntryFileName>;
+
+string GetEntryFileName(Entry &E) {
+    return GetFileNameFromHash(E.Hash);
+}
 
 typedef struct {
     FSeek(currentBucketOffset);
@@ -35,3 +45,5 @@ ulong BucketsOffset <format=hex>;
 
 currentBucketOffset = BucketsOffset;
 BucketStruct Bucket[BucketCount] <optimize=false>;
+
+#endif // _DS1_BHD5_BT

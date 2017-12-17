@@ -5,6 +5,9 @@
 // Author: Jed "Nyxojaele" Lang
 // Revision: 1
 //--------------------------------------
+#ifndef _DS1_CCM_BT
+    #define _DS1_CCM_BT
+
 typedef struct
 {
     int FirstCode;
@@ -49,3 +52,5 @@ struct
 {
     GlyphStruct Glyph[GlyphCount];
 } Glyphs;
+
+#endif // _DS1_CCM_BT

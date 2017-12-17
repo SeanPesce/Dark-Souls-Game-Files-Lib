@@ -5,6 +5,9 @@
 // Author: Jed "Nyxojaele" Lang
 // Revision: 1
 //--------------------------------------
+#ifndef _DS1_BND_BT
+    #define _DS1_BND_BT
+
 typedef struct
 {
     int Offset;
@@ -239,3 +242,5 @@ if (isLong)
     EntriesStruct Entries(0, EntryCount);
 else
     EntriesStruct Entries(1, EntryCount);
+
+#endif // _DS1_BND_BT

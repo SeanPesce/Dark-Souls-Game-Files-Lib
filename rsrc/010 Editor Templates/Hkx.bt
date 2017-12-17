@@ -5,6 +5,9 @@
 // Author: Jed "Nyxojaele" Lang
 // Revision: 1
 //--------------------------------------
+#ifndef _DS1_HKX_BT
+    #define _DS1_HKX_BT
+
 typedef struct
 {
     int Src;
@@ -147,3 +150,5 @@ struct
 } Header <bgcolor=0xCCCCCC>;
 
 SectionHeader Sections[Header.SectionCount] <optimize=false>;
+
+#endif // _DS1_HKX_BT

@@ -1,11 +1,26 @@
-//--------------------------------------
+//----------------------------------------------------------------------------
 //--- 010 Editor v5.0 Binary Template
 //
 // File: Item types
 // Author: Tarvitz
 // Revision: 0.0.1
-// Purpose: for DarkSouls_PTDE.bt
-//--------------------------------------
+// Purpose: Parsing Dark Souls: Prepare to Die Edition data files
+//----------------------------------------------------------------------------
+#ifndef _DS1_ENUM_ITEM_BT
+    #define _DS1_ENUM_ITEM_BT
+
+
+
+typedef enum<uint>{
+    No_Item_          = 0xFFFFFFFF,
+    Weapon            = 0x00000000,
+    Armor             = 0x10000000,
+    Ring_             = 0x20000000,
+    Unknown_Item_Type = 0x30000000,
+    Item_             = 0x40000000,
+} ItemCategory;
+
+
 typedef enum<uint>{
     white_sign_soapstone = 100,
     red_sign_soapstone = 101,
@@ -18,12 +33,12 @@ typedef enum<uint>{
     servant_roster = 112,
     blue_eye_orb = 113,
     dragon_eye = 114,
-    // special black eye orb
+    // Special black eye orb
     black_eye_orb_firekeeper = 115,
     black_eye_orb = 116,
     dark_sign = 117,
     purple_coward_crystal = 118,
-    // rings
+    // Rings
     hawk_ring = 119,
     ring_of_steal_protection = 120,
     gold_serpent_ring = 121,
@@ -34,10 +49,9 @@ typedef enum<uint>{
     ring_of_sacrifice = 126,
     rare_ring_of_sacrifice = 127,
     dark_wood_grain_ring = 128,
-    // estus
+    // Estus
     estus_empty = 200,
     estus_active = 201,
-    // stuff
     estus_4_active = 209,
     estus_5_empty = 210,
     estus_5_active = 211,
@@ -51,22 +65,22 @@ typedef enum<uint>{
     green_blossom = 260,
     blood_moss_clump = 270,
     repair_powder = 280,
-    // throwing stuff
+    // Thrown items
     throwing_knife = 290,
     poison_throwing_knife = 291,
     fire_bomb = 292,
     dung_pie = 293,
     alluring_skull = 294,
-    // buff stuff
+    // Buffs
     charcoal_pine_resin = 310,
     gold_pine_resin = 311,
     transient_curse = 312,
     rotten_pie_resin = 313,
 
-    // bone stuff?
+    // Bone stuff?
     homeward_bone = 330,
     humanity = 350,
-    // utilities
+    // Utilities
     prism_stone = 370,
     item_binoculars = 371,
     indictment = 373,
@@ -83,7 +97,13 @@ typedef enum<uint>{
     dried_finger = 385,
     // 390->396 fire keeper souls
     fire_keeper_soul = 390,
-    lost_undead_soul = 400,
+    fire_keeper_soul2 = 391,
+    fire_keeper_soul3 = 392,
+    fire_keeper_soul4 = 393,
+    fire_keeper_soul5 = 394,
+    fire_keeper_soul6 = 395,
+    fire_keeper_soul7 = 396,
+    lost_undead_soul8 = 400,
     large_soul_of_lost_undead = 401,
     soul_of_nameless_soldier = 402,
     large_soul_of_nameless_soldier = 403,
@@ -93,16 +113,16 @@ typedef enum<uint>{
     large_soul_of_brave_warrior = 407,
     soul_of_hero = 408,
     soul_of_great_hero = 409,
-    // humanity that restores hp
+    // Humanity that restores hp
     humanity_2 = 500, //500
     item_twin_humanities = 501,
-    // carvings
+    // Carvings
     hello_carving = 510,
     thank_you_carving = 511,
     very_good_carving = 512,
     im_sorry_carving = 513,
     help_me_carving = 514,
-    // great souls
+    // Boss souls (aka Great souls)
     soul_of_quelaag = 700,
     soul_of_sif = 701,
     soul_of_gwyn = 702,
@@ -115,7 +135,7 @@ typedef enum<uint>{
     guardian_soul = 709,
     soul_of_artorias = 710,
     soul_of_manus = 711,
-    // embers
+    // Embers
     large_ember = 800,
     very_large_ember = 801,
     crystal_ember = 802,
@@ -126,7 +146,7 @@ typedef enum<uint>{
     dark_ember = 810,
     large_flame_ember = 812,
     chaos_flame_ember = 813,
-    // titanites
+    // Titanite
     titanite_shard = 1000,
     large_titanite_shard = 1010,
     green_titanite_shard = 1020,
@@ -144,7 +164,7 @@ typedef enum<uint>{
     /**********************************
     *            Spells               *
     **********************************/
-    // magic
+    // Sorceries
     soul_arrow = 3000,
     great_soul_arrow = 3010,
     heavy_soul_arrow = 3020,
@@ -173,7 +193,7 @@ typedef enum<uint>{
     dark_bead = 3720,
     dark_fog = 3730,
     pursuers = 3740,
-    // pyromancy
+    // Pyromancy
     fireball = 4000,
     fire_orb = 4010,
     great_fireball = 4020,
@@ -193,7 +213,7 @@ typedef enum<uint>{
     chaos_storm = 4510,
     chaos_fire_whip = 4520,
     black_flame = 4530,
-    // miracles
+    // Miracles
     heal = 5000,
     great_heal = 5010,
     great_heal_excerpt = 5020,
@@ -221,7 +241,7 @@ typedef enum<uint>{
     /*************************************
     *          End of spells             *
     *************************************/
-    // emotions
+    // Gestures
     emo_backon = 9000,
     emo_point_forward = 9001,
     emo_hurrah = 9002,
@@ -237,10 +257,10 @@ typedef enum<uint>{
     emo_prostration = 9012,
     emo_proper_bow = 9013,
     emo_prayer = 9014,
-    // boxes
+    // Boxes
     box_1 = 0xa2a,
     box_2 = 0xa30,
-    // keys
+    // Keys
     key_1 = 0x7d1,
     key_2 = 0x7d2,
     key_3 = 0x7d3,
@@ -267,7 +287,7 @@ typedef enum<uint>{
     /********************************
     *        ARMOUR SECTION         *
     ********************************/
-    // wanderer
+    // Wanderer
     wanderer_hood = 360000,
     wanderer_hood_1 = 360001,
     wanderer_hood_2 = 360002,
@@ -315,7 +335,7 @@ typedef enum<uint>{
     wanderer_boots_8 = 363008,
     wanderer_boots_9 = 363009,
     wanderer_boots_10 = 363010,
-    // shields
+    // Shields
     leather_shield = 1408000,
     leather_shield_1 = 1408001,
     leather_shield_2 = 1408002,
@@ -327,7 +347,6 @@ typedef enum<uint>{
     leather_shield_8 = 1408008,
     leather_shield_9 = 1408009,
     leather_shield_10 = 1408010,
-    // weapon
     /********************************
     *        Weapon SECTION         *
     ********************************/
@@ -373,8 +392,8 @@ typedef enum<uint>{
     great_sword_of_artorias_5 = 307105,
 
     bare_hands = 900000,
-    // blank
-    blank = 0xffffffff
+    // Blank/empty slot
+    No_Item = 0xffffffff
 } Item;
 
 
@@ -2073,7 +2092,8 @@ typedef enum<uint>{
     Dragon_Arms = 1002000,
     Dragon_Legs = 1003000,
     Egg_Head_small = 1010000,
-    Egg_Head_large = 1020000
+    Egg_Head_large = 1020000,
+    No_Armor = 0xffffffff
 } ItemArmor;
 
 
@@ -2118,7 +2138,8 @@ typedef enum<uint>{
     Blue_Tearstone_Ring = 147,
     Ring_of_the_Suns_Firstborn = 148,
     Darkmoon_Seance_Ring = 149,
-    Calamity_Ring_AotA = 150
+    Calamity_Ring_AotA = 150,
+    No_Ring = 0xffffffff
 } ItemRing;
 
 typedef enum<uint>{
@@ -11364,7 +11385,7 @@ typedef enum<uint>{
     Wood_Bolt_15 = 2103015,
     Lightning_Bolt = 2104000,
     Lightning_Bolt_15 = 2104015,
-    Empty = 4294967295
+    No_Weapon = 4294967295
 } ItemWeapon;
 
 typedef enum<uint>{
@@ -11669,7 +11690,8 @@ typedef enum<uint>{
     Tranquil_Walk_of_Peace__MA = 15800,
     Vow_of_Silence__MA = 15810,
     Sunlight_Blade__MA = 15900,
-    Darkmoon_Blade__MA_No_Covenant_Req = 15910
+    Darkmoon_Blade__MA_No_Covenant_Req = 15910,
+    No_Usable_Item = 0xffffffff
 } UsableItem;
 
-
+#endif // _DS1_ENUM_ITEM_BT

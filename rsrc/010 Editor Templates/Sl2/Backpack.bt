@@ -1,0 +1,153 @@
+//----------------------------------------------------------------------------
+//--- 010 Editor v5.0 Binary Template
+//
+// File: Sl2/Backpack.bt
+// Author: Tarvitz
+// Revision: 0.0.1
+// Purpose: Parsing Dark Souls: Prepare to Die Edition data files
+//----------------------------------------------------------------------------
+#ifndef _SL2_BACKPACK_BT
+    #define _SL2_BACKPACK_BT
+
+#include "../Enum/Item.bt"
+
+string ReadBoxTypeAndItem(uint type_and_item){
+    string result;
+    Item it = (type_and_item & ~0xF0000000);
+    SPrintf(result, "%s", EnumToString( it));
+    if (type_and_item == 0xFFFFFFFF){
+        result = "---clean---";
+    }
+    return result;
+}
+
+typedef struct{
+    uint first;
+    uint second;
+    uint third;
+    uint fourth;
+    uint fifth;
+} QuickItems;
+
+typedef enum<uint>{
+    one_hand = 1,
+    two_hand = 3
+} WieldType;
+
+typedef enum<uint>{
+    off = 0,
+    on = 1
+} Switch;
+
+typedef struct{
+    ItemCategory type<name="type">;
+
+    if( type == 0x40000000 )
+        UsableItem item<name="Item">;
+    else if( type == Armor )
+        ItemArmor item<name="Armor">;
+    else if( type == Ring_ )
+        ItemRing item<name="Ring">;
+    else if( type == Weapon )
+        ItemWeapon item<name="Weapon">;
+    else
+        Item item;
+
+    uint amount<name="amount">;
+
+    // Index? 12 LSB is index, the 20 MSB are used for sorting. Is index just another unique identifier?
+    // Is the endianness screwing up these fields? Because this makes no sense? OH THEY ARE THE WRONG WAY AROUND *FACEDESK*
+    uint index:12;
+    uint  sort:20;
+
+    uint have<name="have">; // Quantity? Enabled? "have" is ambiguous
+    uint durability<name="item durability">;
+    // Durability hits treats logic: Each hit that have been reach its target
+    // For example it could be event wall or enemy accumulates 1/2/etc points
+    // int durability_hits accumulator. Then durability hits reaches 10
+    // the accumulator blanks and durability loses 1 point.
+
+    // I found that blocking one hit on the plank shield incremented durability_hits by 1 and decremented durability by 1
+    uint durability_hits <name="durability hits">;
+} Backpack <read=ReadItemAsString>;
+
+
+string ReadItemAsString(Backpack &b) {
+    string result;
+    SPrintf(result, "%s", EnumToString( b.item ));
+    return result;
+}
+
+typedef struct{
+    uint blank;
+    uint type_and_item<read=ReadBoxTypeAndItem>;
+    uint unknown1;
+    uint unknown2;
+    uint durability;
+    uint unknown4;
+    uint unknown5;
+    uint unknown6;
+} BottomlessBox;
+
+typedef struct{
+    uint unknown1;
+    uint unknown2;
+    uint unknown3;
+    uint unknown4;
+    uint unknown5;
+    uint unknown6;
+    uint unknown7;
+    uint unknown8;
+} UnknownBox;
+
+typedef struct (uint size, uint used){
+    if(size >= (0xFFFFFFFF - 64) || size <= 0) {
+        size = 2048;
+    }
+    Backpack used_box[used] <optimize=false>;
+    if(size - used > 0) {
+        Backpack empty_box[size-used] <comment="Empty box part">;
+    }
+} PartiallyUsedBox;
+
+typedef struct{
+    byte unknown_block[168] <bgcolor=cLtPurple>;
+
+    // I think these are indexes that remember which items were selected last in the menu,
+    // notice if you unequip an item and then go into the menu again, it remembers which item was equipped.
+    // Anyway these are definitely indices from the Backpack struct
+    uint weaponequip[4];
+
+    uint L_arrow_slot;
+    uint L_bolts_slot;
+    uint R_arrows_slot;
+    uint R_bolts_slot;
+    uint armorequip[4];
+    uint unknown_1 <bgcolor=cLtPurple>;
+    uint L_ring_slot;
+    uint R_ring_slot;
+    uint belt_item_unknown_value[5];
+    WieldType wield_type;
+    Switch left_hand;
+    Switch right_hand;
+    Switch unknown_2[4] <bgcolor=cLtPurple>;
+    ItemWeapon L_hand_primary;
+    ItemWeapon L_hand_secondary;
+    ItemWeapon R_hand_primary;
+    ItemWeapon R_hand_secondary;
+    ItemWeapon L_item_arrows_slot;
+    ItemWeapon L_item_bolts_slot;
+    ItemWeapon R_item_arrows_slot;
+    ItemWeapon R_item_bolts_slot;
+    ItemArmor head;
+    ItemArmor torso;
+    ItemArmor hands;
+    ItemArmor legs;
+    enum HairStyle hairstyle <bgcolor=cLtPurple>;
+    ItemRing left_ring;
+    ItemRing right_ring;
+    enum UsableItem belt_items2[5] <bgcolor=cLtBlue, comment="IDs of items in quick-use slots">;
+} Pack;
+
+
+#endif // _SL2_BACKPACK_BT

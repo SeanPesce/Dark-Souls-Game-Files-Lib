@@ -5,6 +5,9 @@
 // Author: Jed "Nyxojaele" Lang
 // Revision: 1
 //--------------------------------------
+#ifndef _DS1_TPF_BT
+    #define _DS1_TPF_BT
+
 typedef struct
 {
     int Offset <format=hex>;
@@ -80,3 +83,5 @@ int TextureCount;
 byte Version;
 byte Unknown1[3];
 TextureStruct Textures[TextureCount] <optimize=false>;
+
+#endif // _DS1_TPF_BT

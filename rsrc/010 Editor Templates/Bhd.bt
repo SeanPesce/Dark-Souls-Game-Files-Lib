@@ -5,6 +5,9 @@
 // Author: Jed "Nyxojaele" Lang
 // Revision: 1
 //--------------------------------------
+#ifndef _DS1_BHD_BT
+    #define _DS1_BHD_BT
+
 typedef struct {
     uint NameOffset;
     local long oldPos = FTell();
@@ -12,6 +15,7 @@ typedef struct {
     string Text <bgcolor=0xBB9900>;
     FSeek(oldPos);
 } NameStruct <read=ReadName>;
+
 string ReadName(NameStruct &name)
 {
     return name.Text;
@@ -48,3 +52,5 @@ struct
 {
     EntryStruct Entry[EntryCount] <optimize=false>;
 } Entries;
+
+#endif // _DS1_BHD_BT

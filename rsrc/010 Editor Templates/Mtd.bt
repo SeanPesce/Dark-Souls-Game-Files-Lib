@@ -5,6 +5,9 @@
 // Author: Jed "Nyxojaele" Lang
 // Revision: 1
 //--------------------------------------
+#ifndef _DS1_MTD_BT
+    #define _DS1_MTD_BT
+
 typedef struct {
     byte Marker;
     local int offset = FTell()%4;
@@ -181,3 +184,5 @@ struct
 
 //Some More Data?
 int Unknown8[6] <bgcolor=0x0000FF>;
+
+#endif // _DS1_MTD_BT

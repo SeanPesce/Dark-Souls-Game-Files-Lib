@@ -1,0 +1,551 @@
+//------------------------------------------------------------------------------
+//--- 010 Editor v5.0 Binary Template
+//
+// File: HexStringToInt.bt
+// Author: Sean Pesce
+// Revision: 0.0.1
+// Purpose: Functions for converting hexadecimal strings to decimal equivalents
+//------------------------------------------------------------------------------
+#ifndef _SP_HEX_STRING_TO_INT_BT
+    #define _SP_HEX_STRING_TO_INT_BT
+
+// Returns the unsigned integer value of the hexadecimal number represented by the given string
+// (Used for obtaining the decimal representation of a SteamID64)
+uint64 hex_string_to_int(string hex_str) {
+    if(Strlen(hex_str) % 2 == 1) {
+        hex_str = SPrintf("0%s", hex_str);
+    }
+    if(Strlen(hex_str) == 0){
+        return 0;
+    }
+    local uint hex_str_bytes_count = Strlen(hex_str) / 2;
+    local uint hex_str_bytes_curr_b = 0;
+    local string hex_str_as_bin = "";
+    for(hex_str_bytes_curr_b = 0; hex_str_bytes_curr_b < hex_str_bytes_count; hex_str_bytes_curr_b++) {
+        SPrintf(hex_str_as_bin, "%s%s", hex_str_as_bin, IntToBinaryStr(hex_ubyte_string_to_int(SubStr(hex_str, hex_str_bytes_curr_b*2, 2))));
+    }
+    return (uint64)BinaryStrToInt(SubStr(hex_str_as_bin, 1));
+}
+
+
+// Returns the unsigned integer value of the hexadecimal byte represented by the given 2-character string
+// (Top 5 ugliest pieces of code I've ever written)
+ubyte hex_ubyte_string_to_int(char curr_hx_b[2]) {
+    if (Strchr(SubStr("00", 0, 1), curr_hx_b[0]) == 0 && Strchr(SubStr("00", 1, 1), curr_hx_b[1]) == 0) {
+        return 0x00;
+    } else if (Strchr("01", curr_hx_b[0]) == 0 && Strchr("01", curr_hx_b[1]) == 1) {
+        return 0x01;
+    } else if (Strchr("02", curr_hx_b[0]) == 0 && Strchr("02", curr_hx_b[1]) == 1) {
+        return 0x02;
+    } else if (Strchr("03", curr_hx_b[0]) == 0 && Strchr("03", curr_hx_b[1]) == 1) {
+        return 0x03;
+    } else if (Strchr("04", curr_hx_b[0]) == 0 && Strchr("04", curr_hx_b[1]) == 1) {
+        return 0x04;
+    } else if (Strchr("05", curr_hx_b[0]) == 0 && Strchr("05", curr_hx_b[1]) == 1) {
+        return 0x05;
+    } else if (Strchr("06", curr_hx_b[0]) == 0 && Strchr("06", curr_hx_b[1]) == 1) {
+        return 0x06;
+    } else if (Strchr("07", curr_hx_b[0]) == 0 && Strchr("07", curr_hx_b[1]) == 1) {
+        return 0x07;
+    } else if (Strchr("08", curr_hx_b[0]) == 0 && Strchr("08", curr_hx_b[1]) == 1) {
+        return 0x08;
+    } else if (Strchr("09", curr_hx_b[0]) == 0 && Strchr("09", curr_hx_b[1]) == 1) {
+        return 0x09;
+    } else if (Strchr("0a", curr_hx_b[0]) == 0 && Strchr("0a", curr_hx_b[1]) == 1) {
+        return 0x0a;
+    } else if (Strchr("0b", curr_hx_b[0]) == 0 && Strchr("0b", curr_hx_b[1]) == 1) {
+        return 0x0b;
+    } else if (Strchr("0c", curr_hx_b[0]) == 0 && Strchr("0c", curr_hx_b[1]) == 1) {
+        return 0x0c;
+    } else if (Strchr("0d", curr_hx_b[0]) == 0 && Strchr("0d", curr_hx_b[1]) == 1) {
+        return 0x0d;
+    } else if (Strchr("0e", curr_hx_b[0]) == 0 && Strchr("0e", curr_hx_b[1]) == 1) {
+        return 0x0e;
+    } else if (Strchr("0f", curr_hx_b[0]) == 0 && Strchr("0f", curr_hx_b[1]) == 1) {
+        return 0x0f;
+    } else if (Strchr("10", curr_hx_b[0]) == 0 && Strchr("10", curr_hx_b[1]) == 1) {
+        return 0x10;
+    } else if (Strchr(SubStr("11", 0, 1), curr_hx_b[0]) == 0 && Strchr(SubStr("11", 1, 1), curr_hx_b[1]) == 0) {
+        return 0x11;
+    } else if (Strchr("12", curr_hx_b[0]) == 0 && Strchr("12", curr_hx_b[1]) == 1) {
+        return 0x12;
+    } else if (Strchr("13", curr_hx_b[0]) == 0 && Strchr("13", curr_hx_b[1]) == 1) {
+        return 0x13;
+    } else if (Strchr("14", curr_hx_b[0]) == 0 && Strchr("14", curr_hx_b[1]) == 1) {
+        return 0x14;
+    } else if (Strchr("15", curr_hx_b[0]) == 0 && Strchr("15", curr_hx_b[1]) == 1) {
+        return 0x15;
+    } else if (Strchr("16", curr_hx_b[0]) == 0 && Strchr("16", curr_hx_b[1]) == 1) {
+        return 0x16;
+    } else if (Strchr("17", curr_hx_b[0]) == 0 && Strchr("17", curr_hx_b[1]) == 1) {
+        return 0x17;
+    } else if (Strchr("18", curr_hx_b[0]) == 0 && Strchr("18", curr_hx_b[1]) == 1) {
+        return 0x18;
+    } else if (Strchr("19", curr_hx_b[0]) == 0 && Strchr("19", curr_hx_b[1]) == 1) {
+        return 0x19;
+    } else if (Strchr("1a", curr_hx_b[0]) == 0 && Strchr("1a", curr_hx_b[1]) == 1) {
+        return 0x1a;
+    } else if (Strchr("1b", curr_hx_b[0]) == 0 && Strchr("1b", curr_hx_b[1]) == 1) {
+        return 0x1b;
+    } else if (Strchr("1c", curr_hx_b[0]) == 0 && Strchr("1c", curr_hx_b[1]) == 1) {
+        return 0x1c;
+    } else if (Strchr("1d", curr_hx_b[0]) == 0 && Strchr("1d", curr_hx_b[1]) == 1) {
+        return 0x1d;
+    } else if (Strchr("1e", curr_hx_b[0]) == 0 && Strchr("1e", curr_hx_b[1]) == 1) {
+        return 0x1e;
+    } else if (Strchr("1f", curr_hx_b[0]) == 0 && Strchr("1f", curr_hx_b[1]) == 1) {
+        return 0x1f;
+    } else if (Strchr("20", curr_hx_b[0]) == 0 && Strchr("20", curr_hx_b[1]) == 1) {
+        return 0x20;
+    } else if (Strchr("21", curr_hx_b[0]) == 0 && Strchr("21", curr_hx_b[1]) == 1) {
+        return 0x21;
+    } else if (Strchr(SubStr("22", 0, 1), curr_hx_b[0]) == 0 && Strchr(SubStr("22", 1, 1), curr_hx_b[1]) == 0) {
+        return 0x22;
+    } else if (Strchr("23", curr_hx_b[0]) == 0 && Strchr("23", curr_hx_b[1]) == 1) {
+        return 0x23;
+    } else if (Strchr("24", curr_hx_b[0]) == 0 && Strchr("24", curr_hx_b[1]) == 1) {
+        return 0x24;
+    } else if (Strchr("25", curr_hx_b[0]) == 0 && Strchr("25", curr_hx_b[1]) == 1) {
+        return 0x25;
+    } else if (Strchr("26", curr_hx_b[0]) == 0 && Strchr("26", curr_hx_b[1]) == 1) {
+        return 0x26;
+    } else if (Strchr("27", curr_hx_b[0]) == 0 && Strchr("27", curr_hx_b[1]) == 1) {
+        return 0x27;
+    } else if (Strchr("28", curr_hx_b[0]) == 0 && Strchr("28", curr_hx_b[1]) == 1) {
+        return 0x28;
+    } else if (Strchr("29", curr_hx_b[0]) == 0 && Strchr("29", curr_hx_b[1]) == 1) {
+        return 0x29;
+    } else if (Strchr("2a", curr_hx_b[0]) == 0 && Strchr("2a", curr_hx_b[1]) == 1) {
+        return 0x2a;
+    } else if (Strchr("2b", curr_hx_b[0]) == 0 && Strchr("2b", curr_hx_b[1]) == 1) {
+        return 0x2b;
+    } else if (Strchr("2c", curr_hx_b[0]) == 0 && Strchr("2c", curr_hx_b[1]) == 1) {
+        return 0x2c;
+    } else if (Strchr("2d", curr_hx_b[0]) == 0 && Strchr("2d", curr_hx_b[1]) == 1) {
+        return 0x2d;
+    } else if (Strchr("2e", curr_hx_b[0]) == 0 && Strchr("2e", curr_hx_b[1]) == 1) {
+        return 0x2e;
+    } else if (Strchr("2f", curr_hx_b[0]) == 0 && Strchr("2f", curr_hx_b[1]) == 1) {
+        return 0x2f;
+    } else if (Strchr("30", curr_hx_b[0]) == 0 && Strchr("30", curr_hx_b[1]) == 1) {
+        return 0x30;
+    } else if (Strchr("31", curr_hx_b[0]) == 0 && Strchr("31", curr_hx_b[1]) == 1) {
+        return 0x31;
+    } else if (Strchr("32", curr_hx_b[0]) == 0 && Strchr("32", curr_hx_b[1]) == 1) {
+        return 0x32;
+    } else if (Strchr(SubStr("33", 0, 1), curr_hx_b[0]) == 0 && Strchr(SubStr("33", 1, 1), curr_hx_b[1]) == 0) {
+        return 0x33;
+    } else if (Strchr("34", curr_hx_b[0]) == 0 && Strchr("34", curr_hx_b[1]) == 1) {
+        return 0x34;
+    } else if (Strchr("35", curr_hx_b[0]) == 0 && Strchr("35", curr_hx_b[1]) == 1) {
+        return 0x35;
+    } else if (Strchr("36", curr_hx_b[0]) == 0 && Strchr("36", curr_hx_b[1]) == 1) {
+        return 0x36;
+    } else if (Strchr("37", curr_hx_b[0]) == 0 && Strchr("37", curr_hx_b[1]) == 1) {
+        return 0x37;
+    } else if (Strchr("38", curr_hx_b[0]) == 0 && Strchr("38", curr_hx_b[1]) == 1) {
+        return 0x38;
+    } else if (Strchr("39", curr_hx_b[0]) == 0 && Strchr("39", curr_hx_b[1]) == 1) {
+        return 0x39;
+    } else if (Strchr("3a", curr_hx_b[0]) == 0 && Strchr("3a", curr_hx_b[1]) == 1) {
+        return 0x3a;
+    } else if (Strchr("3b", curr_hx_b[0]) == 0 && Strchr("3b", curr_hx_b[1]) == 1) {
+        return 0x3b;
+    } else if (Strchr("3c", curr_hx_b[0]) == 0 && Strchr("3c", curr_hx_b[1]) == 1) {
+        return 0x3c;
+    } else if (Strchr("3d", curr_hx_b[0]) == 0 && Strchr("3d", curr_hx_b[1]) == 1) {
+        return 0x3d;
+    } else if (Strchr("3e", curr_hx_b[0]) == 0 && Strchr("3e", curr_hx_b[1]) == 1) {
+        return 0x3e;
+    } else if (Strchr("3f", curr_hx_b[0]) == 0 && Strchr("3f", curr_hx_b[1]) == 1) {
+        return 0x3f;
+    } else if (Strchr("40", curr_hx_b[0]) == 0 && Strchr("40", curr_hx_b[1]) == 1) {
+        return 0x40;
+    } else if (Strchr("41", curr_hx_b[0]) == 0 && Strchr("41", curr_hx_b[1]) == 1) {
+        return 0x41;
+    } else if (Strchr("42", curr_hx_b[0]) == 0 && Strchr("42", curr_hx_b[1]) == 1) {
+        return 0x42;
+    } else if (Strchr("43", curr_hx_b[0]) == 0 && Strchr("43", curr_hx_b[1]) == 1) {
+        return 0x43;
+    } else if (Strchr(SubStr("44", 0, 1), curr_hx_b[0]) == 0 && Strchr(SubStr("44", 1, 1), curr_hx_b[1]) == 0) {
+        return 0x44;
+    } else if (Strchr("45", curr_hx_b[0]) == 0 && Strchr("45", curr_hx_b[1]) == 1) {
+        return 0x45;
+    } else if (Strchr("46", curr_hx_b[0]) == 0 && Strchr("46", curr_hx_b[1]) == 1) {
+        return 0x46;
+    } else if (Strchr("47", curr_hx_b[0]) == 0 && Strchr("47", curr_hx_b[1]) == 1) {
+        return 0x47;
+    } else if (Strchr("48", curr_hx_b[0]) == 0 && Strchr("48", curr_hx_b[1]) == 1) {
+        return 0x48;
+    } else if (Strchr("49", curr_hx_b[0]) == 0 && Strchr("49", curr_hx_b[1]) == 1) {
+        return 0x49;
+    } else if (Strchr("4a", curr_hx_b[0]) == 0 && Strchr("4a", curr_hx_b[1]) == 1) {
+        return 0x4a;
+    } else if (Strchr("4b", curr_hx_b[0]) == 0 && Strchr("4b", curr_hx_b[1]) == 1) {
+        return 0x4b;
+    } else if (Strchr("4c", curr_hx_b[0]) == 0 && Strchr("4c", curr_hx_b[1]) == 1) {
+        return 0x4c;
+    } else if (Strchr("4d", curr_hx_b[0]) == 0 && Strchr("4d", curr_hx_b[1]) == 1) {
+        return 0x4d;
+    } else if (Strchr("4e", curr_hx_b[0]) == 0 && Strchr("4e", curr_hx_b[1]) == 1) {
+        return 0x4e;
+    } else if (Strchr("4f", curr_hx_b[0]) == 0 && Strchr("4f", curr_hx_b[1]) == 1) {
+        return 0x4f;
+    } else if (Strchr("50", curr_hx_b[0]) == 0 && Strchr("50", curr_hx_b[1]) == 1) {
+        return 0x50;
+    } else if (Strchr("51", curr_hx_b[0]) == 0 && Strchr("51", curr_hx_b[1]) == 1) {
+        return 0x51;
+    } else if (Strchr("52", curr_hx_b[0]) == 0 && Strchr("52", curr_hx_b[1]) == 1) {
+        return 0x52;
+    } else if (Strchr("53", curr_hx_b[0]) == 0 && Strchr("53", curr_hx_b[1]) == 1) {
+        return 0x53;
+    } else if (Strchr("54", curr_hx_b[0]) == 0 && Strchr("54", curr_hx_b[1]) == 1) {
+        return 0x54;
+    } else if (Strchr(SubStr("55", 0, 1), curr_hx_b[0]) == 0 && Strchr(SubStr("55", 1, 1), curr_hx_b[1]) == 0) {
+        return 0x55;
+    } else if (Strchr("56", curr_hx_b[0]) == 0 && Strchr("56", curr_hx_b[1]) == 1) {
+        return 0x56;
+    } else if (Strchr("57", curr_hx_b[0]) == 0 && Strchr("57", curr_hx_b[1]) == 1) {
+        return 0x57;
+    } else if (Strchr("58", curr_hx_b[0]) == 0 && Strchr("58", curr_hx_b[1]) == 1) {
+        return 0x58;
+    } else if (Strchr("59", curr_hx_b[0]) == 0 && Strchr("59", curr_hx_b[1]) == 1) {
+        return 0x59;
+    } else if (Strchr("5a", curr_hx_b[0]) == 0 && Strchr("5a", curr_hx_b[1]) == 1) {
+        return 0x5a;
+    } else if (Strchr("5b", curr_hx_b[0]) == 0 && Strchr("5b", curr_hx_b[1]) == 1) {
+        return 0x5b;
+    } else if (Strchr("5c", curr_hx_b[0]) == 0 && Strchr("5c", curr_hx_b[1]) == 1) {
+        return 0x5c;
+    } else if (Strchr("5d", curr_hx_b[0]) == 0 && Strchr("5d", curr_hx_b[1]) == 1) {
+        return 0x5d;
+    } else if (Strchr("5e", curr_hx_b[0]) == 0 && Strchr("5e", curr_hx_b[1]) == 1) {
+        return 0x5e;
+    } else if (Strchr("5f", curr_hx_b[0]) == 0 && Strchr("5f", curr_hx_b[1]) == 1) {
+        return 0x5f;
+    } else if (Strchr("60", curr_hx_b[0]) == 0 && Strchr("60", curr_hx_b[1]) == 1) {
+        return 0x60;
+    } else if (Strchr("61", curr_hx_b[0]) == 0 && Strchr("61", curr_hx_b[1]) == 1) {
+        return 0x61;
+    } else if (Strchr("62", curr_hx_b[0]) == 0 && Strchr("62", curr_hx_b[1]) == 1) {
+        return 0x62;
+    } else if (Strchr("63", curr_hx_b[0]) == 0 && Strchr("63", curr_hx_b[1]) == 1) {
+        return 0x63;
+    } else if (Strchr("64", curr_hx_b[0]) == 0 && Strchr("64", curr_hx_b[1]) == 1) {
+        return 0x64;
+    } else if (Strchr("65", curr_hx_b[0]) == 0 && Strchr("65", curr_hx_b[1]) == 1) {
+        return 0x65;
+    } else if (Strchr(SubStr("66", 0, 1), curr_hx_b[0]) == 0 && Strchr(SubStr("66", 1, 1), curr_hx_b[1]) == 0) {
+        return 0x66;
+    } else if (Strchr("67", curr_hx_b[0]) == 0 && Strchr("67", curr_hx_b[1]) == 1) {
+        return 0x67;
+    } else if (Strchr("68", curr_hx_b[0]) == 0 && Strchr("68", curr_hx_b[1]) == 1) {
+        return 0x68;
+    } else if (Strchr("69", curr_hx_b[0]) == 0 && Strchr("69", curr_hx_b[1]) == 1) {
+        return 0x69;
+    } else if (Strchr("6a", curr_hx_b[0]) == 0 && Strchr("6a", curr_hx_b[1]) == 1) {
+        return 0x6a;
+    } else if (Strchr("6b", curr_hx_b[0]) == 0 && Strchr("6b", curr_hx_b[1]) == 1) {
+        return 0x6b;
+    } else if (Strchr("6c", curr_hx_b[0]) == 0 && Strchr("6c", curr_hx_b[1]) == 1) {
+        return 0x6c;
+    } else if (Strchr("6d", curr_hx_b[0]) == 0 && Strchr("6d", curr_hx_b[1]) == 1) {
+        return 0x6d;
+    } else if (Strchr("6e", curr_hx_b[0]) == 0 && Strchr("6e", curr_hx_b[1]) == 1) {
+        return 0x6e;
+    } else if (Strchr("6f", curr_hx_b[0]) == 0 && Strchr("6f", curr_hx_b[1]) == 1) {
+        return 0x6f;
+    } else if (Strchr("70", curr_hx_b[0]) == 0 && Strchr("70", curr_hx_b[1]) == 1) {
+        return 0x70;
+    } else if (Strchr("71", curr_hx_b[0]) == 0 && Strchr("71", curr_hx_b[1]) == 1) {
+        return 0x71;
+    } else if (Strchr("72", curr_hx_b[0]) == 0 && Strchr("72", curr_hx_b[1]) == 1) {
+        return 0x72;
+    } else if (Strchr("73", curr_hx_b[0]) == 0 && Strchr("73", curr_hx_b[1]) == 1) {
+        return 0x73;
+    } else if (Strchr("74", curr_hx_b[0]) == 0 && Strchr("74", curr_hx_b[1]) == 1) {
+        return 0x74;
+    } else if (Strchr("75", curr_hx_b[0]) == 0 && Strchr("75", curr_hx_b[1]) == 1) {
+        return 0x75;
+    } else if (Strchr("76", curr_hx_b[0]) == 0 && Strchr("76", curr_hx_b[1]) == 1) {
+        return 0x76;
+    } else if (Strchr(SubStr("77", 0, 1), curr_hx_b[0]) == 0 && Strchr(SubStr("77", 1, 1), curr_hx_b[1]) == 0) {
+        return 0x77;
+    } else if (Strchr("78", curr_hx_b[0]) == 0 && Strchr("78", curr_hx_b[1]) == 1) {
+        return 0x78;
+    } else if (Strchr("79", curr_hx_b[0]) == 0 && Strchr("79", curr_hx_b[1]) == 1) {
+        return 0x79;
+    } else if (Strchr("7a", curr_hx_b[0]) == 0 && Strchr("7a", curr_hx_b[1]) == 1) {
+        return 0x7a;
+    } else if (Strchr("7b", curr_hx_b[0]) == 0 && Strchr("7b", curr_hx_b[1]) == 1) {
+        return 0x7b;
+    } else if (Strchr("7c", curr_hx_b[0]) == 0 && Strchr("7c", curr_hx_b[1]) == 1) {
+        return 0x7c;
+    } else if (Strchr("7d", curr_hx_b[0]) == 0 && Strchr("7d", curr_hx_b[1]) == 1) {
+        return 0x7d;
+    } else if (Strchr("7e", curr_hx_b[0]) == 0 && Strchr("7e", curr_hx_b[1]) == 1) {
+        return 0x7e;
+    } else if (Strchr("7f", curr_hx_b[0]) == 0 && Strchr("7f", curr_hx_b[1]) == 1) {
+        return 0x7f;
+    } else if (Strchr("80", curr_hx_b[0]) == 0 && Strchr("80", curr_hx_b[1]) == 1) {
+        return 0x80;
+    } else if (Strchr("81", curr_hx_b[0]) == 0 && Strchr("81", curr_hx_b[1]) == 1) {
+        return 0x81;
+    } else if (Strchr("82", curr_hx_b[0]) == 0 && Strchr("82", curr_hx_b[1]) == 1) {
+        return 0x82;
+    } else if (Strchr("83", curr_hx_b[0]) == 0 && Strchr("83", curr_hx_b[1]) == 1) {
+        return 0x83;
+    } else if (Strchr("84", curr_hx_b[0]) == 0 && Strchr("84", curr_hx_b[1]) == 1) {
+        return 0x84;
+    } else if (Strchr("85", curr_hx_b[0]) == 0 && Strchr("85", curr_hx_b[1]) == 1) {
+        return 0x85;
+    } else if (Strchr("86", curr_hx_b[0]) == 0 && Strchr("86", curr_hx_b[1]) == 1) {
+        return 0x86;
+    } else if (Strchr("87", curr_hx_b[0]) == 0 && Strchr("87", curr_hx_b[1]) == 1) {
+        return 0x87;
+    } else if (Strchr(SubStr("88", 0, 1), curr_hx_b[0]) == 0 && Strchr(SubStr("88", 1, 1), curr_hx_b[1]) == 0) {
+        return 0x88;
+    } else if (Strchr("89", curr_hx_b[0]) == 0 && Strchr("89", curr_hx_b[1]) == 1) {
+        return 0x89;
+    } else if (Strchr("8a", curr_hx_b[0]) == 0 && Strchr("8a", curr_hx_b[1]) == 1) {
+        return 0x8a;
+    } else if (Strchr("8b", curr_hx_b[0]) == 0 && Strchr("8b", curr_hx_b[1]) == 1) {
+        return 0x8b;
+    } else if (Strchr("8c", curr_hx_b[0]) == 0 && Strchr("8c", curr_hx_b[1]) == 1) {
+        return 0x8c;
+    } else if (Strchr("8d", curr_hx_b[0]) == 0 && Strchr("8d", curr_hx_b[1]) == 1) {
+        return 0x8d;
+    } else if (Strchr("8e", curr_hx_b[0]) == 0 && Strchr("8e", curr_hx_b[1]) == 1) {
+        return 0x8e;
+    } else if (Strchr("8f", curr_hx_b[0]) == 0 && Strchr("8f", curr_hx_b[1]) == 1) {
+        return 0x8f;
+    } else if (Strchr("90", curr_hx_b[0]) == 0 && Strchr("90", curr_hx_b[1]) == 1) {
+        return 0x90;
+    } else if (Strchr("91", curr_hx_b[0]) == 0 && Strchr("91", curr_hx_b[1]) == 1) {
+        return 0x91;
+    } else if (Strchr("92", curr_hx_b[0]) == 0 && Strchr("92", curr_hx_b[1]) == 1) {
+        return 0x92;
+    } else if (Strchr("93", curr_hx_b[0]) == 0 && Strchr("93", curr_hx_b[1]) == 1) {
+        return 0x93;
+    } else if (Strchr("94", curr_hx_b[0]) == 0 && Strchr("94", curr_hx_b[1]) == 1) {
+        return 0x94;
+    } else if (Strchr("95", curr_hx_b[0]) == 0 && Strchr("95", curr_hx_b[1]) == 1) {
+        return 0x95;
+    } else if (Strchr("96", curr_hx_b[0]) == 0 && Strchr("96", curr_hx_b[1]) == 1) {
+        return 0x96;
+    } else if (Strchr("97", curr_hx_b[0]) == 0 && Strchr("97", curr_hx_b[1]) == 1) {
+        return 0x97;
+    } else if (Strchr("98", curr_hx_b[0]) == 0 && Strchr("98", curr_hx_b[1]) == 1) {
+        return 0x98;
+    } else if (Strchr(SubStr("99", 0, 1), curr_hx_b[0]) == 0 && Strchr(SubStr("99", 1, 1), curr_hx_b[1]) == 0) {
+        return 0x99;
+    } else if (Strchr("9a", curr_hx_b[0]) == 0 && Strchr("9a", curr_hx_b[1]) == 1) {
+        return 0x9a;
+    } else if (Strchr("9b", curr_hx_b[0]) == 0 && Strchr("9b", curr_hx_b[1]) == 1) {
+        return 0x9b;
+    } else if (Strchr("9c", curr_hx_b[0]) == 0 && Strchr("9c", curr_hx_b[1]) == 1) {
+        return 0x9c;
+    } else if (Strchr("9d", curr_hx_b[0]) == 0 && Strchr("9d", curr_hx_b[1]) == 1) {
+        return 0x9d;
+    } else if (Strchr("9e", curr_hx_b[0]) == 0 && Strchr("9e", curr_hx_b[1]) == 1) {
+        return 0x9e;
+    } else if (Strchr("9f", curr_hx_b[0]) == 0 && Strchr("9f", curr_hx_b[1]) == 1) {
+        return 0x9f;
+    } else if (Strchr("a0", curr_hx_b[0]) == 0 && Strchr("a0", curr_hx_b[1]) == 1) {
+        return 0xa0;
+    } else if (Strchr("a1", curr_hx_b[0]) == 0 && Strchr("a1", curr_hx_b[1]) == 1) {
+        return 0xa1;
+    } else if (Strchr("a2", curr_hx_b[0]) == 0 && Strchr("a2", curr_hx_b[1]) == 1) {
+        return 0xa2;
+    } else if (Strchr("a3", curr_hx_b[0]) == 0 && Strchr("a3", curr_hx_b[1]) == 1) {
+        return 0xa3;
+    } else if (Strchr("a4", curr_hx_b[0]) == 0 && Strchr("a4", curr_hx_b[1]) == 1) {
+        return 0xa4;
+    } else if (Strchr("a5", curr_hx_b[0]) == 0 && Strchr("a5", curr_hx_b[1]) == 1) {
+        return 0xa5;
+    } else if (Strchr("a6", curr_hx_b[0]) == 0 && Strchr("a6", curr_hx_b[1]) == 1) {
+        return 0xa6;
+    } else if (Strchr("a7", curr_hx_b[0]) == 0 && Strchr("a7", curr_hx_b[1]) == 1) {
+        return 0xa7;
+    } else if (Strchr("a8", curr_hx_b[0]) == 0 && Strchr("a8", curr_hx_b[1]) == 1) {
+        return 0xa8;
+    } else if (Strchr("a9", curr_hx_b[0]) == 0 && Strchr("a9", curr_hx_b[1]) == 1) {
+        return 0xa9;
+    } else if (Strchr(SubStr("aa", 0, 1), curr_hx_b[0]) == 0 && Strchr(SubStr("aa", 1, 1), curr_hx_b[1]) == 0) {
+        return 0xaa;
+    } else if (Strchr("ab", curr_hx_b[0]) == 0 && Strchr("ab", curr_hx_b[1]) == 1) {
+        return 0xab;
+    } else if (Strchr("ac", curr_hx_b[0]) == 0 && Strchr("ac", curr_hx_b[1]) == 1) {
+        return 0xac;
+    } else if (Strchr("ad", curr_hx_b[0]) == 0 && Strchr("ad", curr_hx_b[1]) == 1) {
+        return 0xad;
+    } else if (Strchr("ae", curr_hx_b[0]) == 0 && Strchr("ae", curr_hx_b[1]) == 1) {
+        return 0xae;
+    } else if (Strchr("af", curr_hx_b[0]) == 0 && Strchr("af", curr_hx_b[1]) == 1) {
+        return 0xaf;
+    } else if (Strchr("b0", curr_hx_b[0]) == 0 && Strchr("b0", curr_hx_b[1]) == 1) {
+        return 0xb0;
+    } else if (Strchr("b1", curr_hx_b[0]) == 0 && Strchr("b1", curr_hx_b[1]) == 1) {
+        return 0xb1;
+    } else if (Strchr("b2", curr_hx_b[0]) == 0 && Strchr("b2", curr_hx_b[1]) == 1) {
+        return 0xb2;
+    } else if (Strchr("b3", curr_hx_b[0]) == 0 && Strchr("b3", curr_hx_b[1]) == 1) {
+        return 0xb3;
+    } else if (Strchr("b4", curr_hx_b[0]) == 0 && Strchr("b4", curr_hx_b[1]) == 1) {
+        return 0xb4;
+    } else if (Strchr("b5", curr_hx_b[0]) == 0 && Strchr("b5", curr_hx_b[1]) == 1) {
+        return 0xb5;
+    } else if (Strchr("b6", curr_hx_b[0]) == 0 && Strchr("b6", curr_hx_b[1]) == 1) {
+        return 0xb6;
+    } else if (Strchr("b7", curr_hx_b[0]) == 0 && Strchr("b7", curr_hx_b[1]) == 1) {
+        return 0xb7;
+    } else if (Strchr("b8", curr_hx_b[0]) == 0 && Strchr("b8", curr_hx_b[1]) == 1) {
+        return 0xb8;
+    } else if (Strchr("b9", curr_hx_b[0]) == 0 && Strchr("b9", curr_hx_b[1]) == 1) {
+        return 0xb9;
+    } else if (Strchr("ba", curr_hx_b[0]) == 0 && Strchr("ba", curr_hx_b[1]) == 1) {
+        return 0xba;
+    } else if (Strchr(SubStr("bb", 0, 1), curr_hx_b[0]) == 0 && Strchr(SubStr("bb", 1, 1), curr_hx_b[1]) == 0) {
+        return 0xbb;
+    } else if (Strchr("bc", curr_hx_b[0]) == 0 && Strchr("bc", curr_hx_b[1]) == 1) {
+        return 0xbc;
+    } else if (Strchr("bd", curr_hx_b[0]) == 0 && Strchr("bd", curr_hx_b[1]) == 1) {
+        return 0xbd;
+    } else if (Strchr("be", curr_hx_b[0]) == 0 && Strchr("be", curr_hx_b[1]) == 1) {
+        return 0xbe;
+    } else if (Strchr("bf", curr_hx_b[0]) == 0 && Strchr("bf", curr_hx_b[1]) == 1) {
+        return 0xbf;
+    } else if (Strchr("c0", curr_hx_b[0]) == 0 && Strchr("c0", curr_hx_b[1]) == 1) {
+        return 0xc0;
+    } else if (Strchr("c1", curr_hx_b[0]) == 0 && Strchr("c1", curr_hx_b[1]) == 1) {
+        return 0xc1;
+    } else if (Strchr("c2", curr_hx_b[0]) == 0 && Strchr("c2", curr_hx_b[1]) == 1) {
+        return 0xc2;
+    } else if (Strchr("c3", curr_hx_b[0]) == 0 && Strchr("c3", curr_hx_b[1]) == 1) {
+        return 0xc3;
+    } else if (Strchr("c4", curr_hx_b[0]) == 0 && Strchr("c4", curr_hx_b[1]) == 1) {
+        return 0xc4;
+    } else if (Strchr("c5", curr_hx_b[0]) == 0 && Strchr("c5", curr_hx_b[1]) == 1) {
+        return 0xc5;
+    } else if (Strchr("c6", curr_hx_b[0]) == 0 && Strchr("c6", curr_hx_b[1]) == 1) {
+        return 0xc6;
+    } else if (Strchr("c7", curr_hx_b[0]) == 0 && Strchr("c7", curr_hx_b[1]) == 1) {
+        return 0xc7;
+    } else if (Strchr("c8", curr_hx_b[0]) == 0 && Strchr("c8", curr_hx_b[1]) == 1) {
+        return 0xc8;
+    } else if (Strchr("c9", curr_hx_b[0]) == 0 && Strchr("c9", curr_hx_b[1]) == 1) {
+        return 0xc9;
+    } else if (Strchr("ca", curr_hx_b[0]) == 0 && Strchr("ca", curr_hx_b[1]) == 1) {
+        return 0xca;
+    } else if (Strchr("cb", curr_hx_b[0]) == 0 && Strchr("cb", curr_hx_b[1]) == 1) {
+        return 0xcb;
+    } else if (Strchr(SubStr("cc", 0, 1), curr_hx_b[0]) == 0 && Strchr(SubStr("cc", 1, 1), curr_hx_b[1]) == 0) {
+        return 0xcc;
+    } else if (Strchr("cd", curr_hx_b[0]) == 0 && Strchr("cd", curr_hx_b[1]) == 1) {
+        return 0xcd;
+    } else if (Strchr("ce", curr_hx_b[0]) == 0 && Strchr("ce", curr_hx_b[1]) == 1) {
+        return 0xce;
+    } else if (Strchr("cf", curr_hx_b[0]) == 0 && Strchr("cf", curr_hx_b[1]) == 1) {
+        return 0xcf;
+    } else if (Strchr("d0", curr_hx_b[0]) == 0 && Strchr("d0", curr_hx_b[1]) == 1) {
+        return 0xd0;
+    } else if (Strchr("d1", curr_hx_b[0]) == 0 && Strchr("d1", curr_hx_b[1]) == 1) {
+        return 0xd1;
+    } else if (Strchr("d2", curr_hx_b[0]) == 0 && Strchr("d2", curr_hx_b[1]) == 1) {
+        return 0xd2;
+    } else if (Strchr("d3", curr_hx_b[0]) == 0 && Strchr("d3", curr_hx_b[1]) == 1) {
+        return 0xd3;
+    } else if (Strchr("d4", curr_hx_b[0]) == 0 && Strchr("d4", curr_hx_b[1]) == 1) {
+        return 0xd4;
+    } else if (Strchr("d5", curr_hx_b[0]) == 0 && Strchr("d5", curr_hx_b[1]) == 1) {
+        return 0xd5;
+    } else if (Strchr("d6", curr_hx_b[0]) == 0 && Strchr("d6", curr_hx_b[1]) == 1) {
+        return 0xd6;
+    } else if (Strchr("d7", curr_hx_b[0]) == 0 && Strchr("d7", curr_hx_b[1]) == 1) {
+        return 0xd7;
+    } else if (Strchr("d8", curr_hx_b[0]) == 0 && Strchr("d8", curr_hx_b[1]) == 1) {
+        return 0xd8;
+    } else if (Strchr("d9", curr_hx_b[0]) == 0 && Strchr("d9", curr_hx_b[1]) == 1) {
+        return 0xd9;
+    } else if (Strchr("da", curr_hx_b[0]) == 0 && Strchr("da", curr_hx_b[1]) == 1) {
+        return 0xda;
+    } else if (Strchr("db", curr_hx_b[0]) == 0 && Strchr("db", curr_hx_b[1]) == 1) {
+        return 0xdb;
+    } else if (Strchr("dc", curr_hx_b[0]) == 0 && Strchr("dc", curr_hx_b[1]) == 1) {
+        return 0xdc;
+    } else if (Strchr(SubStr("dd", 0, 1), curr_hx_b[0]) == 0 && Strchr(SubStr("dd", 1, 1), curr_hx_b[1]) == 0) {
+        return 0xdd;
+    } else if (Strchr("de", curr_hx_b[0]) == 0 && Strchr("de", curr_hx_b[1]) == 1) {
+        return 0xde;
+    } else if (Strchr("df", curr_hx_b[0]) == 0 && Strchr("df", curr_hx_b[1]) == 1) {
+        return 0xdf;
+    } else if (Strchr("e0", curr_hx_b[0]) == 0 && Strchr("e0", curr_hx_b[1]) == 1) {
+        return 0xe0;
+    } else if (Strchr("e1", curr_hx_b[0]) == 0 && Strchr("e1", curr_hx_b[1]) == 1) {
+        return 0xe1;
+    } else if (Strchr("e2", curr_hx_b[0]) == 0 && Strchr("e2", curr_hx_b[1]) == 1) {
+        return 0xe2;
+    } else if (Strchr("e3", curr_hx_b[0]) == 0 && Strchr("e3", curr_hx_b[1]) == 1) {
+        return 0xe3;
+    } else if (Strchr("e4", curr_hx_b[0]) == 0 && Strchr("e4", curr_hx_b[1]) == 1) {
+        return 0xe4;
+    } else if (Strchr("e5", curr_hx_b[0]) == 0 && Strchr("e5", curr_hx_b[1]) == 1) {
+        return 0xe5;
+    } else if (Strchr("e6", curr_hx_b[0]) == 0 && Strchr("e6", curr_hx_b[1]) == 1) {
+        return 0xe6;
+    } else if (Strchr("e7", curr_hx_b[0]) == 0 && Strchr("e7", curr_hx_b[1]) == 1) {
+        return 0xe7;
+    } else if (Strchr("e8", curr_hx_b[0]) == 0 && Strchr("e8", curr_hx_b[1]) == 1) {
+        return 0xe8;
+    } else if (Strchr("e9", curr_hx_b[0]) == 0 && Strchr("e9", curr_hx_b[1]) == 1) {
+        return 0xe9;
+    } else if (Strchr("ea", curr_hx_b[0]) == 0 && Strchr("ea", curr_hx_b[1]) == 1) {
+        return 0xea;
+    } else if (Strchr("eb", curr_hx_b[0]) == 0 && Strchr("eb", curr_hx_b[1]) == 1) {
+        return 0xeb;
+    } else if (Strchr("ec", curr_hx_b[0]) == 0 && Strchr("ec", curr_hx_b[1]) == 1) {
+        return 0xec;
+    } else if (Strchr("ed", curr_hx_b[0]) == 0 && Strchr("ed", curr_hx_b[1]) == 1) {
+        return 0xed;
+    } else if (Strchr(SubStr("ee", 0, 1), curr_hx_b[0]) == 0 && Strchr(SubStr("ee", 1, 1), curr_hx_b[1]) == 0) {
+        return 0xee;
+    } else if (Strchr("ef", curr_hx_b[0]) == 0 && Strchr("ef", curr_hx_b[1]) == 1) {
+        return 0xef;
+    } else if (Strchr("f0", curr_hx_b[0]) == 0 && Strchr("f0", curr_hx_b[1]) == 1) {
+        return 0xf0;
+    } else if (Strchr("f1", curr_hx_b[0]) == 0 && Strchr("f1", curr_hx_b[1]) == 1) {
+        return 0xf1;
+    } else if (Strchr("f2", curr_hx_b[0]) == 0 && Strchr("f2", curr_hx_b[1]) == 1) {
+        return 0xf2;
+    } else if (Strchr("f3", curr_hx_b[0]) == 0 && Strchr("f3", curr_hx_b[1]) == 1) {
+        return 0xf3;
+    } else if (Strchr("f4", curr_hx_b[0]) == 0 && Strchr("f4", curr_hx_b[1]) == 1) {
+        return 0xf4;
+    } else if (Strchr("f5", curr_hx_b[0]) == 0 && Strchr("f5", curr_hx_b[1]) == 1) {
+        return 0xf5;
+    } else if (Strchr("f6", curr_hx_b[0]) == 0 && Strchr("f6", curr_hx_b[1]) == 1) {
+        return 0xf6;
+    } else if (Strchr("f7", curr_hx_b[0]) == 0 && Strchr("f7", curr_hx_b[1]) == 1) {
+        return 0xf7;
+    } else if (Strchr("f8", curr_hx_b[0]) == 0 && Strchr("f8", curr_hx_b[1]) == 1) {
+        return 0xf8;
+    } else if (Strchr("f9", curr_hx_b[0]) == 0 && Strchr("f9", curr_hx_b[1]) == 1) {
+        return 0xf9;
+    } else if (Strchr("fa", curr_hx_b[0]) == 0 && Strchr("fa", curr_hx_b[1]) == 1) {
+        return 0xfa;
+    } else if (Strchr("fb", curr_hx_b[0]) == 0 && Strchr("fb", curr_hx_b[1]) == 1) {
+        return 0xfb;
+    } else if (Strchr("fc", curr_hx_b[0]) == 0 && Strchr("fc", curr_hx_b[1]) == 1) {
+        return 0xfc;
+    } else if (Strchr("fd", curr_hx_b[0]) == 0 && Strchr("fd", curr_hx_b[1]) == 1) {
+        return 0xfd;
+    } else if (Strchr("fe", curr_hx_b[0]) == 0 && Strchr("fe", curr_hx_b[1]) == 1) {
+        return 0xfe;
+    } else if (Strchr(SubStr("ff", 0, 1), curr_hx_b[0]) == 0 && Strchr(SubStr("ff", 1, 1), curr_hx_b[1]) == 0) {
+        return 0xff;
+    } else {
+        return 0;
+    }
+}
+
+#endif // _SP_HEX_STRING_TO_INT_BT

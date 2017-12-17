@@ -1,0 +1,104 @@
+//----------------------------------------------------------------------------
+//--- 010 Editor v5.0 Binary Template
+//
+// File: Sl2/Character.bt
+// Author: Tarvitz
+// Revision: 0.0.1
+// Purpose: Parsing Dark Souls: Prepare to Die Edition data files
+//----------------------------------------------------------------------------
+#ifndef _SL2_CHARACTER_BT
+    #define _SL2_CHARACTER_BT
+    
+#include "../Enum/Character.bt"
+
+typedef struct{
+    float R;
+    float G;
+    float B;
+    float A;
+} Color;
+
+// Is the middle value total or current?
+typedef struct{
+    uint current;
+    uint total;
+    uint total_2;
+} HP;
+
+typedef struct{
+    uint current;
+    uint total;
+    uint total_2;
+} Stamina;
+
+// Possibly an unused MP/mana stat
+typedef struct{
+    uint current;
+    uint total;
+    uint total_2;
+} UnknownCharStat <bgcolor=cLtPurple>;
+
+typedef struct{
+    SetForeColor(cWhite);
+    SetBackColor(cDkYellow);
+    uint64 vitality;
+    uint64 attunement;
+    uint64 endurance;
+    uint64 strength;
+    uint64 dexterity;
+    uint64 intelligence;
+    uint64 faith;
+    uint64 unknown1 <fgcolor=cLtGray>;
+    uint unknown2 <fgcolor=cLtGray>; // Usually has a value of 0, but I've seen value = 4
+    uint humanity;
+    uint64 resistance; // Is this uint64 or uint32?
+    uint level;
+    uint souls;
+    uint64 earned_souls;
+    uint unknown3 <fgcolor=cLtGray>;
+    Status status;
+    SetForeColor(cNone);
+    SetBackColor(cLtGray);
+} CharStats;
+
+
+// Poise? I think poise is inferred from equipped items etc.
+typedef struct{
+    HP hp <fgcolor=cWhite, bgcolor=cDkRed>;
+    UnknownCharStat unknown_stat <comment="Unused MP/mana stat?", fgcolor=cWhite, bgcolor=cDkBlue>;
+    uint unknown_1 <bgcolor=cLtPurple>;
+    Stamina stamina <fgcolor=cWhite, bgcolor=cDkGreen>;
+    uint unknown_2 <bgcolor=cLtPurple>;
+    CharStats stats;
+    wchar_t name[14] <comment="UTF-8", bgcolor=cLtAqua>; // Garbage characters after nulls?
+    byte unknown_3[6] <bgcolor=cLtPurple>;
+    Gender gender;
+
+    byte unknown_4 <bgcolor=cLtPurple>;
+    byte unknown_5[2] <bgcolor=cLtPurple>;
+
+    StartingClass class;
+    BodyType bodytype;
+    StartingGift gift;
+    byte unknown_6 <bgcolor=cLtPurple>;
+
+    byte unknown_7[34] <bgcolor=cLtPurple>;
+    uint sin <bgcolor=cLtRed, comment="Not confirmed">; // Haven't tested this
+
+    byte unknown_8[8] <bgcolor=cLtPurple>;
+
+    uint poison_resistance;
+    uint bleeding_resistence;
+    uint poison_resistance_2;
+    uint curse_resistence;
+
+    byte unknown_9[3] <bgcolor=cLtPurple>;
+
+    Covenant covenant;
+    Homeland homeland;
+    StartingHairStyle hair_style;
+    HairColor hair_color;
+    byte unknown_10 <bgcolor=cLtPurple>;
+} Stats;
+
+#endif // _SL2_CHARACTER_BT

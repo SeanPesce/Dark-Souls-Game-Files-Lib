@@ -1,0 +1,145 @@
+//-----------------------------------------------------------
+//--- 010 Editor v5.0 Binary Template
+//
+// File: Sl2/Sl2
+// Author: Sean Pesce
+// Revision: 0.5
+// Purpose: Reading saved character data for the main menu
+//          in Dark Souls: Prepare to Die Edition (PC)
+//-----------------------------------------------------------
+#ifndef _SL2_MAIN_MENU_BT
+    #define _SL2_MAIN_MENU_BT
+
+#include "Bnd4.bt";
+#include "Character.bt";
+#include "../Enum/Character.bt"
+
+
+typedef struct {
+    local ubyte del_char = 0;
+    if(GetBackColor() != cNone){
+        del_char = 1;
+    }
+    SetBackColor(cNone);
+    uint unknown_stat[6];
+    if(del_char != 1){
+        SetBackColor( cDkYellow );
+        SetForeColor( cWhite );
+    } else {
+        SetBackColor(cSilver);
+    }
+    Color hair_color;
+    Color eye_color;
+    SetForeColor( cNone );
+    if(del_char != 1){
+        SetBackColor( cLtYellow );
+    }
+    ubyte face_geo_data[50];
+    ubyte skin_tone;
+    ubyte face_tex_data[49];
+    SetBackColor( cNone );
+    ubyte unknown_byte[60];
+    
+    if(del_char != 1){
+        SetBackColor( cLtRed );
+    } else {
+        SetBackColor(cSilver);
+    }
+    
+    enum ItemWeapon L_hand_primary <comment="Weapon ID">;
+    enum ItemWeapon R_hand_primary <comment="Weapon ID">;
+    enum ItemWeapon L_hand_secondary <comment="Weapon ID">;
+    enum ItemWeapon R_hand_secondary <comment="Weapon ID">;
+    enum ItemWeapon L_arrows <comment="Weapon ID">;
+    enum ItemWeapon L_bolts <comment="Weapon ID">;
+    enum ItemWeapon R_arrows <comment="Weapon ID">;
+    enum ItemWeapon R_bolts <comment="Weapon ID">;
+    enum ItemArmor head <comment="Armor ID">;
+    enum ItemArmor torso <comment="Armor ID">;
+    enum ItemArmor hands <comment="Armor ID">;
+    enum ItemArmor legs <comment="Armor ID">;
+    enum HairStyle hairstyle <comment="Armor ID">;
+    enum ItemRing L_ring <comment="Accessory ID">;
+    enum ItemRing R_ring <comment="Accessory ID">;
+    enum UsableItem belt[5] <comment="Item ID">; // First item is left-most belt item
+    SetBackColor( cNone );
+    uint unknown_data[2];
+} CharPreview;
+
+
+typedef struct {
+    wchar_t name[14] <bgcolor=cLtPurple>;
+    uint unknown_stat[2];
+    uint level <bgcolor=cSilver>;
+    uint playtime <bgcolor=cSilver, comment="Time in seconds; overflows at 999:59:59 (3599999)">;
+    uint earned_souls <bgcolor=cSilver>;
+    ushort unknown_stat3[2];
+    enum Location location  <bgcolor=cSilver, comment="Game world location string ID from 地名.fmg (Must be unpacked from msg/<LANGUAGE>/item.msgbnd.dcx)">;
+    SetBackColor( cNone );
+    CharPreview character_preview;
+    ushort unknown_data[4];
+} MainMenuCharPreview;
+
+
+typedef struct {
+    wchar_t name[14] <bgcolor=cSilver>;
+    uint unknown_stat[2];
+    uint level <bgcolor=cSilver>;
+    uint playtime <bgcolor=cSilver>;
+    uint earned_souls <bgcolor=cSilver>;
+    ushort unknown_stat3[2];
+    enum Location location  <bgcolor=cSilver>;
+    SetBackColor( cSilver );
+    CharPreview character_preview;
+    SetBackColor( cNone );
+    ushort unknown_data[4];
+} DeletedCharPreview;
+
+
+typedef struct {
+    ubyte unused_bytes[(14*2)+(4*30)+162];
+} EmptyCharPreview;
+
+
+// Contains data for character previews on the main menu
+typedef struct {
+    Checksum header;
+    uint length;
+    uint version <bgcolor=cDkGray, fgcolor=cWhite, comment="If this value is changed, game will often display \"Wrong version\" error (Message ID = 45001). Some non-default values do work though.">;
+    ushort unknown1[3];
+    ubyte total_slots_maybe;
+    ubyte unknown_flags[8];
+    ubyte unknown_byte;
+    ubyte slot_occupied[10] <bgcolor=cLtAqua, comment="1 or 0">;
+    ubyte unknown_flags2[6];
+    
+    local uint char_index = 0;
+    local ubyte char_check = 0;
+    local ushort name_check = 0;
+    for(char_index = 0; char_index < (meta.ContainerCount - 1); char_index++){
+        char_check = ReadUByte(meta.chunks[meta.ContainerCount - 1].start + 40 + char_index);
+        if(char_check != 0){
+            MainMenuCharPreview preview_char;
+        }else{
+            name_check = ReadUShort( FTell() );
+            if(name_check != 0){
+                // Found leftover data from a deleted character
+                DeletedCharPreview deleted_char;
+            }else{
+                EmptyCharPreview empty;
+            }
+            name_check = 0;
+        }
+    }
+    
+    local uint menu_data_start = meta.chunks[meta.ContainerCount - 1].start;
+    local uint menu_data_size = meta.chunks[meta.ContainerCount - 1].block_size;
+    local uint pos = FTell();
+    ubyte unknown_sections[(menu_data_size - 16) - (pos - menu_data_start)];
+    
+    
+    Checksum footer;
+    ubyte padding[meta.chunks[meta.ContainerCount - 1].space_size];
+} MainMenu;
+
+#endif // _SL2_MAIN_MENU_BT

@@ -1,0 +1,167 @@
+//----------------------------------------------------------------------------
+//--- 010 Editor v5.0 Binary Template
+//
+// File: Enum/Character.bt
+// Author: Tarvitz & Sean Pesce
+// Revision: 0.0.1
+// Purpose: Parsing Dark Souls: Prepare to Die Edition data files
+//----------------------------------------------------------------------------
+#ifndef _DS1_ENUM_CHARACTER_DATA_BT
+    #define _DS1_ENUM_CHARACTER_DATA_BT
+    
+typedef enum <uint> {
+    Loading = -1,
+    Human = 0,
+    Coop = 1,
+    Invader = 2,
+    Hollow = 8
+} Status;
+
+typedef enum<byte>{
+    Warrior = 0,
+    Knight = 1,
+    Wanderer = 2,
+    Thief = 3,
+    Bandit = 4,
+    Hunter = 5,
+    Sorcerer = 6,
+    Pyromancer = 7,
+    Cleric = 8,
+    Deprived = 9,
+    Temp_Warrior = 20,
+    Temp_Knight = 21,
+    Temp_Sorcerer = 22,
+    Temp_Pyromancer = 23,
+    Chi_Warrior = 24,
+    Chi_Knight = 25,
+    Chi_Sorcerer = 26,
+    Chi_Pyromancer = 27
+} StartingClass;
+
+typedef enum<byte>{
+    Average = 0,
+    Slim = 1,
+    Very_Slim = 2,
+    Large = 3,
+    Very_Large = 4,
+    Large_Upper_Body = 5,
+    Large_Lower_Body = 6,
+    Top_Heavy = 7,
+    Tiny_Head = 8
+} BodyType;
+
+typedef enum<byte>{
+  Commoner = 0,
+  Delta_Farmer = 1,
+  Astora_Noble = 2,
+  Dragon_Scholar = 3,
+  Thorolund_Cleric = 4,
+  Jubilant_Catarina = 5,
+  Dubious_Carim = 6,
+  Classic_Zena = 7,
+  Eerie_Great_Swamp = 8,
+  Far_East_Traveler = 9
+} Homeland;
+
+typedef enum<byte>{
+    Shaved = 0,
+    Receding = 1,
+    Short_Hair_ = 2,
+    Swept_Back = 3,
+    Ponytail = 4,
+    Wild = 5,
+    Parted_Center = 6,
+    Semi_Long = 7,
+    Curly = 8,
+    Bobbed = 9
+} StartingHairStyle;
+
+typedef enum<byte>{
+    Black_ = 0,
+    Dark_Brown_ = 1,
+    Light_Brown_ = 2,
+    Dark_Red_ = 3,
+    Dark_Blue_ = 4,
+    Gray_ = 5,
+    Gold_ = 6,
+    Silver_ = 7,
+    Dark_Purple_ = 8,
+    Red_ = 9   
+} HairColor;
+
+typedef enum<byte>{
+    No_Gift = 0,
+    Divine_Blessing_ = 1,
+    Black_Firebomb_ = 2,
+    Twin_Humanities_ = 3,
+    Binoculars_ = 4,
+    Pendant_ = 5,
+    Master_Key_ = 6,
+    Tiny_Being_Ring_ = 7,
+    Old_Witch_Ring_ = 8
+} StartingGift;
+
+typedef enum<byte>{
+    No_Covenant = 0,
+    Way_of_White = 1,
+    Princess_Guard = 2,
+    Warrior_of_Sunlight = 3,
+    Darkwraith = 4,
+    Path_of_Dragon = 5,
+    Gravelord_Servant = 6,
+    Forest_Hunter = 7,
+    Darkmoon_Blade_ = 8,
+    Chaos_Servant = 9
+} Covenant;
+
+
+typedef enum<byte> {
+    Female = 0,
+    Male = 1
+} Gender;
+
+typedef enum<uint> {
+    Shaved_Head = 1000,
+    Receding_Hairline = 1100,
+    Short_Hair = 1200,
+    Swept_Back_ = 1300,
+    Ponytail_ = 1400,
+    Wild_ = 1500,
+    Parted_Center_ = 1600,
+    Semi_Long_ = 1700,
+    Curly_ = 1800,
+    Bobbed_ = 1900,
+    Male_11 = 2000,
+    Male_12 = 2100,
+    Male_13 = 2200,
+    Male_14 = 2300,
+    Male_15 = 2400,
+    Male_16 = 2500,
+    Male_17 = 2600,
+    Male_18 = 2700,
+    Male_19 = 2800,
+    Male_20 = 2900,
+    Shaved_ = 3000,
+    Very_Short = 3100,
+    Wave = 3200,
+    Straight_A = 3300,
+    Straight_B = 3400,
+    Ponytail_A = 3500,
+    Ponytail_B = 3600,
+    Pigtails = 3700,
+    Bun = 3800,
+    Braided = 3900,
+    Female_11 = 4000,
+    Female_12 = 4100,
+    Female_13 = 4200,
+    Female_14 = 4300,
+    Female_15 = 4400,
+    Female_16 = 4500,
+    Female_17 = 4600,
+    Female_18 = 4700,
+    Female_19 = 4800,
+    Female_20 = 4900,
+    Travel_Hairstyle = 5000
+} HairStyle;
+
+#endif // _DS1_ENUM_CHARACTER_DATA_BT

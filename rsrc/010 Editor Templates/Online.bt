@@ -1,0 +1,285 @@
+//----------------------------------------------------------------------------
+//--- 010 Editor v5.0 Binary Template
+//
+// File: Online.bt
+// Author: Tarvitz & Sean Pesce
+// Revision: 0.0.1
+// Purpose: Parsing Dark Souls: Prepare to Die Edition data files
+//----------------------------------------------------------------------------
+#ifndef _SL2_MULTIPLAYER_DATA_BT
+    #define _SL2_MULTIPLAYER_DATA_BT
+
+#include "World.bt"
+#include "HexStringToInt.bt"
+
+
+typedef struct {
+    local ubyte fg_color_set = 0;
+    local ubyte bg_color_set = 0;
+    if(GetForeColor() == cNone)
+    {
+        SetForeColor(cWhite);
+        fg_color_set = 1;
+    }
+    if(GetBackColor() == cNone) {
+        SetBackColor(cDkGray);
+        bg_color_set = 1;
+    }
+    if(GetBackColor() == cLtGray) {
+        SetBackColor(cDkGray);
+        bg_color_set = 2;
+    }
+    // Steam64IDs can be searched using this site: https://steamid.io/lookup
+    char id[16] <comment="Steam64ID (not null-terminated) or (if display name length is < 16 chars) display name (null-terminated)">; 
+    if(fg_color_set == 1) {
+        SetForeColor(cNone);
+    }
+    if(bg_color_set == 1) {
+        SetBackColor(cNone);
+    }
+    if(bg_color_set == 2) {
+        SetBackColor(cLtGray);
+    }
+} SteamId <read=GetSteamId, comment=GetSteamIdComment>;
+
+string GetSteamId(SteamId &steam_id) {
+    local char id[17];
+    id = steam_id.id;
+    id[16] = '\0';
+    return id;
+}
+
+string GetSteamIdComment(SteamId &steam_id) {
+    local ubyte is_steam_id = 1;
+    local ubyte steam_id_index = 0;
+    local string steam_id_as_string = "";
+    local string steam_id_as_dec_string = "";
+    for(steam_id_index = 0; steam_id_index < 16; steam_id_index++) {
+        if(steam_id.id[steam_id_index] == '\0') {
+            is_steam_id = 0;
+        }
+        SPrintf(steam_id_as_string, "%s%c", steam_id_as_string, steam_id.id[steam_id_index]);
+    }
+    if (is_steam_id == 1) {
+        SPrintf(steam_id_as_dec_string, "SteamID64 (Decimal value: %Lu)", (uint64)hex_string_to_int(steam_id_as_string));
+        return steam_id_as_dec_string;
+    } else if (steam_id.id[0] != '\0') {
+        return "Steam display name";
+    } else {
+        return "";
+    }
+}
+
+typedef struct {
+    int start_flag <comment="Usually 1 or 0 (If 0, investigate why)">; // Usually 1; sometimes 0 (maybe when player is the author?)
+    local uint msg_size = ReadUInt(FTell());
+    uint size <fgcolor=cWhite, bgcolor=cLtBlue>; // Usually 52 or 56 (maybe other values but I haven't seen any)
+    SteamId author; 
+    local uint unknown_data_length = msg_size - (16 + (4*4) + (2*4));
+    ubyte unknown_data[unknown_data_length];
+    Position position;
+    ushort substring_id[2] <comment="ID of message substring from 血文字.fmg in msg/<LANGUAGE>/menu.msgbnd.dcx (Example: ID of \"Be wary of $1 $2\" = 10001)">; // Note: One of the 2 might not always be substring ID
+    ushort positive <read=get_pos_soapstone_rating_string, bgcolor=cWhite, fgcolor=cDkGreen, comment="Positive ratings (upvotes)">;
+    // NOTE: Overall rating of a message is upvotes + ABS(downvotes) by default. To see a true net score (upvotes - downvotes), player must use Seek Guidance.
+    // More info here: http://darksouls.wikidot.com/orange-guidance-soapstone
+    ushort negative <read=get_neg_soapstone_rating_string, bgcolor=cWhite, fgcolor=cDkRed, comment="Negative ratings (downvotes)">;
+} SoapstoneMessage;
+
+string get_neg_soapstone_rating_string(ushort &rating) {
+    local string soapstone_rating_string = "";
+    SPrintf(soapstone_rating_string, "-%d", (int)rating);
+    return soapstone_rating_string;
+}
+
+string get_pos_soapstone_rating_string(ushort &rating) {
+    local string soapstone_rating_string = "";
+    SPrintf(soapstone_rating_string, "+%d", (int)rating);
+    return soapstone_rating_string;
+}
+
+typedef struct{
+    local uint container_start_offset = FTell();
+    uint length;
+    while(ReadUInt(FTell()) != 0x0000FFFF && FTell() < (container_start_offset + 4 + length)) { // 0x0000FFFF is "end of data" flag
+        SoapstoneMessage messages;
+    }
+    uint end_flag <format=hex, comment="Should be 0x0000FFFF">;
+    uint padding <comment="Should be 0">;
+    uint index <comment="Should be 7">; // (Unless we're wrong and containers are not always in same order)
+} SoapstoneMessagesContainer;
+
+
+typedef struct{
+    int start_flag <comment="Usually 1 (If not, investigate why)">; // I've never seen a value other than 1 here
+    local uint data_size = ReadUInt(FTell());
+    uint size <fgcolor=cWhite, bgcolor=cLtBlue>;
+    SteamId player;
+    ubyte unknown_data[12] <fgcolor=cDkRed>;;
+    Position position;
+    local uint unknown_data_length_pad = 0;
+    while(ReadUByte(FTell() + (data_size - (16 + 12 + 16)) + unknown_data_length_pad) == 0) {
+        unknown_data_length_pad++;
+    }
+    local uint unknown_data_length = data_size - (16 + 12 + 16);
+    ubyte unknown_animation_data[unknown_data_length + unknown_data_length_pad] <fgcolor=cDkRed>;
+} Bloodstain;
+
+typedef struct{
+    local uint container_start_offset = FTell();
+    uint length <fgcolor=cWhite, bgcolor=cLtBlue>;
+    local uint next_4b = ReadUInt(FTell());
+    while(next_4b != 0x0000FFFF && FTell() < (container_start_offset + 4 + length)) { // 0x0000FFFF is "end of data" flag
+        Bloodstain bloodstains;
+        next_4b = ReadUInt(FTell());
+    }
+    uint end_flag <format=hex, comment="Should be 0xFFFF">;
+    uint padding <comment="Should be 0">;
+    uint index <comment="Should be 8">; // (Unless we're wrong and containers are not always in same order)
+} BloodstainsContainer;
+
+
+typedef struct{
+    uint start_flag <comment="Should be 1 (Or 0?)">;
+    local uint data_size = ReadUInt(FTell());
+    uint length <fgcolor=cWhite, bgcolor=cLtBlue, comment="Should be 48">;
+    local uint start_data = FTell();
+    SteamId player; 
+    byte unknown_data1[12];
+    Position position;
+    if((int)(FTell() - (start_data + data_size - 4)) > 0) {
+        byte unknown_data2[(FTell() - (start_data + data_size - 4))];
+    }
+    uint padding <comment="Should be 0">;
+} SummonSign;
+
+typedef struct{
+    local uint container_start_offset = FTell();
+    uint length <fgcolor=cWhite, bgcolor=cLtBlue>;
+    local uint next_4b = ReadUInt(FTell());
+    while(next_4b != 0x0000FFFF && FTell() < (container_start_offset + 4 + length)) { // 0x0000FFFF is "end of data" flag
+        SummonSign signs;
+        next_4b = ReadUInt(FTell());
+    }
+    uint end_flag <format=hex, comment="Should be 0xFFFF">;
+    uint padding <comment="Should be 0">;
+    uint index;
+} SummonSignsContainer;
+
+
+typedef struct{
+    uint length <fgcolor=cWhite, bgcolor=cLtBlue>;
+    byte data[length];
+    uint index;
+} UnknownOnlineContainer;
+
+typedef struct {
+    uint length <fgcolor=cWhite, bgcolor=cLtBlue>;
+    byte data[length];
+    uint index;
+} EmptyContainer;
+
+typedef struct {
+    uint length <fgcolor=cWhite, bgcolor=cLtBlue>;
+    byte data[length];
+    uint index <comment="Should be 0 or 0x0000FFFF">;
+} EndContainer;
+
+typedef struct(uint length){
+    byte data[length];
+} Message;
+
+/* Basic structure of outer container:
+ * -----
+ *    uint total_length;
+ *    uint unknown;
+ *    Messages message[];
+ *    uint unknown;
+ *    uint index;
+ * -----
+ */ 
+
+/* The message array size depends on total_length and the size of the individual 
+ * messages. Each message can be a different size.
+ *
+ * message basic structure:
+ * -------
+ *   uint length;
+ *   byte data[length];
+ *   byte padding[?????];
+ *   uint tag;
+ * -------
+ */
+
+// Padding is really weird; the array length can be between 0 and 3.
+// It always pads to alignment of 2, but sometimes it skips past a 2-aligmnent to alignment of 4; I don't know why.
+// The while loop within the do-while loop fixes this for now, but it would be better to find the reason for the varying alignments.
+// The tag indicates if another message exists after this. 0x1 means there is, 0xFFFF0000 means "This message is the last one".
+
+
+typedef struct{
+    uint block_size <fgcolor=cWhite, bgcolor=cLtBlue>;
+    uint indicatortag;
+    local uint mark = indicatortag;
+    byte message[block_size - 8];
+    /* @TODO: This block is unstable and could break on some saves
+    do{
+        uint length;
+        Message data(length);
+        // Skip until next non-zero byte
+        while( ReadByte() == 0 ){
+            FSeek( FTell() + 1 );
+        }
+        uint tag;
+        mark = tag;
+    } while(mark == 1); */
+    uint unknown;
+    uint index;
+} OnlineContainer;
+
+typedef struct{
+    uint ChrHeaderLength <fgcolor=cWhite, bgcolor=cLtBlue>;
+    local uint chr_header_length_tmp = 4;
+    if(ChrHeaderLength > 0 && ChrHeaderLength < 393216) {
+        chr_header_length_tmp = ChrHeaderLength;
+    }
+    
+    byte ChrHeader[chr_header_length_tmp]; // Some bytes in here definitely track enemy deaths
+    // The case I tested was writing byte 30 and 34, which made some enemies in the level spawn dead.
+    // It seems to resets when you move to a different area?
+
+    uint ObjHeaderLength <fgcolor=cWhite, bgcolor=cLtBlue>;
+    local uint obj_header_length_tmp = 4;
+    if(ObjHeaderLength > 0 && ObjHeaderLength < 393216) {
+        obj_header_length_tmp = ObjHeaderLength;
+    }
+    byte ObjHeader[obj_header_length_tmp] <comment="Probably contains data about broken scenery objects">; // Tracker for broken objects?
+    byte TrailingData[88];
+
+    // Containers always seem to be in the same order, so we're assuming this is true
+    local int last_index = -1;
+    local uint current_container_length = 0;
+    local uint slot_size = ReadUInt(meta.chunks[slots].start + 16);
+    //if(slot_size <= 0 || slot_size >= 0xFFFFFFFF || slot_size >= meta.chunks[slots].block_size || (meta.chunks[slots].start + slot_size) >= meta.chunks[slots + 1].start) {
+        while(last_index != 0x0000FFFF && last_index != 0) {
+            current_container_length = ReadUInt(FTell());
+            last_index = ReadInt(FTell() + current_container_length + 4);
+            if (last_index == 7) {
+                SoapstoneMessagesContainer player_messages <comment="Orange Soapstone messages">;
+            } else if (last_index == 8) {
+                BloodstainsContainer player_bloodstains;
+            } else if (last_index == 9 && current_container_length > 8) {
+                UnknownOnlineContainer unknown_container <comment="Possibly related to summon signs">;
+            } else if (last_index == 10 && current_container_length > 8) {
+                SummonSignsContainer unknown_signs_container <comment="Probably related to summon signs">;
+            } else if ((last_index == 0 || last_index == 0x0000FFFF) && current_container_length <= 8) {
+                EndContainer end;
+            } else if (current_container_length <= 8) {
+                EmptyContainer empty;
+            } else {
+                UnknownOnlineContainer unknown_container <comment="Probably related to red summon signs, vagrants, or multiplayer covenant data (dragon/Gravelord summon signs etc)">;
+            }
+        }
+    //}
+} OnlineData;
+
+#endif // _SL2_MULTIPLAYER_DATA_BT

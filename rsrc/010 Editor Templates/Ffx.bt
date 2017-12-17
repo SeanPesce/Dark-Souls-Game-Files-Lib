@@ -5,6 +5,9 @@
 // Author: Jed "Nyxojaele" Lang
 // Revision: 1
 //--------------------------------------
+#ifndef _DS1_FFX_BT
+    #define _DS1_FFX_BT
+
 byte Signature[4] <bgcolor=0xCCFFCC>;
 int Unknown1;   //Version?
 int HeaderSize <format=hex, bgcolor=0x88EE88>;
@@ -22,3 +25,5 @@ struct
 } Data1;
 int Data2[Data2Count] <bgcolor=0x999999>;
 int Data3[Data3Count] <bgcolor=0x555555, fgcolor=0xFFFFFF>;
+
+#endif // _DS1_FFX_BT

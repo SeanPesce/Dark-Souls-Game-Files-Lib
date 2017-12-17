@@ -5,6 +5,9 @@
 // Author: Jed "Nyxojaele" Lang
 // Revision: 1
 //--------------------------------------
+#ifndef _DS1_PARAM_BT
+    #define _DS1_PARAM_BT
+
 typedef struct(int dataSize)
 {
     int Id <format=hex>;
@@ -53,3 +56,5 @@ struct
 {
     RowStruct Row(dataSize)[RowCount] <optimize=false>;
 } Rows;
+
+#endif // _DS1_PARAM_BT

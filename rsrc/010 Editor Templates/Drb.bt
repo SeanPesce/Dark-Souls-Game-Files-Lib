@@ -5,6 +5,9 @@
 // Author: Jed "Nyxojaele" Lang
 // Revision: 1
 //--------------------------------------
+#ifndef _DS1_DRB_BT
+    #define _DS1_DRB_BT
+
 //**************************************
 //
 //               GENERAL
@@ -1037,3 +1040,5 @@ FSeek(blockStart + sizeof(DLG.Header) + DLG.Header.BlockSize);
 blockStart = FTell();
 BlockStruct_END END;
 FSeek(blockStart + sizeof(END.Header) + END.Header.BlockSize);
+
+#endif // _DS1_DRB_BT

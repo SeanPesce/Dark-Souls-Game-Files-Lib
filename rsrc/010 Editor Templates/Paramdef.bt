@@ -5,6 +5,9 @@
 // Author: Jed "Nyxojaele" Lang
 // Revision: 1
 //--------------------------------------
+#ifndef _DS1_PARAMDEF_BT
+    #define _DS1_PARAMDEF_BT
+
 typedef struct
 {
     char JPName[0x40];
@@ -48,3 +51,5 @@ struct
 {
     ColumnStruct Column[ColumnCount] <bgcolor=cLtRed, optimize=false>;
 } Columns;
+
+#endif // _DS1_PARAMDEF_BT

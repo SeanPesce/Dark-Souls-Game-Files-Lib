@@ -5,6 +5,9 @@
 // Author: Jed "Nyxojaele" Lang
 // Revision: 1
 //--------------------------------------
+#ifndef _DS1_MSB_BT
+    #define _DS1_MSB_BT
+
 //***************************************
 //
 //          BASE STRUCTS
@@ -1097,3 +1100,5 @@ ModelParamStStruct Models;
 EventParamStStruct Events;
 PointParamStStruct Points;
 PartsParamStStruct Parts;
+
+#endif // _DS1_MSB_BT

@@ -5,6 +5,9 @@
 // Author: Jed "Nyxojaele" Lang
 // Revision: 1
 //--------------------------------------
+#ifndef _DS1_FLVER_BT
+    #define _DS1_FLVER_BT
+
 typedef struct {
     byte r;
     byte g;
@@ -542,3 +545,5 @@ struct {
         } IndicesAndVertices;
     }
 } Data;
+
+#endif // _DS1_FLVER_BT

@@ -5,6 +5,9 @@
 // Author: Jed "Nyxojaele" Lang
 // Revision: 1
 //--------------------------------------
+#ifndef _DS1_TAE_BT
+    #define _DS1_TAE_BT
+
 typedef struct
 {
     int Offset <format=hex, bgcolor=0xBB8800>;
@@ -302,8 +305,9 @@ wstring ReadHeaderStruct(EventHeaderStruct &event)
 //----------------------------------------------------
 typedef struct
 {
-    //All values except AnimDataOffset seem to be 0 when AnimFileStruct.Type == 1
-    int EventCount;
+    // All values except AnimDataOffset seem to be 0 when AnimFileStruct.Type == 1
+    short EventCount;
+    short Unknown;
     int EventHeadersOffset <format=hex>;
     int Null1;
     if (Null1 != 0)
@@ -396,3 +400,5 @@ struct
         AnimDataStruct AnimData[Header.AnimDataCount] <optimize=false>;// bgcolor=0xCCCCCC>;
     } AnimData;
 } Data;
+
+#endif // _DS1_TAE_BT

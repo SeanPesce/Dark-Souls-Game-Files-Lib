@@ -5,6 +5,9 @@
 // Author: Jed "Nyxojaele" Lang
 // Revision: 1
 //--------------------------------------
+#ifndef _DS1_DDS_BT
+    #define _DS1_DDS_BT
+
 byte Signature[4];
 int HeaderSize;
 byte DDSD_Flags[4] <format=hex>;
@@ -30,3 +33,5 @@ byte Caps2[4] <format=hex>;
 byte Caps3[4] <format=hex>;
 byte Caps4[4] <format=hex>;
 int Reserved2;
+
+#endif // _DS1_DDS_BT

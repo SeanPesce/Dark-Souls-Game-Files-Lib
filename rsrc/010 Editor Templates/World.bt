@@ -1,0 +1,54 @@
+//--------------------------------------------------------------------
+//--- 010 Editor v5.0 Binary Template
+//
+// File: World.bt
+// Author: Sean Pesce
+// Revision: 0.0.1
+// Purpose: Parsing Dark Souls: Prepare to Die Edition data files
+//-------------------------------------------------------------------
+#ifndef _DS1_GAME_WORLD_BT
+    #define _DS1_GAME_WORLD_BT
+
+
+// 3D coordinates specifying a location in the game world
+typedef struct {
+    // @TODO: Determine the order of X/Y/Z
+    float x <comment = "Order of X/Y/Z is unconfirmed (does it even matter?)">;
+    float y;
+    float z;
+} Coordinates;
+
+
+// 3D coordinates and rotation value
+typedef struct {
+    local ubyte fg_color_set = 0;
+    local ubyte bg_color_set = 0;
+    if(GetForeColor() == cNone)
+    {
+        SetForeColor(cWhite);
+        fg_color_set = 1;
+    }
+    if(GetBackColor() == cNone) {
+        SetBackColor(cDkAqua);
+        bg_color_set = 1;
+    }
+    if(GetBackColor() == cLtGray) {
+        SetBackColor(cDkAqua);
+        bg_color_set = 2;
+    }
+    Coordinates coordinates;
+    float rotation;
+    if(fg_color_set == 1) {
+        SetForeColor(cNone);
+    }
+    if(bg_color_set == 1) {
+        SetBackColor(cNone);
+    }
+    if(bg_color_set == 2) {
+        SetBackColor(cLtGray);
+    }
+} Position;
+
+
+
+#endif // _DS1_GAME_WORLD_BT

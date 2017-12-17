@@ -5,6 +5,9 @@
 // Author: Jed "Nyxojaele" Lang
 // Revision: 1
 //--------------------------------------
+#ifndef _DS1_BDT_BT
+    #define _DS1_BDT_BT
+
 byte Signature[12];
 int Unknown1;
 
@@ -32,3 +35,5 @@ typedef struct
 } DcxFile;
 
 AddBookmark(0, "Moving Struct", "DcxFile", 1, cNone, 0xFFFFC4, true);
+
+#endif // _DS1_BDT_BT

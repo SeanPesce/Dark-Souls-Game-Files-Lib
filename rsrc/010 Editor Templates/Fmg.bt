@@ -5,6 +5,9 @@
 // Author: Jed "Nyxojaele" Lang
 // Revision: 1
 //--------------------------------------
+#ifndef _DS1_FMG_BT
+    #define _DS1_FMG_BT
+
 typedef struct
 {
     int StringIndex;
@@ -39,3 +42,5 @@ struct
 {
     StringStruct String[StringCount] <bgcolor=cLtBlue, optimize=false>;
 } Strings;
+
+#endif // _DS1_FMG_BT
