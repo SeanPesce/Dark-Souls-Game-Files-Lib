@@ -14,6 +14,7 @@
 #include "Character.bt";
 #include "../Enum/Character.bt"
 
+#define _DS1_SAVE_VERSION_NUM 19
 
 typedef struct {
     local ubyte del_char = 0;
@@ -119,7 +120,7 @@ typedef struct {
     Checksum header;
     SetForeColor(cNone);
     uint length;
-    uint version <bgcolor=cDkGray, fgcolor=cWhite, comment="If this value is changed, game will often display \"Wrong version\" error (Message ID = 45001). Some non-default values do work though.">;
+    uint version <bgcolor=cDkGray, fgcolor=cWhite, read=CheckMenuVersion, comment="If this value is changed, game will often display \"Wrong version\" error (Message ID = 45001). Some non-default values do work though.">;
     ushort unknown1[3];
     ubyte total_slots_maybe;
     ubyte unknown_flags[8];
@@ -157,5 +158,17 @@ typedef struct {
     SetForeColor(cNone);
     ubyte padding[meta.chunks[meta.ContainerCount - 1].space_size];
 } MainMenu <read=GetMenuSlotChecksumStatus, comment=GetMenuSlotChecksumCorrection>;
+
+
+string CheckMenuVersion(uint &ver) {
+    string version_check_string = "";
+    if(ver == _DS1_SAVE_VERSION_NUM) {
+        SPrintf(version_check_string, "%d", ver);
+    } else {
+        SPrintf(version_check_string, "%d    (WARNING: Version number should be %d)", ver, _DS1_SAVE_VERSION_NUM);
+    }
+    return version_check_string;
+}
+
 
 #endif // _SL2_MAIN_MENU_BT
