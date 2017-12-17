@@ -103,7 +103,21 @@ typedef struct {
 
 // Contains data for character previews on the main menu
 typedef struct {
+    local uint secondary_hash_calc_start = ((FTell() + 20) + (uint64)ReadUInt(FTell() + 16) - 16);
+    local string header_hash_start = "";
+    local string footer_hash_start = "";
+    local string header_hash_calculated = "";
+    local string footer_hash_calculated = "";
+    local string header_hash_recalculated = ""; // Only used if existing footer hash was invalid
+    local ubyte hash_verified[2] = GetChecksumStrings(FTell() + 20, (uint64)ReadUInt(FTell() + 16),
+                                    secondary_hash_calc_start,
+                                    header_hash_start, footer_hash_start, header_hash_calculated,
+                                    footer_hash_calculated, header_hash_recalculated);
+    if (hash_verified[0] == 0) {
+        SetForeColor(cRed);
+    }
     Checksum header;
+    SetForeColor(cNone);
     uint length;
     uint version <bgcolor=cDkGray, fgcolor=cWhite, comment="If this value is changed, game will often display \"Wrong version\" error (Message ID = 45001). Some non-default values do work though.">;
     ushort unknown1[3];
@@ -134,12 +148,14 @@ typedef struct {
     
     local uint menu_data_start = meta.chunks[meta.ContainerCount - 1].start;
     local uint menu_data_size = meta.chunks[meta.ContainerCount - 1].block_size;
-    local uint pos = FTell();
-    ubyte unknown_sections[(menu_data_size - 16) - (pos - menu_data_start)];
+    ubyte unknown_sections[(menu_data_size - 16) - (FTell() - menu_data_start)];
     
-    
+    if (hash_verified[1] == 0) {
+        SetForeColor(cRed);
+    }
     Checksum footer;
+    SetForeColor(cNone);
     ubyte padding[meta.chunks[meta.ContainerCount - 1].space_size];
-} MainMenu;
+} MainMenu <read=GetMenuSlotChecksumStatus, comment=GetMenuSlotChecksumCorrection>;
 
 #endif // _SL2_MAIN_MENU_BT

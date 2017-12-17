@@ -18,6 +18,9 @@
 #include "../Enum/Location.bt";
 #include "../Enum/Character.bt"
 
+
+local string checksum_verification_messages = "\n";
+
 typedef struct{
     ubyte flag1 : 1 ;
     ubyte flag2 : 1 ;
@@ -113,16 +116,33 @@ typedef struct{
     byte filler2[16] <bgcolor=cWhite>;
 } BonfireSection;
 
+
+
+
 typedef struct {
     local int unknown_size_1 = sizeof(StatsUnknown1);
     local int stats_size = sizeof(Stats);
     local int pack_size = sizeof(Pack);
-    local int backpack_amount = 2048; // is this hard code constant? // I don't know, we could try filling the backpack 
-    // with 2047 items and see what happens when we try to pick up another. If it refuses it's constant, if it dynamically resizes the 
-    // pack then we know
+    local int backpack_amount = 2048; // Is this a hard-coded constant? // I don't know, we could try filling the backpack 
+    //                                   with 2047 items and see what happens when we try to pick up another. If it refuses
+    //                                   it's constant, if it dynamically resizes the pack then we know
 
+    local string header_hash_start = "";
+    local string footer_hash_start = "";
+    local string header_hash_calculated = "";
+    local string footer_hash_calculated = "";
+    local string header_hash_recalculated = ""; // Only used if existing footer hash was invalid (header hash is calculated using footer hash)
+    local ubyte hash_verified[2] = GetChecksumStrings(FTell() + 20, (uint64)ReadUInt(FTell() + 16),
+                                    meta.chunks[slots+1].start - (16 + meta.chunks[slots].space_size),
+                                    header_hash_start, footer_hash_start, header_hash_calculated,
+                                    footer_hash_calculated, header_hash_recalculated);
 
+    if (hash_verified[0] == 0) {
+        SetForeColor(cRed);
+    }
     Checksum header; // This is written after the MD5 in the footer of the save slot is written, it includes all parts of the save slot except for the ChecksumHeader
+    SetForeColor(cNone);
+    
     uint length <fgcolor=cWhite, bgcolor=cLtBlue>; // Number of bytes that should be included in the checksum, 393216 ( Entire slot is 393248 )
     uint unknown_a[2];
     uint playtime <comment="Time in milliseconds; maxes out at 999:59:59 (3599999000)">; // Milliseconds since game start (verified); maxes out at 3599999000 (999:59:59)
@@ -187,12 +207,16 @@ typedef struct {
 
     //0x56280 Undead Burg bonfire?
     UnknownArea areadata[2578] <fgcolor=cGray, bgcolor=cWhite>;  // I'm getting indications that this is just garbage data?
-
-    Checksum secondary; // MD5 checksum of all bytes in this save slot (excluding header and length fields)
+    if (hash_verified[1] == 0) {
+        SetForeColor(cRed);
+    }
+    Checksum footer; // MD5 checksum of all bytes in this save slot (excluding header and length fields)
+    SetForeColor(cNone);
     // Secondary checksum isn't actually required to be correct to form a valid save file; save file loads despite it being edited.
 
     ubyte offset[meta.chunks[slots].space_size] <bgcolor=cWhite>;
-} SaveSlot;
+} SaveSlot <read=GetChecksumStatus, comment=GetChecksumCorrection>;
+
 
 typedef struct {
     Checksum header;
@@ -214,10 +238,122 @@ typedef struct {
     byte unknownSections[72*0x500];
     byte zerofill[10] <bgcolor=cWhite,fgcolor=cGreen>;
     ubyte onlinedata[131242]<bgcolor=cLtPurple>;
-    UnknownArea areadata[2578] <fgcolor=cGray>; 
+    UnknownArea areadata[2578] <fgcolor=cGray>;
     Checksum secondary;
     ubyte offset[12] <bgcolor=cWhite>;
 } EmptySlot;
+
+
+string GetChecksumStatus(SaveSlot &last_slot) {
+    local string return_string = "";
+    if (last_slot.hash_verified[0] == 1 && last_slot.hash_verified[1] == 1) {
+        SPrintf(return_string, "Header: %s (Valid)", last_slot.header_hash_calculated);
+    } else if (last_slot.hash_verified[1] != 1) {
+        SPrintf(return_string, "Header: %s (INVALID: Footer checksum is incorrect)", last_slot.header_hash_start);
+    } else {
+        SPrintf(return_string, "Header: %s (INVALID: Header checksum is incorrect)", last_slot.header_hash_start);
+    }
+    return return_string;
+}
+
+string GetChecksumCorrection(SaveSlot &last_slot) {
+    local string return_string = "";
+    if (last_slot.hash_verified[0] == 1 && last_slot.hash_verified[1] == 1) {
+        SPrintf(return_string, "Footer: %s (Valid)", last_slot.footer_hash_calculated);
+    } else if (last_slot.hash_verified[1] != 1) {
+        SPrintf(return_string, "Corrected footer: %s", last_slot.footer_hash_calculated);
+    } else {
+        SPrintf(return_string, "Corrected header: %s", last_slot.header_hash_calculated);
+    }
+    return return_string;
+}
+
+string GetMenuSlotChecksumStatus(MainMenu &mm) {
+    local string return_string = "";
+    if (mm.hash_verified[0] == 1 && mm.hash_verified[1] == 1) {
+        SPrintf(return_string, "Header: %s (Valid)", mm.header_hash_calculated);
+    } else if (mm.hash_verified[1] != 1) {
+        SPrintf(return_string, "Header: %s (INVALID: Footer checksum is incorrect)", mm.header_hash_start);
+    } else {
+        SPrintf(return_string, "Header: %s (INVALID: Header checksum is incorrect)", mm.header_hash_start);
+    }
+    return return_string;
+}
+
+string GetMenuSlotChecksumCorrection(MainMenu &mm) {
+    local string return_string = "";
+    if (mm.hash_verified[0] == 1 && mm.hash_verified[1] == 1) {
+        SPrintf(return_string, "Footer: %s (Valid)", mm.footer_hash_calculated);
+    } else if (mm.hash_verified[1] != 1) {
+        SPrintf(return_string, "Corrected footer: %s", mm.footer_hash_calculated);
+    } else {
+        SPrintf(return_string, "Corrected header: %s", mm.header_hash_calculated);
+    }
+    return return_string;
+}
+
+ubyte[2] GetChecksumStrings(uint start, uint64 size, uint secondary_start, string &current_primary, string &current_secondary,
+                            string &calculated_primary, string &calculated_secondary, string &recalculated_primary) {
+    local uchar md5_hash[33];
+    local uint64 range_size = size;
+    local uint ret_bytes = ChecksumAlgBytes(CHECKSUM_MD5, md5_hash, start, size - 16);
+    local uint current_ret_b = 0;
+    local ubyte valid[2];
+    valid[0] = 1;
+    valid[1] = 1;
+    for (current_ret_b = 0; current_ret_b < ret_bytes; current_ret_b++) {
+        if (md5_hash[current_ret_b] != ReadUByte(secondary_start + current_ret_b)) {
+            valid[1] = 0;
+        }
+        if(ReadUByte(secondary_start + current_ret_b) < 16) {
+            SPrintf(current_secondary, "%s0", current_secondary);
+        }
+        SPrintf(current_secondary, "%s%x", current_secondary, ReadUByte(secondary_start + current_ret_b));
+        if(md5_hash[current_ret_b] < 16) {
+            SPrintf(calculated_secondary, "%s0", calculated_secondary);
+        }
+        SPrintf(calculated_secondary, "%s%x", calculated_secondary, md5_hash[current_ret_b]);
+    }
+    SPrintf(calculated_secondary, "%s", calculated_secondary);
+    
+    if (valid[1] != 1) {
+        SPrintf(checksum_verification_messages,
+          "%s[WARNING] Invalid footer checksum for slot %d:\n          Current hash:     %s\n          Calculated hash:  %s\n",
+          checksum_verification_messages, slots, current_secondary, calculated_secondary);
+    }
+    
+    // @TODO: If some preprocessor macro is defined, use void OverwriteBytes( int64 start, int64 size, uchar value=0 ) to overwrite incorrect checksums (or make copy of file with fixed)
+    
+    ret_bytes = ChecksumAlgBytes(CHECKSUM_MD5, md5_hash, start-4, size + 4);
+    
+    for (current_ret_b = 0; current_ret_b < ret_bytes; current_ret_b++) {
+        if (md5_hash[current_ret_b] != ReadUByte((start-20) + current_ret_b)) {
+            valid[0] = 0;
+        }
+        if(ReadUByte((start-20) + current_ret_b) < 16) {
+            SPrintf(current_primary, "%s0", current_primary);
+        }
+        SPrintf(current_primary, "%s%x", current_primary, ReadUByte((start-20) + current_ret_b));
+        if(md5_hash[current_ret_b] < 16) {
+            SPrintf(calculated_primary, "%s0", calculated_primary);
+        }
+        SPrintf(calculated_primary, "%s%x", calculated_primary, md5_hash[current_ret_b]);
+    }
+    
+    if (valid[0] != 1) {
+        SPrintf(checksum_verification_messages,
+          "%s[WARNING] Invalid header checksum for slot %d:\n          Current hash:     %s\n          Calculated hash:  %s\n",
+          checksum_verification_messages, slots, current_primary, calculated_primary);
+    }
+    
+    if (valid[0] != 1 || valid[0] != 1) {
+        SPrintf(checksum_verification_messages, "%s\n", checksum_verification_messages);
+    }
+    
+    // @TODO: If footer hash is invalid, recalculate header using correct footer
+    
+    return valid;
+}
 
 
 LittleEndian(); 
@@ -267,8 +403,10 @@ for( slots = 0; slots < meta.ContainerCount; slots++ )
 
 SetBackColor(cRed);
 while(!FEof()) {
-    ubyte eof_padding <comment="Unknown bytes; verify that this is a valid Dark Souls: PtDE save file and check that the file-reader script is working correctly.">;
+    ubyte eof_padding <comment="Unknown bytes; verify that this is a valid Dark Souls: PtDE save file and check that the template is working correctly.">;
 }
 SetBackColor(cLtGray);
+
+Printf("%s", checksum_verification_messages);
 
 #endif // _DS1_SL2_BT

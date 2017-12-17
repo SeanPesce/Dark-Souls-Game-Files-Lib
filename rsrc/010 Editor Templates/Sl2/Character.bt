@@ -63,7 +63,7 @@ typedef struct{
 
 
 // Poise? I think poise is inferred from equipped items etc.
-typedef struct{
+typedef struct {
     HP hp <fgcolor=cWhite, bgcolor=cDkRed>;
     UnknownCharStat unknown_stat <comment="Unused MP/mana stat?", fgcolor=cWhite, bgcolor=cDkBlue>;
     uint unknown_1 <bgcolor=cLtPurple>;
@@ -99,6 +99,10 @@ typedef struct{
     StartingHairStyle hair_style;
     HairColor hair_color;
     byte unknown_10 <bgcolor=cLtPurple>;
-} Stats;
+} Stats <read=GetCharName>;
+
+string GetCharName(Stats &s) {
+    return WStringToString(s.name);
+}
 
 #endif // _SL2_CHARACTER_BT

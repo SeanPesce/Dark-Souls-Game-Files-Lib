@@ -106,7 +106,7 @@ typedef struct (uint size, uint used){
     }
     Backpack used_box[used] <optimize=false>;
     if(size - used > 0) {
-        Backpack empty_box[size-used] <comment="Empty box part">;
+        Backpack empty_box[size-used] <optimize=false, comment="Empty box part">;
     }
 } PartiallyUsedBox;
 
