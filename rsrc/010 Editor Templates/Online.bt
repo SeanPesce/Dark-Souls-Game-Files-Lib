@@ -150,15 +150,17 @@ string get_pos_soapstone_rating_string(ushort &rating) {
 }
 
 typedef struct{
+    local uint count = 0;
     local uint container_start_offset = FTell();
     uint length;
     while(ReadUInt(FTell()) != 0x0000FFFF && FTell() < (container_start_offset + 4 + length)) { // 0x0000FFFF is "end of data" flag
         SoapstoneMessage messages;
+        count++;
     }
     uint end_flag <format=hex, comment="Should be 0x0000FFFF">;
     uint padding <comment="Should be 0">;
     uint index <comment="Should be 7">; // (Unless we're wrong and containers are not always in same order)
-} SoapstoneMessagesContainer;
+} SoapstoneMessagesContainer <read=GetSoapstoneMessageCount>;
 
 
 typedef struct{
@@ -177,17 +179,19 @@ typedef struct{
 } Bloodstain;
 
 typedef struct{
+    local uint count = 0;
     local uint container_start_offset = FTell();
     uint length <fgcolor=cWhite, bgcolor=cLtBlue>;
     local uint next_4b = ReadUInt(FTell());
     while(next_4b != 0x0000FFFF && FTell() < (container_start_offset + 4 + length)) { // 0x0000FFFF is "end of data" flag
         Bloodstain bloodstains;
         next_4b = ReadUInt(FTell());
+        count++;
     }
     uint end_flag <format=hex, comment="Should be 0xFFFF">;
     uint padding <comment="Should be 0">;
     uint index <comment="Should be 8">; // (Unless we're wrong and containers are not always in same order)
-} BloodstainsContainer;
+} BloodstainsContainer <read=GetBloodstainCount>;
 
 
 typedef struct{
@@ -205,18 +209,38 @@ typedef struct{
 } SummonSign;
 
 typedef struct{
+    local uint count = 0;
     local uint container_start_offset = FTell();
     uint length <fgcolor=cWhite, bgcolor=cLtBlue>;
     local uint next_4b = ReadUInt(FTell());
     while(next_4b != 0x0000FFFF && FTell() < (container_start_offset + 4 + length)) { // 0x0000FFFF is "end of data" flag
         SummonSign signs;
         next_4b = ReadUInt(FTell());
+        count++;
     }
     uint end_flag <format=hex, comment="Should be 0xFFFF">;
     uint padding <comment="Should be 0">;
     uint index;
-} SummonSignsContainer;
+} SummonSignsContainer <read=GetSummonSignCount>;
 
+
+string GetSoapstoneMessageCount(SoapstoneMessagesContainer &smc) {
+    local string count_str = "";
+    SPrintf(count_str, "Message count = %d", smc.count);
+    return count_str;
+}
+
+string GetBloodstainCount(BloodstainsContainer &bsc) {
+    local string count_str = "";
+    SPrintf(count_str, "Bloodstain count = %d", bsc.count);
+    return count_str;
+}
+
+string GetSummonSignCount(SummonSignsContainer &ssc) {
+    local string count_str = "";
+    SPrintf(count_str, "Summon sign count = %d", ssc.count);
+    return count_str;
+}
 
 typedef struct{
     uint length <fgcolor=cWhite, bgcolor=cLtBlue>;
