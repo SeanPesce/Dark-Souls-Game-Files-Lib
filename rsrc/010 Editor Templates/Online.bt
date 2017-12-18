@@ -11,6 +11,7 @@
 
 #include "World.bt"
 #include "HexStringToInt.bt"
+#include "Enum/SoapstoneMessage.bt"
 
 
 typedef struct {
@@ -78,12 +79,63 @@ typedef struct {
     local uint unknown_data_length = msg_size - (16 + (4*4) + (2*4));
     ubyte unknown_data[unknown_data_length];
     Position position;
-    ushort substring_id[2] <comment="ID of message substring from 血文字.fmg in msg/<LANGUAGE>/menu.msgbnd.dcx (Example: ID of \"Be wary of $1 $2\" = 10001)">; // Note: One of the 2 might not always be substring ID
+    PlayerMsg substring_id[2] <comment="ID of message substring from 血文字.fmg in msg/<LANGUAGE>/menu.msgbnd.dcx (Example: ID of \"Be wary of $1 $2\" = 10001)">; // Note: One of the 2 might not always be substring ID
     ushort positive <read=get_pos_soapstone_rating_string, bgcolor=cWhite, fgcolor=cDkGreen, comment="Positive ratings (upvotes)">;
     // NOTE: Overall rating of a message is upvotes + ABS(downvotes) by default. To see a true net score (upvotes - downvotes), player must use Seek Guidance.
     // More info here: http://darksouls.wikidot.com/orange-guidance-soapstone
     ushort negative <read=get_neg_soapstone_rating_string, bgcolor=cWhite, fgcolor=cDkRed, comment="Negative ratings (downvotes)">;
-} SoapstoneMessage;
+} SoapstoneMessage <read=GetSoapstoneMessageString>;
+
+
+string GetSoapstoneMessageString(SoapstoneMessage &sm) {
+    local string msg1 = EnumToString(sm.substring_id[0]);
+    local string msg2 = EnumToString(sm.substring_id[1]);
+    local int match_size = 0;
+    local string full_msg = "";
+    if (Strcmp(msg1, "_fill_blank") == 0 || Strcmp(msg1, "bmsg__low__") == 0) {
+        msg1 = "";
+    }
+    local int index = RegExSearch(msg1, "upr_", match_size);
+    if (index >= 0) {
+        msg1 = StrDel(msg1, index, 4);
+    }
+    index = RegExSearch(msg1, "bmsg_low_", match_size);
+    if (index >= 0) {
+        msg1 = StrDel(msg1, index, 9);
+        msg1 = SubStr(msg1, 0, index) + msg2 + SubStr(msg1, index + 1, Strlen(msg1) - index);
+        msg2 = "";
+    }
+    index = RegExSearch(msg1, "bmsg_", match_size);
+    if (index >= 0) {
+        msg1 = StrDel(msg1, index, 3);
+        msg1 = SubStr(msg1, 0, index) + " " + msg2 + SubStr(msg1, index + 1, Strlen(msg1) - index);
+        msg2 = "";
+    }
+    for (index = 0; index < Strlen(msg1); index++) {
+        if (Strcmp(SubStr(msg1, index, 1), "_") == 0) {
+            msg1 = SubStr(msg1, 0, index) + " " + SubStr(msg1, index + 1, Strlen(msg1) - index);
+        }
+    }
+    for (index = 0; index < Strlen(msg2); index++) {
+        if (Strcmp(SubStr(msg2, index, 1), "_") == 0) {
+            msg1 = SubStr(msg2, 0, index) + " " + SubStr(msg2, index + 1, Strlen(msg2) - index);
+        }
+    }
+    full_msg = msg1 + " " + msg2;
+    for (index = 0; index < Strlen(full_msg); index++) {
+        if (Strcmp(SubStr(full_msg, 0, 1), " ") == 0) {
+            full_msg = SubStr(full_msg, 1);
+        } else {
+            break;
+        }
+    }
+    index = RegExSearch(full_msg, "cant", match_size);
+    if (index >= 0) {
+        full_msg = StrDel(full_msg, index, 3);
+        full_msg = SubStr(full_msg, 0, index) + "can't" + SubStr(full_msg, index + 1, Strlen(full_msg) - index);
+    }
+    return full_msg;
+}
 
 string get_neg_soapstone_rating_string(ushort &rating) {
     local string soapstone_rating_string = "";

@@ -143,9 +143,9 @@ typedef struct {
     Checksum header; // This is written after the MD5 in the footer of the save slot is written, it includes all parts of the save slot except for the ChecksumHeader
     SetForeColor(cNone);
     
-    uint length <fgcolor=cWhite, bgcolor=cLtBlue>; // Number of bytes that should be included in the checksum, 393216 ( Entire slot is 393248 )
+    uint length <read=GetDecAndHexValuesUInt, fgcolor=cWhite, bgcolor=cLtBlue>; // Number of bytes that should be included in the checksum, 393216 ( Entire slot is 393248 )
     uint unknown_a[2];
-    uint playtime <comment="Time in milliseconds; maxes out at 999:59:59 (3599999000)">; // Milliseconds since game start (verified); maxes out at 3599999000 (999:59:59)
+    uint playtime <read=GetTimeStamp, comment="Time in milliseconds; maxes out at 999:59:59:000 (3599999000)">; // Milliseconds since game start (verified); maxes out at 3599999000 (999:59:59)
     StatsUnknown1 unknown <comment="Unknown data">;
 
     Stats stats;
@@ -215,7 +215,74 @@ typedef struct {
     // Secondary checksum isn't actually required to be correct to form a valid save file; save file loads despite it being edited.
 
     ubyte offset[meta.chunks[slots].space_size] <bgcolor=cWhite>;
-} SaveSlot <read=GetChecksumStatus, comment=GetChecksumCorrection>;
+} SaveSlot <read=GetChecksumStatus, name=GetSlotCharName, comment=GetChecksumCorrection>;
+
+
+string GetSlotCharName(SaveSlot &s) {
+    return "SaveSlot (" + WStringToString(s.stats.name) + ")";
+}
+
+
+string GetDecAndHexValuesUInt(uint val) {
+    local string ret_str = "";
+    SPrintf(ret_str, "%d (0x%x)", val, val);
+    return ret_str;
+}
+
+string GetTimeStamp(uint val) {
+    local ubyte hours = val / 3600000;
+    local ubyte mins = (val - (hours * 3600000)) / 60000;
+    local ubyte secs = ((val - (hours * 3600000)) - (mins * 60000)) / 1000;
+    local ushort ms = ((val - (hours * 3600000)) - (mins * 60000)) - (secs * 1000);
+    local string time_str = "";
+    local string hours_pad = "";
+    local string mins_pad = "";
+    local string secs_pad = "";
+    local string ms_pad = "";
+    if(hours < 10)
+        hours_pad = "0";
+    if(mins < 10)
+        mins_pad = "0";
+    if(secs < 10)
+        secs_pad = "0";
+    if(ms < 100)
+        ms_pad = "0";
+    if(ms < 10)
+        ms_pad += "0";
+    SPrintf(time_str, "%s%d:%s%d:%s%d:%s%d", hours_pad, hours, mins_pad, mins, secs_pad, secs, ms_pad, ms);
+    return time_str;
+}
+
+string GetTimeStampNoMs(uint val) {
+    local ubyte hours = val / 3600;
+    local ubyte mins = (val - (hours * 3600)) / 60;
+    local ubyte secs = (val - (hours * 3600)) - (mins * 60);
+    local string time_str = "";
+    local string hours_pad = "";
+    local string mins_pad = "";
+    local string secs_pad = "";
+    if(hours < 10)
+        hours_pad = "0";
+    if(mins < 10)
+        mins_pad = "0";
+    if(secs < 10)
+        secs_pad = "0";
+    SPrintf(time_str, "%s%d:%s%d:%s%d", hours_pad, hours, mins_pad, mins, secs_pad, secs);
+    return time_str;
+}
+
+string ChecksumToString(Checksum &cs) {
+    local string hash_str = "";
+    local ubyte current_b = 0;
+    hash_str = "";
+    for (current_b = 0; current_b < 16; current_b++) {
+        if(current_b > 0 && cs.md5[current_b] < 16) {
+            SPrintf(hash_str, "%s0", hash_str);
+        }
+        SPrintf(hash_str, "%s%x", hash_str, (ubyte)cs.md5[current_b]);
+    }
+    return hash_str;
+}
 
 
 typedef struct {

@@ -72,7 +72,7 @@ typedef struct {
     wchar_t name[14] <bgcolor=cLtPurple>;
     uint unknown_stat[2];
     uint level <bgcolor=cSilver>;
-    uint playtime <bgcolor=cSilver, comment="Time in seconds; overflows at 999:59:59 (3599999)">;
+    uint playtime <read=GetTimeStampNoMs, bgcolor=cSilver, comment="Time in seconds; overflows at 999:59:59 (3599999)">;
     uint earned_souls <bgcolor=cSilver>;
     ushort unknown_stat3[2];
     enum Location location  <bgcolor=cSilver, comment="Game world location string ID from 地名.fmg (Must be unpacked from msg/<LANGUAGE>/item.msgbnd.dcx)">;
@@ -86,7 +86,7 @@ typedef struct {
     wchar_t name[14] <bgcolor=cSilver>;
     uint unknown_stat[2];
     uint level <bgcolor=cSilver>;
-    uint playtime <bgcolor=cSilver>;
+    uint playtime <read=GetTimeStampNoMs, bgcolor=cSilver>;
     uint earned_souls <bgcolor=cSilver>;
     ushort unknown_stat3[2];
     enum Location location  <bgcolor=cSilver>;

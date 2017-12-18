@@ -35,7 +35,7 @@ wstring ReadSlotMeta(SlotMeta &meta){
 
 typedef struct{
     byte md5[16];
-} Checksum <bgcolor=cLtGreen>;
+} Checksum <read=ChecksumToString, bgcolor=cLtGreen>;
 
 typedef struct (uint name_block_size) {
     wchar_t title[name_block_size];
@@ -62,7 +62,7 @@ typedef struct {
     uint     uint_unknown1 <bgcolor=cLtPurple>;
     byte     char_unknown2[12] <bgcolor=cLtPurple>;
     // SlotMeta chunks[ContainerCount];
-    SlotMeta chunks(SlotMetaBlockSize)[ContainerCount]<optimize=true>;
+    SlotMeta chunks(SlotMetaBlockSize)[ContainerCount]<read=GetSlotOffset, optimize=true>;
     // Slot title structure
     local uint i, name_block_size = 0;
     for (i = 0; i < ContainerCount; i++){
@@ -71,6 +71,11 @@ typedef struct {
     }
     byte EOFBNDMeta[MetaSize - FTell()] <name="End of meta", fgcolor=cLtYellow>;
 } BND4 <read=ReadBND4>;
+
+string GetSlotOffset(SlotMeta &sm) {
+    local string ret_str = "";
+    return SPrintf(ret_str, "Slot offset: %d (0x%x)", sm.start, sm.start);
+}
 
 string GetSlotTitle(SlotTitle &st) {
     return WStringToString(st.title);
