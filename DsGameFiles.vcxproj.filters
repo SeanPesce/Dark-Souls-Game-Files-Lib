@@ -224,5 +224,11 @@
     <ClInclude Include="include\Asset\Animation\Tae.h">
       <Filter>Header Files\Asset\Animation</Filter>
     </ClInclude>
+    <ClInclude Include="include\Archive\Bnd4.h">
+      <Filter>Header Files\Archive</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Save\Enum.h">
+      <Filter>Header Files\Save</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

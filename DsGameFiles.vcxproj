@@ -34,6 +34,7 @@
     <ClInclude Include="include\Archive\Bdt.h" />
     <ClInclude Include="include\Archive\Bhd5.h" />
     <ClInclude Include="include\Archive\Bnd3.h" />
+    <ClInclude Include="include\Archive\Bnd4.h" />
     <ClInclude Include="include\Archive\Dcx.h" />
     <ClInclude Include="include\Archive\Header.h" />
     <ClInclude Include="include\Asset\Animation\Tae.h" />
@@ -80,6 +81,7 @@
     <ClInclude Include="include\Param\Throw.h" />
     <ClInclude Include="include\Param\Weapon.h" />
     <ClInclude Include="include\Param\WeaponReinforcement.h" />
+    <ClInclude Include="include\Save\Enum.h" />
     <ClInclude Include="include\Save\Sl2.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
