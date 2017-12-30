@@ -6,12 +6,12 @@
 */
 
 
+
 #include "Shlobj.h"
 #include "SP_IO.hpp"
-
 #include "FileUtil.h"
-
 #include "FileList.h"
+#include <Wincrypt.h>
 
 
 // Checks if the specified file exists (char* string)
@@ -342,4 +342,99 @@ uint32_t FileUtil::reverse_endian(uint32_t from_endian_int)
     return *(uint32_t*)bytes;
 }
 
+
+/*
+    Converts the given integer value to hexadecimal string representation
+    and stores it in the supplied output string.
+*/
+const char *FileUtil::to_hex_string(int number, std::string &out_string, bool hex_prefix, bool full_bytes)
+{
+    out_string.clear();
+    std::stringstream hex_stream;
+    hex_stream << std::hex << number;
+    if (hex_prefix) {
+        out_string += "0x";
+    }
+    if (full_bytes && number < 16 && number > -16) {
+        out_string += '0';
+    }
+    out_string.append(hex_stream.str());
+    return out_string.c_str();
+}
+
+
+/*
+    Calculates the MD5 hash for the data in a given block of memory
+*/
+uint32_t FileUtil::calculate_md5_hash(uint8_t *data, uint32_t size, uint32_t hash_length, std::vector<uint8_t> &output)
+{
+    uint8_t *buffer = NULL;
+    uint32_t err;
+    HCRYPTPROV hash_provider = 0;
+    HCRYPTHASH hash = 0;
+    output.clear();
+
+    if (data == NULL)
+    {
+        SetLastError(ERROR_INVALID_ADDRESS);
+        return ERROR_INVALID_ADDRESS;
+    }
+
+    if ((buffer = (uint8_t*)CoTaskMemAlloc(hash_length)) == NULL)
+    {
+        // Unable to allocate memory
+        SetLastError(ERROR_OUTOFMEMORY);
+        return ERROR_OUTOFMEMORY;
+    }
+    
+    // Get handle to crypto provider
+    if (!CryptAcquireContext(&hash_provider, NULL, NULL,
+                             PROV_RSA_FULL, CRYPT_VERIFYCONTEXT))
+    {
+        err = GetLastError();
+        CoTaskMemFree(buffer);
+        SetLastError(err);
+        return err;
+    }
+
+    // Initialize hashing stream
+    if (!CryptCreateHash(hash_provider, CALG_MD5, 0, 0, &hash))
+    {
+        err = GetLastError();
+        CryptReleaseContext(hash_provider, 0);
+        CoTaskMemFree(buffer);
+        SetLastError(err);
+        return err;
+    }
+
+    // Calculate hash
+    if (!CryptHashData(hash, data, size, 0))
+    {
+        err = GetLastError();
+        CryptReleaseContext(hash_provider, 0);
+        CryptDestroyHash(hash);
+        CoTaskMemFree(buffer);
+        SetLastError(err);
+        return err;
+    }
+
+    // Get final hash value
+    if (CryptGetHashParam(hash, HP_HASHVAL, buffer, (DWORD*)&hash_length, 0))
+    {
+        err = ERROR_SUCCESS;
+        for (int i = 0; i < (int)hash_length; i++) {
+            output.push_back(buffer[i]);
+        }
+    }
+    else
+    {
+        err = GetLastError();
+    }
+
+    CryptDestroyHash(hash);
+    CryptReleaseContext(hash_provider, 0);
+    CoTaskMemFree(buffer);
+    SetLastError(err);
+    return err;
+}
 

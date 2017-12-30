@@ -11,8 +11,9 @@
 
 
 // Default filename for Dark Souls BDT files
-const char *BdtArchive::FILE_NAME_DEFAULT = "dvdbnd";
+const char    *BdtArchive::FILE_NAME_DEFAULT   =  "dvdbnd"; // (char)
+const wchar_t *BdtArchive::FILE_NAME_DEFAULT_W = L"dvdbnd"; // (wide char)
 
-// BDT file extension
-const char    *BdtArchive::FILE_EXT = ".bdt"; // (char)
+// Default BDT file extension
+const char    *BdtArchive::FILE_EXT   =  ".bdt"; // (char)
 const wchar_t *BdtArchive::FILE_EXT_W = L".bdt"; // (wide char)

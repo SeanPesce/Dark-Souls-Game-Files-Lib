@@ -11,8 +11,9 @@
 
 
 // Default filename for Dark Souls BHD5 files
-const char *Bhd5Archive::FILE_NAME_DEFAULT = "dvdbnd";
+const char    *Bhd5Archive::FILE_NAME_DEFAULT   =  "dvdbnd"; // (char)
+const wchar_t *Bhd5Archive::FILE_NAME_DEFAULT_W = L"dvdbnd"; // (wide char)
 
 // Default BHD5 file extension
-const char    *Bhd5Archive::FILE_EXT = ".bhd5"; // (char)
+const char    *Bhd5Archive::FILE_EXT   =  ".bhd5"; // (char)
 const wchar_t *Bhd5Archive::FILE_EXT_W = L".bhd5"; // (wide char)
