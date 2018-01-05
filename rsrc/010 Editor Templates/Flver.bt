@@ -87,11 +87,11 @@ typedef struct {
     Vector3_Float Row1;
     byte Unknown1;  //Always 0xFF
     if (Unknown1 != -1)
-        Printf("HitboxStruct.Unknown1: Unexpected Value @ %d!\n", FTell());
+        Printf("ActionPointStruct.Unknown1: Unexpected Value @ %d!\n", FTell());
     byte UnknownID1;
     short Unknown2; //Always 0xFFFF or 0x0000
     if (Unknown2 != 0 && Unknown2 != -1)
-        Printf("HitboxStruct.Unknown2: Unexpected Value @ %d!\n", FTell());
+        Printf("ActionPointStruct.Unknown2: Unexpected Value @ %d!\n", FTell());
     Vector3_Float Row2;
     short UnknownID2;
     short UnknownID3;
@@ -99,7 +99,7 @@ typedef struct {
     short Unknown3;
     short Unknown4;
     byte Null[16];
-} HitboxStruct <optimize=false>;
+} ActionPointStruct <optimize=false>;
 
 typedef struct {
     NameStruct Name;
@@ -425,7 +425,7 @@ struct {
     uint DataOffset <format=hex>;
     uint DataSize <format=hex>;
     
-    uint HitboxCount;
+    uint ActionPointCount;
     uint MaterialCount;
     uint BoneCount;
     uint MeshCount;
@@ -464,11 +464,11 @@ struct {
 
 } Header <bgcolor=0xA86872>;
 struct {
-    if (Header.HitboxCount != 0)
+    if (Header.ActionPointCount != 0)
     {
         struct {
-            HitboxStruct Hitbox[Header.HitboxCount] <bgcolor=0x00AA00>;
-        } Hitboxes;
+            ActionPointStruct ActionPoint[Header.ActionPointCount] <bgcolor=0x00AA00>;
+        } ActionPointes;
     }
     if (Header.MaterialCount != 0)
     {
