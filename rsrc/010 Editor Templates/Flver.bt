@@ -2,7 +2,7 @@
 //--- 010 Editor v3.1.2 Binary Template
 //
 // File: Dark Souls .FLVER (Mesh)
-// Author: Jed "Nyxojaele" Lang
+// Author: Jed "Nyxojaele" Lang (Some edits by Meowmaritus)
 // Revision: 1
 //--------------------------------------
 #ifndef _DS1_FLVER_BT
@@ -48,7 +48,7 @@ typedef struct {
     unsigned byte x;
     unsigned byte y;
     unsigned byte z;
-    byte padding;
+    unsigned byte w; // Unused in normals
 } PackedNormal <read=ReadPackedNormal>;
 string ReadPackedNormal(PackedNormal &nvector)
 {
@@ -119,8 +119,10 @@ typedef struct {
     ushort ParentIndex;
     ushort FirstChildIndex;
     Vector3_Float Scale;
-    ushort FirstSiblingIndex;
-    ushort CopyOfIndex;    //LCalfTwist -> LCalf, LTare -> RTare, L_Clavicle -> Neck, LFinger1 -> LFinger0, LFinger2 -> LFinger1, MovePoint_01 -> LFinger2 - Some sort of IK?
+    // FirstSiblingIndex (nyxojaele) --> NextSiblingIndex (Meowmaritus)
+    ushort NextSiblingIndex;
+    // CopyOfIndex (nyxojaele) --> PreviousSiblingIndex (Meowmaritus)
+    ushort PreviousSiblingIndex;    //LCalfTwist -> LCalf, LTare -> RTare, L_Clavicle -> Neck, LFinger1 -> LFinger0, LFinger2 -> LFinger1, MovePoint_01 -> LFinger2 - Some sort of IK?
     Vector3_Float BBLower;
     ushort IsNub;
     ushort Unknown6;
@@ -425,12 +427,14 @@ struct {
     uint DataOffset <format=hex>;
     uint DataSize <format=hex>;
     
+    // Alternatively, Meowmaritus claims all references to "ActionPoint" should actually be "DummyPoint", as they are referred to in the Debug menu
     uint ActionPointCount;
     uint MaterialCount;
     uint BoneCount;
     uint MeshCount;
     uint VertexInfoCount;
     
+    // Bounding Box data aka the min/max of the bounding box
     Vector3_Float BBa;  //Not tested!
     Vector3_Float BBb;  //Not tested!
     

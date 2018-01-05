@@ -59,8 +59,11 @@ typedef struct
 {
     int DataOffset <format=hex>;
     int DataSize <format=hex>;
-    short Type <format=hex>;
-    short Subtype <format=hex>;
+    
+    // Type and MipMapCount are duplicate data for image formats that contain a header, but useful for headerless image formats
+    short Type <format=hex>; // Compression type used in the contained image
+    short MipMapCount <format=hex>; // Previously called "Subtype"
+    
     NameStruct Name;
     byte Unknown1[4];
 
