@@ -73,7 +73,8 @@ public:
 private:
     FaceGenParamDef()
         : ParamDef(NULL, sizeof(FaceGenParam),
-                   "10 56 00 00 ?? ?? 01 00 6D 00 ?? ?? 46 41 43 45",
+                   //"10 56 00 00 ?? ?? 00 00 01 00 ?? ?? 46 41 43 45",
+                   "?? ?? ?? ?? ?? ?? 00 00 01 00 ?? ?? 46 41 43 45 5F 50 41 52 41 4D 5F 53 54 00",
                    "FaceGenParam", "Face Generation")
     {
     }
