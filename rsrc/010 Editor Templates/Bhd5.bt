@@ -10,6 +10,9 @@
 
 #include "BhdDefaultFileNames.bt"
 
+// Uncomment next line for useful debug output
+//#define _DS1_DEBUG
+
 SetBackColor(cLtBlue);
 InitializeFileNameMappingPrecalculated();
 local ulong currentBucketOffset;
@@ -31,7 +34,45 @@ typedef struct {
     currentBucketOffset = FTell();
     FSeek(EntriesOffset);
     Entry Entries[EntryCount] <optimize=false>;
-} BucketStruct;
+} BucketStruct <comment=GetAllEntryFileNamesOneLine>;
+
+string GetAllEntryFileNamesOneLine(BucketStruct &Bs) {
+    string s = "";
+    #ifdef _DS1_DEBUG
+    local uint i = 0;
+    for (i = 0; i < Bs.EntryCount; i++) {
+        if (i > 0) {
+            s += ";  ";
+        }
+        s += GetFileNameFromHash(Bs.Entries[i].Hash);
+    }
+    #endif // _DS1_DEBUG
+    return s;
+}
+
+string GetAllEntryFileNames(BucketStruct &Bs) {
+    local string s = "  ";
+    local uint i = 0;
+    for (i = 0; i < Bs.EntryCount; i++) {
+        if (i > 0) {
+            s += "\n  ";
+        }
+        s += GetFileNameFromHash(Bs.Entries[i].Hash);
+    }
+    return s;
+}
+
+string MapFileNameToBdtOffset(BucketStruct &Bs) {
+    local string s = "";
+    local uint i = 0;
+    for (i = 0; i < Bs.EntryCount; i++) {
+        if (i > 0) {
+            s += "\n";
+        }
+        SPrintf(s, "%sbdt_off_to_fn.insert(std::make_pair(%u, \"%s\"));", s, Bs.Entries[i].Offset, GetFileNameFromHash(Bs.Entries[i].Hash));
+    }
+    return s;
+}
 
 ulong Signature;
 ulong EndianCheck;
@@ -45,5 +86,17 @@ ulong BucketsOffset <format=hex>;
 
 currentBucketOffset = BucketsOffset;
 BucketStruct Bucket[BucketCount] <optimize=false>;
+
+#ifdef _DS1_DEBUG
+local uint i = 0;
+for (i = 0; i < BucketCount; i++) {
+    Printf("i=%d\n%s\n", i, GetAllEntryFileNames(Bucket[i]));
+}
+#endif // _DS1_DEBUG
+
+//local uint j = 0;
+//for (j = 0; j < BucketCount; j++) {
+//    Printf("%s\n", MapFileNameToBdtOffset(Bucket[j]));
+//}
 
 #endif // _DS1_BHD5_BT
