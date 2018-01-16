@@ -69,6 +69,9 @@
     <ClCompile Include="src\FileUtil.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Param\Params.cpp">
+      <Filter>Source Files\Param</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\FileList.h">
@@ -173,9 +176,6 @@
     <ClInclude Include="include\Param\Draw\DofBank.h">
       <Filter>Header Files\Param\Draw</Filter>
     </ClInclude>
-    <ClInclude Include="include\Param\Attack.h">
-      <Filter>Header Files\Param</Filter>
-    </ClInclude>
     <ClInclude Include="include\Param\CalcCorrect.h">
       <Filter>Header Files\Param</Filter>
     </ClInclude>
@@ -229,6 +229,30 @@
     </ClInclude>
     <ClInclude Include="include\Save\Enum.h">
       <Filter>Header Files\Save</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Param\AttackNpc.h">
+      <Filter>Header Files\Param</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Param\AttackPc.h">
+      <Filter>Header Files\Param</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Param\ObjectAction.h">
+      <Filter>Header Files\Param</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Param\QwcChange.h">
+      <Filter>Header Files\Param</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Param\QwcJudge.h">
+      <Filter>Header Files\Param</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Param\Talk.h">
+      <Filter>Header Files\Param</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Param\HitMaterial.h">
+      <Filter>Header Files\Param</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Param\KnockBack.h">
+      <Filter>Header Files\Param</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

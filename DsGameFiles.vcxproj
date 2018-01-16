@@ -27,6 +27,7 @@
     <ClCompile Include="src\FileUtil.cpp" />
     <ClCompile Include="src\GameEnum.cpp" />
     <ClCompile Include="src\Param\Param.cpp" />
+    <ClCompile Include="src\Param\Params.cpp" />
     <ClCompile Include="src\Save\Sl2.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -46,7 +47,8 @@
     <ClInclude Include="include\Param\AIStandardInfo.h" />
     <ClInclude Include="include\Param\Armor.h" />
     <ClInclude Include="include\Param\ArmorReinforcement.h" />
-    <ClInclude Include="include\Param\Attack.h" />
+    <ClInclude Include="include\Param\AttackNpc.h" />
+    <ClInclude Include="include\Param\AttackPc.h" />
     <ClInclude Include="include\Param\BehaviorNPC.h" />
     <ClInclude Include="include\Param\BehaviorPC.h" />
     <ClInclude Include="include\Param\Bullet.h" />
@@ -61,7 +63,10 @@
     <ClInclude Include="include\Param\Draw\ToneMapBank.h" />
     <ClInclude Include="include\Param\EnemyStandardInfo.h" />
     <ClInclude Include="include\Param\GameArea.h" />
+    <ClInclude Include="include\Param\HitMaterial.h" />
+    <ClInclude Include="include\Param\KnockBack.h" />
     <ClInclude Include="include\Param\Object.h" />
+    <ClInclude Include="include\Param\ObjectAction.h" />
     <ClInclude Include="include\Param\Param.h" />
     <ClInclude Include="include\Param\ItemLot.h" />
     <ClInclude Include="include\Param\Item.h" />
@@ -73,11 +78,14 @@
     <ClInclude Include="include\Param\NPC.h" />
     <ClInclude Include="include\Param\NPCThink.h" />
     <ClInclude Include="include\Param\Params.h" />
+    <ClInclude Include="include\Param\QwcChange.h" />
+    <ClInclude Include="include\Param\QwcJudge.h" />
     <ClInclude Include="include\Param\Ragdoll.h" />
     <ClInclude Include="include\Param\ShopLineup.h" />
     <ClInclude Include="include\Param\Skeleton.h" />
     <ClInclude Include="include\Param\SpecialEffect.h" />
     <ClInclude Include="include\Param\SpecialEffectVFX.h" />
+    <ClInclude Include="include\Param\Talk.h" />
     <ClInclude Include="include\Param\Throw.h" />
     <ClInclude Include="include\Param\Weapon.h" />
     <ClInclude Include="include\Param\WeaponReinforcement.h" />
