@@ -21,6 +21,7 @@ Large sections of this project were created using the following references:
 
 ## Built With  
 
+* [010 Editor](https://www.sweetscape.com/010editor/) hex editor & binary templates  
 * [Visual Studio 2015](https://www.visualstudio.com/)  
 * [zlib](https://zlib.net/) compression library  
 * [curl](https://curl.haxx.se/) data transfer library  
