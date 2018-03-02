@@ -1,7 +1,7 @@
 # Dark Souls Game File Library  
 **Author: Sean Pesce**  
 
-An unfinished set of C++ headers and classes for reading, extracting, and/or generally manipulating various Dark Souls: Prepare to Die Edition game files.  
+An unfinished set of C++ headers and classes for reading, extracting, and/or generally manipulating various *Dark Souls™: Prepare to Die Edition* game files.  
 
 This project is essentially a forked sub-project of the [Dark Souls Overhaul Mod](https://github.com/metal-crow/Dark-Souls-1-Overhaul).  
 
@@ -24,5 +24,13 @@ Large sections of this project were created using the following references:
 * [Visual Studio 2015](https://www.visualstudio.com/)  
 * [zlib](https://zlib.net/) compression library  
 * [curl](https://curl.haxx.se/) data transfer library  
-* [SeQan](https://www.seqan.de/) algorithm library  
+* [SeQan](https://www.seqan.de/) sequence analysis and algorithms library  
 
+
+## License  
+[GNU General Public License v3.0](LICENSE)  
+
+
+---------------------------------------------
+
+For inquiries and/or information about me, visit my **[personal website](https://SeanPesce.github.io)**.  
