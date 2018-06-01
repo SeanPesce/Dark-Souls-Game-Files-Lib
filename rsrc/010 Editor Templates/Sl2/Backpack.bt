@@ -2,7 +2,7 @@
 //--- 010 Editor v5.0 Binary Template
 //
 // File: Sl2/Backpack.bt
-// Author: Tarvitz
+// Author: Tarvitz & Sean Pesce
 // Revision: 0.0.1
 // Purpose: Parsing Dark Souls: Prepare to Die Edition data files
 //----------------------------------------------------------------------------
@@ -110,8 +110,13 @@ typedef struct (uint size, uint used){
     }
 } PartiallyUsedBox;
 
-typedef struct{
-    byte unknown_block[168] <bgcolor=cLtPurple>;
+typedef struct (ubyte remaster){
+    local ushort unknown_block_length = 168;
+    if (remaster == 1) {
+        // @REMASTER_CHANGE: 168 to 304
+        unknown_block_length = 304;
+    }
+    byte unknown_block[unknown_block_length] <bgcolor=cLtPurple>;
 
     // I think these are indexes that remember which items were selected last in the menu,
     // notice if you unequip an item and then go into the menu again, it remembers which item was equipped.

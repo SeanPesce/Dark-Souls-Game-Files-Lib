@@ -2,13 +2,12 @@
 //--- 010 Editor v5.0 Binary Template
 //
 // File: Item types
-// Author: Tarvitz
+// Author: Tarvitz & Sean Pesce
 // Revision: 0.0.1
 // Purpose: Parsing Dark Souls: Prepare to Die Edition data files
 //----------------------------------------------------------------------------
 #ifndef _DS1_ENUM_ITEM_BT
     #define _DS1_ENUM_ITEM_BT
-
 
 
 typedef enum<uint>{

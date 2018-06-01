@@ -2,12 +2,14 @@
 //--- 010 Editor v5.0 Binary Template
 //
 // File: Sl2/Bnd4.bt
-// Author: Tarvitz
+// Author: Tarvitz & Sean Pesce
 // Revision: 0.5
 // Purpose: Parsing data from BND4 archive files
 //----------------------------------------------------------------------------
 #ifndef _SL2_BND4_BT
     #define _SL2_BND4_BT
+
+#include "../Utility.bt"
 
 struct SlotMeta(int slotSize){
     uint block_id <fgcolor=cWhite, bgcolor=cLtBlue>;
@@ -32,10 +34,6 @@ struct SlotMeta(int slotSize){
 wstring ReadSlotMeta(SlotMeta &meta){
     return ReadWString(meta.title_offset);
 }
-
-typedef struct{
-    byte md5[16];
-} Checksum <read=ChecksumToString, bgcolor=cLtGreen>;
 
 typedef struct (uint name_block_size) {
     wchar_t title[name_block_size];

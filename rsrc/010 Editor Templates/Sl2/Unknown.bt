@@ -2,15 +2,20 @@
 //--- 010 Editor v5.0 Binary Template
 //
 // File: Sl2/Unknown.bt
-// Author: Tarvitz
+// Author: Tarvitz, Sean Pesce, & B3LYP
 // Revision: 0.0.1
 // Purpose: Parsing Dark Souls: Prepare to Die Edition save files (*.sl2)
 //----------------------------------------------------------------------------
 #ifndef _SL2_UNKNOWN_BT
     #define _SL2_UNKNOWN_BT
 
-typedef struct{
-    uint unknown[19]; // Most of these look like uints?
+typedef struct (ubyte remaster){
+    local ushort unk_length = 19;
+    if (remaster == 1) {
+        // @REMASTER_CHANGE: 19 to 21
+        unk_length = 21;
+    }
+    uint unknown[unk_length]; // Most of these look like uints?
 } StatsUnknown1 <bgcolor=cLtYellow>;
 
 typedef struct{

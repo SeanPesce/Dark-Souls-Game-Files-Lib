@@ -334,7 +334,7 @@ typedef struct{
     // Containers always seem to be in the same order, so we're assuming this is true
     local int last_index = -1;
     local uint current_container_length = 0;
-    local uint slot_size = ReadUInt(meta.chunks[slots].start + 16);
+    //local uint slot_size = ReadUInt(meta.chunks[slots].start + 16);
     //if(slot_size <= 0 || slot_size >= 0xFFFFFFFF || slot_size >= meta.chunks[slots].block_size || (meta.chunks[slots].start + slot_size) >= meta.chunks[slots + 1].start) {
         while(last_index != 0x0000FFFF && last_index != 0) {
             current_container_length = ReadUInt(FTell());

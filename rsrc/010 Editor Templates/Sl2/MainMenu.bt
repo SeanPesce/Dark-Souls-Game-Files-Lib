@@ -10,8 +10,8 @@
 #ifndef _SL2_MAIN_MENU_BT
     #define _SL2_MAIN_MENU_BT
 
-#include "Bnd4.bt";
-#include "Character.bt";
+#include "Bnd4.bt"
+#include "Character.bt"
 #include "../Enum/Character.bt"
 
 #define _DS1_SAVE_VERSION_NUM 19
@@ -117,7 +117,7 @@ typedef struct {
     if (hash_verified[0] == 0) {
         SetForeColor(cRed);
     }
-    Checksum header;
+    Checksum header(16);
     SetForeColor(cNone);
     uint length;
     uint version <bgcolor=cDkGray, fgcolor=cWhite, read=CheckMenuVersion, comment="If this value is changed, game will often display \"Wrong version\" error (Message ID = 45001). Some non-default values do work though.">;
@@ -154,7 +154,7 @@ typedef struct {
     if (hash_verified[1] == 0) {
         SetForeColor(cRed);
     }
-    Checksum footer;
+    Checksum footer(16);
     SetForeColor(cNone);
     ubyte padding[meta.chunks[meta.ContainerCount - 1].space_size];
 } MainMenu <read=GetMenuSlotChecksumStatus, comment=GetMenuSlotChecksumCorrection>;

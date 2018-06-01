@@ -1,7 +1,7 @@
 //----------------------------------------------------------------------------
 //--- 010 Editor v7.0 Binary Template
 //
-// File: Enum_or_SoapstoneMessage.bt
+// File: SoapstoneMessage.bt
 // Author: Sean Pesce
 // Revision: 0.0.1
 // Purpose: Parsing Dark Souls: Prepare to Die Edition data files

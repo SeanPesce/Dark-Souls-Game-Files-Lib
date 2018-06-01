@@ -1,0 +1,80 @@
+//----------------------------------------------------------------------------
+//--- 010 Editor v5.0 Binary Template
+//
+// File: Utility.bt
+// Author: Sean Pesce
+// Revision: 0.0.1
+// Purpose: General utility functions
+//----------------------------------------------------------------------------
+#ifndef _SP_UTILITY_BT
+    #define _SP_UTILITY_BT
+
+
+string GetDecAndHexValuesUInt(uint val) {
+    local string ret_str = "";
+    SPrintf(ret_str, "%d (0x%x)", val, val);
+    return ret_str;
+}
+
+string GetTimeStamp(uint val) {
+    local ubyte hours = val / 3600000;
+    local ubyte mins = (val - (hours * 3600000)) / 60000;
+    local ubyte secs = ((val - (hours * 3600000)) - (mins * 60000)) / 1000;
+    local ushort ms = ((val - (hours * 3600000)) - (mins * 60000)) - (secs * 1000);
+    local string time_str = "";
+    local string hours_pad = "";
+    local string mins_pad = "";
+    local string secs_pad = "";
+    local string ms_pad = "";
+    if(hours < 10)
+        hours_pad = "0";
+    if(mins < 10)
+        mins_pad = "0";
+    if(secs < 10)
+        secs_pad = "0";
+    if(ms < 100)
+        ms_pad = "0";
+    if(ms < 10)
+        ms_pad += "0";
+    SPrintf(time_str, "%s%d:%s%d:%s%d:%s%d", hours_pad, hours, mins_pad, mins, secs_pad, secs, ms_pad, ms);
+    return time_str;
+}
+
+string GetTimeStampNoMs(uint val) {
+    local ubyte hours = val / 3600;
+    local ubyte mins = (val - (hours * 3600)) / 60;
+    local ubyte secs = (val - (hours * 3600)) - (mins * 60);
+    local string time_str = "";
+    local string hours_pad = "";
+    local string mins_pad = "";
+    local string secs_pad = "";
+    if(hours < 10)
+        hours_pad = "0";
+    if(mins < 10)
+        mins_pad = "0";
+    if(secs < 10)
+        secs_pad = "0";
+    SPrintf(time_str, "%s%d:%s%d:%s%d", hours_pad, hours, mins_pad, mins, secs_pad, secs);
+    return time_str;
+}
+
+typedef struct (uint length){
+    ubyte bytes[length];
+} Checksum <read=ChecksumToString, bgcolor=cLtGreen>;
+
+string ChecksumToString(Checksum &cs) {
+    local uint length = sizeof(cs);
+    local string hash_str = "";
+    local ubyte current_b = 0;
+    hash_str = "";
+    for (current_b = 0; current_b < length; current_b++) {
+        if(current_b > 0 && cs.bytes[current_b] < 16) {
+            SPrintf(hash_str, "%s0", hash_str);
+        }
+        SPrintf(hash_str, "%s%x", hash_str, (ubyte)cs.bytes[current_b]);
+    }
+    return hash_str;
+}
+
+
+#endif // _SP_UTILITY_BT

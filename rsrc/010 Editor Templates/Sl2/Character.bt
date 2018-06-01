@@ -2,7 +2,7 @@
 //--- 010 Editor v5.0 Binary Template
 //
 // File: Sl2/Character.bt
-// Author: Tarvitz
+// Author: Tarvitz & Sean Pesce
 // Revision: 0.0.1
 // Purpose: Parsing Dark Souls: Prepare to Die Edition data files
 //----------------------------------------------------------------------------
@@ -10,6 +10,8 @@
     #define _SL2_CHARACTER_BT
     
 #include "../Enum/Character.bt"
+#include "../Enum/Item.bt"
+#include "Unknown.bt"
 
 typedef struct{
     float R;
@@ -37,6 +39,90 @@ typedef struct{
     uint total;
     uint total_2;
 } UnknownCharStat <bgcolor=cLtPurple>;
+
+typedef struct{
+    ubyte face_geo_data[50] <bgcolor=cLtYellow>;
+    // I suspect the character creation options can be found around here
+    ubyte skin_tone <bgcolor=cLtYellow, fgcolor=cBlue>;
+    ubyte face_tex_data[49] <bgcolor=cLtYellow>;
+    byte UnknownData4[8];
+} CharacterParams;
+
+// I'm not sure exactly how these map, if they are just shorts or UnknownTuple
+typedef struct{
+    UnknownTuple unknown1 <bgcolor=cLtYellow>;
+    UnknownTuple petrus <comment="Shrug = 21, Look Skyward = 23, Unlearned = 20">;
+    UnknownTuple unknown3 <bgcolor=cLtYellow>;
+    UnknownTuple unknown4 <bgcolor=cLtYellow>;
+} LearnedGestures;
+
+typedef struct{
+    UnknownTuple UnknownData5a[10] <bgcolor=cLtYellow>;
+    // Equipped gestures are stored somewhere else, this is specifically if they are available or not
+    // Enabling this won't remove the dialog option and vice verse
+    LearnedGestures gestures;
+    //maybe more gestures?
+    UnknownTuple UnknownData5b[4] <bgcolor=cLtYellow>;
+    uint ZeroPad[16] <bgcolor=cWhite>;
+} Gestures;
+
+typedef struct{
+    Item magic;
+    uint count;
+} Attuned;
+
+// This is specifically bonfires RESTED AT, not lit. (i.e. relevant to which bonfires player can warp to. Only warpable bonfires in this struct??)
+typedef struct{
+
+    // I noticed that if you do not light any bonfires in the Undead Asylum, and then you die after running past the second bonfire, your spawn point is still set there.
+    // Most likely the game state moves your spawn point automatically during the tutorial so you don't get trapped behind the locked gate.
+
+    // 2,8,13,14,28,29,30
+    // Must be from {depths, fairlady, anorlondo1, anorlondotomb, paintedworld, tombgiants1}?
+    // Undead Burg first bonfire not here
+    uint bonfireenabled1 : 1 <comment="Undead Parish"> ;
+    uint bonfireenabled2 : 1 ;
+    uint bonfireenabled3 : 1 ;
+    uint bonfireenabled4 : 1 ;
+    uint bonfireenabled5 : 1 ;
+    uint bonfireenabled6 : 1 ;
+    uint bonfireenabled7 : 1 ;
+    uint bonfireenabled8 : 1 ;
+    uint bonfireenabled9 : 1 <comment="Chamber of the Princess">;
+    uint bonfireenabled10 : 1 ;
+    uint bonfireenabled11 : 1 <comment="Altar of Sunlight">;
+    uint bonfireenabled12 : 1 ;
+    uint bonfireenabled13 : 1 ;
+    uint bonfireenabled14 : 1 ;
+    uint bonfireenabled15 : 1 ;
+    uint bonfireenabled16 : 1 <comment="Firelink Shrine">; // Enabled when arriving at Firelink first time
+    uint bonfireenabled17 : 1 ;
+    uint bonfireenabled18 : 1 ;
+    uint bonfireenabled19 : 1 ;
+    uint bonfireenabled20 : 1 ;
+    uint bonfireenabled21 : 1 ;
+    uint bonfireenabled22 : 1 ;
+    uint bonfireenabled23 : 1 ;
+    uint bonfireenabled24 : 1 ;
+    uint bonfireenabled25 : 1 ;
+    uint bonfireenabled26 : 1 ;
+    uint bonfireenabled27 : 1 ;
+    uint bonfireenabled28 : 1 ;
+    uint bonfireenabled29 : 1 ;
+    uint bonfireenabled30 : 1 ;
+    uint bonfireenabled31 : 1 ;
+    uint bonfireenabled32 : 1 ;
+} Bonfires;
+
+typedef struct{
+    uint unknown[4]; // I think here is where we can find bonfire 'lit' info
+    byte UnknownData8b[38-20] <bgcolor=cLtYellow>;
+    Bonfires bonfiresRestedAt<bgcolor=cLtGreen>;
+    byte unknown2[214] <bgcolor=cLtYellow>;
+    byte filler[788] <bgcolor=cWhite>;
+    byte unknown3[224] <bgcolor=cLtYellow>;
+    byte filler2[16] <bgcolor=cWhite>;
+} BonfireSection;
 
 typedef struct{
     SetForeColor(cWhite);
@@ -70,7 +156,7 @@ typedef struct {
     Stamina stamina <fgcolor=cWhite, bgcolor=cDkGreen>;
     uint unknown_2 <bgcolor=cLtPurple>;
     CharStats stats;
-    wchar_t name[14] <comment="UTF-8", bgcolor=cLtAqua>; // Garbage characters after nulls?
+    wchar_t name[14] <comment="UTF-16", bgcolor=cLtAqua>; // Garbage characters after nulls?
     byte unknown_3[6] <bgcolor=cLtPurple>;
     Gender gender;
 
