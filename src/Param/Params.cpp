@@ -155,6 +155,11 @@ void init(bool print_output)
     Params::HitMaterial().init(files_buff[HIT_MTRL_PARAM_ST], print_output);
     Params::KnockBack().init(files_buff[KNOCKBACK_PARAM_ST], print_output);
 
+    // Remaster params (not properly enumerated) // @TODO: Figure out correct enumeration
+    //Params::CoolTime().init(files_buff[COOLTIME_PARAM_ST], print_output);
+    //Params::WhiteCoolTime().init(files_buff[WHITECOOLTIME_PARAM_ST], print_output);
+    //Params::LevelSync().init(files_buff[LEVELSYNC_PARAM_ST], print_output);
+
     // @TODO: Non-default draw params
     //Params::_().init(files_buff[DOF_BANK_M10], print_output);
     //Params::_().init(files_buff[ENV_LIGHT_TEX_BANK_M10], print_output);

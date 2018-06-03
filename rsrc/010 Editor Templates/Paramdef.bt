@@ -8,6 +8,8 @@
 #ifndef _DS1_PARAMDEF_BT
     #define _DS1_PARAMDEF_BT
 
+local uint paramdef_column_count = 0;
+    
 typedef struct
 {
     char JPName[0x40];
@@ -30,6 +32,15 @@ typedef struct
     char InternalType[0x20];
     char ENName[0x20];
     int Unknown7 <format=hex>;
+    if (ExternalType[0] == 'f')
+    {
+        Printf("%d\t%s\t%s\t%s\t%f\t%f\t%f\t%d\n", paramdef_column_count, ENName, ExternalType, InternalType, DefaultValue, MinValue, MaxValue, Size);
+    }
+    else
+    {
+        Printf("%d\t%s\t%s\t%s\t%d\t%d\t%d\t%d\n", paramdef_column_count, ENName, ExternalType, InternalType, (int32)DefaultValue, (int32)MinValue, (int32)MaxValue, Size);
+    }
+    paramdef_column_count++;
 } ColumnStruct <read=ReadColumnStruct>;
 string ReadColumnStruct(ColumnStruct &cs)
 {

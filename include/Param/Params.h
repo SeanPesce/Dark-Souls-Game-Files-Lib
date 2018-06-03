@@ -28,6 +28,7 @@
 #include "Param/Bullet.h"
 #include "Param/CalcCorrect.h"
 #include "Param/CharInit.h"
+#include "Param/CoolTime.h"
 #include "Param/EnemyStandardInfo.h"
 #include "Param/FaceGeneration.h"
 #include "Param/GameArea.h"
@@ -35,6 +36,7 @@
 #include "Param/Item.h"
 #include "Param/ItemLot.h"
 #include "Param/KnockBack.h"
+#include "Param/LevelSync.h"
 #include "Param/LockCam.h"
 #include "Param/Magic.h"
 #include "Param/MaterialSet.h"
@@ -55,6 +57,7 @@
 #include "Param/Throw.h"
 #include "Param/Weapon.h"
 #include "Param/WeaponReinforcement.h"
+#include "Param/WhiteCoolTime.h"
 
 #include "Param/Draw/DofBank.h"
 #include "Param/Draw/EnvLightTexBank.h"
@@ -319,6 +322,9 @@ static CalcCorrectParamDef& CalcCorrect() { return CalcCorrectParamDef::get_inst
 static CharInitParamDef& CharInit() { return CharInitParamDef::get_instance(); }
 //static CharInitParamDef& NpcChar() { return CharInitParamDef::get_instance(); } // Alias for CharInit
 
+// Cool Time parameters (Remaster only)
+//static CoolTimeParamDef& CoolTime() { return CoolTimeParamDef::get_instance(); }
+
 // Default Enemy Behavior Parameters
 static EnemyStandardInfoParamDef& EnemyStandardInfo() { return EnemyStandardInfoParamDef::get_instance(); }
 
@@ -340,6 +346,9 @@ static ItemLotParamDef& ItemLot() { return ItemLotParamDef::get_instance(); }
 
 // Knock-back parameters
 static KnockBackParamDef& KnockBack() { return KnockBackParamDef::get_instance(); }
+
+// Level Synchronization parameters (Remaster only)
+//static LevelSyncParamDef& LevelSync() { return LevelSyncParamDef::get_instance(); }
 
 // Camera lock paramters
 static LockCamParamDef& LockCam() { return LockCamParamDef::get_instance(); }
@@ -401,6 +410,9 @@ static WeaponParamDef& Weapon() { return WeaponParamDef::get_instance(); }
 
 // Weapon Reinforcement parameters
 static WeaponReinforceParamDef& WeaponReinforce() { return WeaponReinforceParamDef::get_instance(); }
+
+// White Cool Time parameters (Remaster only)
+//static WhiteCoolTimeParamDef& WhiteCoolTime() { return WhiteCoolTimeParamDef::get_instance(); }
 
 
 

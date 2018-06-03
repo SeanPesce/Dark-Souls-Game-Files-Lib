@@ -254,5 +254,14 @@
     <ClInclude Include="include\Param\KnockBack.h">
       <Filter>Header Files\Param</Filter>
     </ClInclude>
+    <ClInclude Include="include\Param\LevelSync.h">
+      <Filter>Header Files\Param</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Param\CoolTime.h">
+      <Filter>Header Files\Param</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Param\WhiteCoolTime.h">
+      <Filter>Header Files\Param</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

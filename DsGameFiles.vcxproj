@@ -54,6 +54,7 @@
     <ClInclude Include="include\Param\Bullet.h" />
     <ClInclude Include="include\Param\CalcCorrect.h" />
     <ClInclude Include="include\Param\CharInit.h" />
+    <ClInclude Include="include\Param\CoolTime.h" />
     <ClInclude Include="include\Param\Draw\DofBank.h" />
     <ClInclude Include="include\Param\Draw\EnvLightTexBank.h" />
     <ClInclude Include="include\Param\Draw\FogBank.h" />
@@ -65,6 +66,7 @@
     <ClInclude Include="include\Param\GameArea.h" />
     <ClInclude Include="include\Param\HitMaterial.h" />
     <ClInclude Include="include\Param\KnockBack.h" />
+    <ClInclude Include="include\Param\LevelSync.h" />
     <ClInclude Include="include\Param\Object.h" />
     <ClInclude Include="include\Param\ObjectAction.h" />
     <ClInclude Include="include\Param\Param.h" />
@@ -89,6 +91,7 @@
     <ClInclude Include="include\Param\Throw.h" />
     <ClInclude Include="include\Param\Weapon.h" />
     <ClInclude Include="include\Param\WeaponReinforcement.h" />
+    <ClInclude Include="include\Param\WhiteCoolTime.h" />
     <ClInclude Include="include\Save\Enum.h" />
     <ClInclude Include="include\Save\Sl2.h" />
   </ItemGroup>
