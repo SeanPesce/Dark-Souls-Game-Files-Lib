@@ -18,7 +18,6 @@
           https://docs.google.com/spreadsheets/d/1QX6i93H4_jGZ0So9mArDECnuv1lfkaJQhXOzkDuxdkE/edit#gid=2133439974
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_ACCESSORY_PARAM_DEF_FILE_H_
@@ -28,7 +27,7 @@
 #include "Param.h"
 
 
-// Accessory parameter
+// Accessory parameters
 typedef struct AccessoryParameter : public Param {
 
     int32_t
@@ -81,9 +80,8 @@ typedef struct AccessoryParameter : public Param {
 
 
 
-// Accessory parameter definitions file
+// Accessory parameter data manipulation class
 class AccessoryParamDef : public ParamDef {
-
 
 public:
     static AccessoryParamDef& get_instance()
@@ -103,8 +101,6 @@ public:
     }
 
 
-    // @TODO: Member data specific to this class
-
 private:
     AccessoryParamDef()
         : ParamDef(NULL, sizeof(AccessoryParam),
@@ -118,11 +114,5 @@ public:
     AccessoryParamDef(AccessoryParamDef const&) = delete;
     void operator=(AccessoryParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_ACCESSORY_PARAM_DEF_FILE_H_

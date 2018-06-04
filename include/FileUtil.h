@@ -9,7 +9,6 @@
     Defines functions and variables that are used for file-related
     tasks in general, rather than specific file types.
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_FILE_UTIL_H_
@@ -72,7 +71,7 @@ public:
         If from_endian_int is an unsigned 32-bit Litte Endian integer, return value is an unsigned 32-bit Big Endian integer.
     */
     static uint32_t reverse_endian(uint32_t from_endian_int);
-    
+
     /*
         Converts the given integer value to hexadecimal string representation
         and stores it in the supplied output string.

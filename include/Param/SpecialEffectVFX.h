@@ -2,7 +2,7 @@
     DARK SOULS GAME FILE C++ LIBRARY
 
     Contributors to this file:
-        Sean Pesce	-	C++
+        Sean Pesce    -    C++
 
 
     Param/SpEffectVfx.h
@@ -18,7 +18,6 @@
           https://docs.google.com/spreadsheets/d/1QX6i93H4_jGZ0So9mArDECnuv1lfkaJQhXOzkDuxdkE/edit#gid=2133439974
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_SPECIAL_EFFECT_VFX_PARAM_DEF_FILE_H_
@@ -28,7 +27,7 @@
 #include "Param.h"
 
 
-// SpEffectVfx parameter
+// SpEffectVfx parameters
 typedef struct SpEffectVfxParameter : public Param {
 
 
@@ -80,9 +79,8 @@ typedef struct SpEffectVfxParameter : public Param {
 
 
 
-// SpEffectVfx parameter definitions file
+// SpEffectVfx parameter data manipulation class
 class SpEffectVfxParamDef : public ParamDef {
-
 
 public:
     static SpEffectVfxParamDef& get_instance()
@@ -102,8 +100,6 @@ public:
     }
 
 
-    // @TODO: Member data specific to this class
-
 private:
     SpEffectVfxParamDef()
         : ParamDef(NULL, /*0xB10, 232,*/ sizeof(SpEffectVfxParam),
@@ -117,11 +113,5 @@ public:
     SpEffectVfxParamDef(SpEffectVfxParamDef const&) = delete;
     void operator=(SpEffectVfxParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_SPECIAL_EFFECT_VFX_PARAM_DEF_FILE_H_

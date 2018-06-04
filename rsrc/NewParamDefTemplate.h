@@ -7,18 +7,9 @@
 
     Param/New.h
 
-    New Parameters from NewParam.paramdef
-
-
-    References:
-        - Burton Radons' ParamDefs Sheet
-          https://docs.google.com/spreadsheets/d/1KukblWL61We64-gNIyaAShga9h8RTXYmyFs98eQhY4E/
-
-        - Kushisushi's ParamDefs Sheet
-          https://docs.google.com/spreadsheets/d/1QX6i93H4_jGZ0So9mArDECnuv1lfkaJQhXOzkDuxdkE/edit#gid=2133439974
+    New Parameters as defined in NewParam.paramdef
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_NEW_PARAM_DEF_FILE_H_
@@ -28,16 +19,15 @@
 #include "Param.h"
 
 
-// New parameter
+// New parameters
 typedef struct NewParameter : public Param {
     @TODO
 } NewParam;
 
 
 
-// New parameter definitions file
+// New parameter data manipulation class
 class NewParamDef : public ParamDef {
-
 
 public:
     static NewParamDef& get_instance()
@@ -45,7 +35,7 @@ public:
         static NewParamDef instance;
         return instance;
     }
-    
+
     NewParam *data()
     {
         return (NewParam*)ParamDef::data();
@@ -56,26 +46,17 @@ public:
         return (NewParam*)ParamDef::get(index);
     }
 
-
-    // @TODO: Member data specific to this class
-    
 private:
     NewParamDef()
         : ParamDef(/* @TODO: NULL, sizeof(NewParam),
-                   "scan_pattern", 
+                   "scan_pattern",
                    "NewParam", "title" */)
     {
     }
-    
+
 public:
     NewParamDef(NewParamDef const&) = delete;
     void operator=(NewParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_NEW_PARAM_DEF_FILE_H_

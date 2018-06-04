@@ -18,7 +18,6 @@
           https://docs.google.com/spreadsheets/d/1QX6i93H4_jGZ0So9mArDECnuv1lfkaJQhXOzkDuxdkE/edit#gid=2133439974
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_KNOCK_BACK_PARAM_DEF_FILE_H_
@@ -28,9 +27,9 @@
 #include "Param.h"
 
 
-// KnockBack parameter
+// KnockBack parameters
 typedef struct KnockBackParameter : public Param {
-    
+
     float
         damage_Min_ContTime,
         damage_S_ContTime,
@@ -70,9 +69,8 @@ typedef struct KnockBackParameter : public Param {
 
 
 
-// KnockBack parameter definitions file
+// KnockBack parameter data manipulation class
 class KnockBackParamDef : public ParamDef {
-
 
 public:
     static KnockBackParamDef& get_instance()
@@ -80,7 +78,7 @@ public:
         static KnockBackParamDef instance;
         return instance;
     }
-    
+
     KnockBackParam *data()
     {
         return (KnockBackParam*)ParamDef::data();
@@ -92,8 +90,6 @@ public:
     }
 
 
-    // @TODO: Member data specific to this class
-    
 private:
     KnockBackParamDef()
         : ParamDef(NULL, sizeof(KnockBackParam),
@@ -101,16 +97,10 @@ private:
                    "KnockBackParam", "Knock-Back")
     {
     }
-    
+
 public:
     KnockBackParamDef(KnockBackParamDef const&) = delete;
     void operator=(KnockBackParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_KNOCK_BACK_PARAM_DEF_FILE_H_

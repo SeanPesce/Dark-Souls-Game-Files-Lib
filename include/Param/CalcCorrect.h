@@ -18,7 +18,6 @@
           https://docs.google.com/spreadsheets/d/1QX6i93H4_jGZ0So9mArDECnuv1lfkaJQhXOzkDuxdkE/edit#gid=2133439974
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_CALC_CORRECT_PARAM_DEF_FILE_H_
@@ -28,7 +27,7 @@
 #include "Param.h"
 
 
-// CalcCorrect parameter
+// CalcCorrect parameters
 typedef struct CalcCorrectParameter : public Param {
 
     float
@@ -59,9 +58,8 @@ typedef struct CalcCorrectParameter : public Param {
 
 
 
-// CalcCorrect parameter definitions file
+// CalcCorrect parameter data manipulation class
 class CalcCorrectParamDef : public ParamDef {
-
 
 public:
     static CalcCorrectParamDef& get_instance()
@@ -81,8 +79,6 @@ public:
     }
 
 
-    // @TODO: Member data specific to this class
-
 private:
     CalcCorrectParamDef()
         : ParamDef(NULL, sizeof(CalcCorrectParam),
@@ -96,11 +92,5 @@ public:
     CalcCorrectParamDef(CalcCorrectParamDef const&) = delete;
     void operator=(CalcCorrectParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_CALC_CORRECT_PARAM_DEF_FILE_H_

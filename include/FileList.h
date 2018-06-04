@@ -2,7 +2,7 @@
     DARK SOULS GAME FILE C++ LIBRARY
 
     Contributors to this file:
-        Sean Pesce	    -  Converting other contributers' data to C++ formatting
+        Sean Pesce        -  Converting other contributers' data to C++ formatting
         Meowmaritus     -  Reversing and obtaining game filenames
         Wulf2k          -  Reversing and obtaining game filenames
 

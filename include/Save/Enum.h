@@ -17,7 +17,6 @@
 
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_SL2_SAVE_FILE_ENUM_H_

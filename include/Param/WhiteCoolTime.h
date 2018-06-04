@@ -12,7 +12,6 @@
     NOTE: These parameters only exist in Dark Souls: Remastered.
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_WHITE_COOL_TIME_PARAM_DEF_FILE_H_
@@ -22,10 +21,10 @@
 #include "Param.h"
 
 
-// WhiteCoolTime parameter
+// WhiteCoolTime parameters
 typedef struct WhiteCoolTimeParameter : public Param {
 
-    // @TODO: Description comments
+    // Note: Paramdef file did not contain descriptions
 
     float
         timeLimit0 = 0.0f,
@@ -37,9 +36,8 @@ typedef struct WhiteCoolTimeParameter : public Param {
 
 
 
-// WhiteCoolTime parameter definitions file
+// WhiteCoolTime parameter data manipulation class
 class WhiteCoolTimeParamDef : public ParamDef {
-
 
 public:
     static WhiteCoolTimeParamDef& get_instance()
@@ -47,7 +45,7 @@ public:
         static WhiteCoolTimeParamDef instance;
         return instance;
     }
-    
+
     WhiteCoolTimeParam *data()
     {
         return (WhiteCoolTimeParam*)ParamDef::data();
@@ -57,24 +55,18 @@ public:
     {
         return (WhiteCoolTimeParam*)ParamDef::get(index);
     }
-    
+
 private:
     WhiteCoolTimeParamDef()
         : ParamDef(NULL, sizeof(WhiteCoolTimeParam),
-                   "?? ?? ?? ?? ?? ?? 01 00 04 00 ?? ?? 57 48 49 54 45 5F 43 4F 4F 4C 5F 54 49 4D 45 5F 50 41 52 41 4D 5F 53 54 00", 
+                   "?? ?? ?? ?? ?? ?? 01 00 04 00 ?? ?? 57 48 49 54 45 5F 43 4F 4F 4C 5F 54 49 4D 45 5F 50 41 52 41 4D 5F 53 54 00",
                    "WhiteCoolTimeParam", "WhiteCoolTime")
     {
     }
-    
+
 public:
     WhiteCoolTimeParamDef(WhiteCoolTimeParamDef const&) = delete;
     void operator=(WhiteCoolTimeParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_WHITE_COOL_TIME_PARAM_DEF_FILE_H_

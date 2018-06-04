@@ -17,7 +17,6 @@
 
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_BHD5_ARCHIVE_FILE_H_
@@ -1195,11 +1194,5 @@ public:
         return extract_from_bdt_by_hash(bdt_file, bhd5_file, hash, write_file, overwrite);
     }
 } Bhd5Archive;
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_BHD5_ARCHIVE_FILE_H_

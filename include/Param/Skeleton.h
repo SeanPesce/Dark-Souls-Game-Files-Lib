@@ -18,7 +18,6 @@
           https://docs.google.com/spreadsheets/d/1QX6i93H4_jGZ0So9mArDECnuv1lfkaJQhXOzkDuxdkE/edit#gid=2133439974
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_SKELETON_PARAM_DEF_FILE_H_
@@ -28,7 +27,7 @@
 #include "Param.h"
 
 
-// Skeleton parameter
+// Skeleton parameters
 typedef struct SkeletonParameter : public Param {
 
     float
@@ -73,9 +72,8 @@ typedef struct SkeletonParameter : public Param {
 
 
 
-// Skeleton parameter definitions file
+// Skeleton parameter data manipulation class
 class SkeletonParamDef : public ParamDef {
-
 
 public:
     static SkeletonParamDef& get_instance()
@@ -95,8 +93,6 @@ public:
     }
 
 
-    // @TODO: Member data specific to this class
-
 private:
     SkeletonParamDef()
         : ParamDef(NULL, sizeof(SkeletonParam),
@@ -110,11 +106,5 @@ public:
     SkeletonParamDef(SkeletonParamDef const&) = delete;
     void operator=(SkeletonParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_SKELETON_PARAM_DEF_FILE_H_

@@ -41,7 +41,6 @@
           https://docs.google.com/spreadsheets/d/1QX6i93H4_jGZ0So9mArDECnuv1lfkaJQhXOzkDuxdkE/edit#gid=2133439974
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_DOF_BANK_PARAM_DEF_FILE_H_
@@ -51,12 +50,12 @@
 #include "Param/Param.h"
 
 
-// DoF Bank parameter
+// DoF Bank parameters
 typedef struct DofBankParameter : public Param {
 
     float
         farDofBegin = 60,  // Distance at which depth of field begins blurring far away
-        farDofEnd = 360; // Distance at which depth of field is far away at depth of field
+        farDofEnd   = 360; // Distance at which depth of field is far away at depth of field
 
     uint8_t
         farDofMul = 100; // Depth of field blurring (0 will not blur)
@@ -66,7 +65,7 @@ typedef struct DofBankParameter : public Param {
 
     float
         nearDofBegin = 3, // Distance at which the depth of field is close to blur starts (It is farther than the end distance)
-        nearDofEnd = 0; // Distance at which the depth of field is close to the depth of field (closer than the starting distance)
+        nearDofEnd   = 0; // Distance at which the depth of field is close to the depth of field (closer than the starting distance)
 
     uint8_t
         nearDofMul = 100; // Depth of field blurring (0 will not blur)
@@ -261,9 +260,8 @@ typedef struct DofBankParameter : public Param {
 */
 
 
-// DofBank parameter definitions file
+// DofBank parameter data manipulation class
 class DofBankParamDef : public ParamDef {
-
 
 public:
     static DofBankParamDef& get_instance()
@@ -283,8 +281,6 @@ public:
     }
 
 
-    // @TODO: Member data specific to this class
-
 private:
     // There are 11 DoF Bank param files
 
@@ -301,11 +297,5 @@ public:
     DofBankParamDef(DofBankParamDef const&) = delete;
     void operator=(DofBankParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_DOF_BANK_PARAM_DEF_FILE_H_

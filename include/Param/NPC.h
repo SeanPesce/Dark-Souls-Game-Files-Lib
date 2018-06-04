@@ -2,7 +2,7 @@
     DARK SOULS GAME FILE C++ LIBRARY
 
     Contributors to this file:
-        Sean Pesce	-	C++
+        Sean Pesce    -    C++
 
 
     Param/NPC.h
@@ -18,7 +18,6 @@
           https://docs.google.com/spreadsheets/d/1QX6i93H4_jGZ0So9mArDECnuv1lfkaJQhXOzkDuxdkE/edit#gid=2133439974
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_NEW_PARAM_DEF_FILE_H_
@@ -28,7 +27,7 @@
 #include "Param.h"
 
 
-// Npc parameter
+// Npc parameters
 typedef struct NpcParameter : public Param {
 
     int32_t
@@ -242,9 +241,8 @@ typedef struct NpcParameter : public Param {
 
 
 
-// Npc parameter definitions file
+// Npc parameter data manipulation class
 class NpcParamDef : public ParamDef {
-
 
 public:
     static NpcParamDef& get_instance()
@@ -264,8 +262,6 @@ public:
     }
 
 
-    // @TODO: Member data specific to this class
-
 private:
     NpcParamDef()
         : ParamDef(NULL, /*0x1A40, 556,*/ sizeof(NpcParam),
@@ -279,11 +275,5 @@ public:
     NpcParamDef(NpcParamDef const&) = delete;
     void operator=(NpcParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_NEW_PARAM_DEF_FILE_H_

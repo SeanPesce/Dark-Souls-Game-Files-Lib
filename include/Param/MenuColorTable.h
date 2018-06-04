@@ -2,7 +2,7 @@
     DARK SOULS GAME FILE C++ LIBRARY
 
     Contributors to this file:
-        Sean Pesce	-	C++
+        Sean Pesce    -    C++
 
 
     Param/MenuColor.h
@@ -18,7 +18,6 @@
           https://docs.google.com/spreadsheets/d/1QX6i93H4_jGZ0So9mArDECnuv1lfkaJQhXOzkDuxdkE/edit#gid=2133439974
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_MENU_COLOR_TABLE_PARAM_DEF_FILE_H_
@@ -28,7 +27,7 @@
 #include "Param.h"
 
 
-// MenuColor parameter
+// MenuColor parameters
 typedef struct MenuColorParameter : public Param {
 
     uint8_t
@@ -41,9 +40,8 @@ typedef struct MenuColorParameter : public Param {
 
 
 
-// MenuColor parameter definitions file
+// MenuColor parameter data manipulation class
 class MenuColorParamDef : public ParamDef {
-
 
 public:
     static MenuColorParamDef& get_instance()
@@ -63,8 +61,6 @@ public:
     }
 
 
-    // @TODO: Member data specific to this class
-
 private:
     MenuColorParamDef()
         : ParamDef(NULL, /*0x3FC, 81,*/ sizeof(MenuColorParam),
@@ -78,11 +74,5 @@ public:
     MenuColorParamDef(MenuColorParamDef const&) = delete;
     void operator=(MenuColorParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_MENU_COLOR_TABLE_PARAM_DEF_FILE_H_

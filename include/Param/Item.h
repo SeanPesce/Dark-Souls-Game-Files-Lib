@@ -2,7 +2,7 @@
     DARK SOULS GAME FILE C++ LIBRARY
 
     Contributors to this file:
-        Sean Pesce	-	C++
+        Sean Pesce    -    C++
 
 
     Param/Item.h
@@ -18,7 +18,6 @@
           https://docs.google.com/spreadsheets/d/1QX6i93H4_jGZ0So9mArDECnuv1lfkaJQhXOzkDuxdkE/edit#gid=2133439974
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_GOODS_PARAM_DEF_FILE_H_
@@ -28,7 +27,7 @@
 #include "Param.h"
 
 
-// Goods parameter
+// Goods parameters
 typedef struct ItemParameter : public Param {
 
     int32_t
@@ -71,47 +70,47 @@ typedef struct ItemParameter : public Param {
         replaceCategory = 0; // Condition category to be added to the call ID
 
     uint8_t
-        vowType0 : 1,	// Can it be used with pledge 0
-        vowType1 : 1,	// Can it be used under pledge 1
-        vowType2 : 1,	// Can it be used in pledge 2
-        vowType3 : 1,	// Can it be used in pledge 3
-        vowType4 : 1,	// Can it be used under pledge 4
-        vowType5 : 1,	// Can it be used in pledge 5
-        vowType6 : 1,	// Can it be used under pledge 6
-        vowType7 : 1,	// Can it be used with pledge 7
-        vowType8 : 1,	// Is it possible to use it at pledge 8
-        vowType9 : 1,	// Is it possible to use it at pledge 9
-        vowType10 : 1,	// Is it possible to use with the pledge 10
-        vowType11 : 1,	// Is it possible to use with pledge 11
-        vowType12 : 1,	// Can it be used with pledge 12
-        vowType13 : 1,	// Is it possible to use with the pledge 13
-        vowType14 : 1,	// Can it be used under pledge 14
-        vowType15 : 1,	// Can it be used with pledge 15
-        enable_live : 1,	// Can surviving players be used?
-        enable_gray : 1,	// Can you use gray ghost?
-        enable_white : 1,	// Is it possible to use white ghost?
-        enable_black : 1,	// Is it possible to black ghost
-        enable_multi : 1,	// Can it be used during multiplayer play?
-        disable_offline : 1,	// Is it unusable while offline?
-        isEquip : 1,	// Whether you can equip it
-        isConsume : 1,	// Will it be consumed when used (whether the number of possessions is reduced)
-        isAutoEquip : 1,	// Do you want to equip it automatically when you pick it up?
-        isEstablishment : 1,	// Is it an installation type item?
-        isOnlyOne : 1,	// Is it possible to have only one item
-        isDrop : 1,	// Do you throw items away? TRUE = discarded
-        isDeposit : 1,	// Will it be deposited in the warehouse?
-        isDisableHand : 1,	// Can not use if the right hand weapon is bare hands
-        IsTravelItem : 1,	// It is used to judge items to travel
-        isSuppleItem : 1,	// It is used to determine replenishable items
-        isFullSuppleItem : 1,	// Used to determine the replenished item
-        isEnhance : 1,	// Do you enchant with weapons?
-        isFixItem : 1,	// Is it an item to be repaired?
-        disableMultiDropShare : 1,	// Does multi-drop sharing prohibited?
-        disableUseAtColiseum : 1,	// Is it prohibited to use in the field?
-        disableUseAtOutOfColiseum : 1;	// Is it prohibited to use outside the battlefield?
+        vowType0 : 1,    // Can it be used with pledge 0
+        vowType1 : 1,    // Can it be used under pledge 1
+        vowType2 : 1,    // Can it be used in pledge 2
+        vowType3 : 1,    // Can it be used in pledge 3
+        vowType4 : 1,    // Can it be used under pledge 4
+        vowType5 : 1,    // Can it be used in pledge 5
+        vowType6 : 1,    // Can it be used under pledge 6
+        vowType7 : 1,    // Can it be used with pledge 7
+        vowType8 : 1,    // Is it possible to use it at pledge 8
+        vowType9 : 1,    // Is it possible to use it at pledge 9
+        vowType10 : 1,    // Is it possible to use with the pledge 10
+        vowType11 : 1,    // Is it possible to use with pledge 11
+        vowType12 : 1,    // Can it be used with pledge 12
+        vowType13 : 1,    // Is it possible to use with the pledge 13
+        vowType14 : 1,    // Can it be used under pledge 14
+        vowType15 : 1,    // Can it be used with pledge 15
+        enable_live : 1,    // Can surviving players be used?
+        enable_gray : 1,    // Can you use gray ghost?
+        enable_white : 1,    // Is it possible to use white ghost?
+        enable_black : 1,    // Is it possible to black ghost
+        enable_multi : 1,    // Can it be used during multiplayer play?
+        disable_offline : 1,    // Is it unusable while offline?
+        isEquip : 1,    // Whether you can equip it
+        isConsume : 1,    // Will it be consumed when used (whether the number of possessions is reduced)
+        isAutoEquip : 1,    // Do you want to equip it automatically when you pick it up?
+        isEstablishment : 1,    // Is it an installation type item?
+        isOnlyOne : 1,    // Is it possible to have only one item
+        isDrop : 1,    // Do you throw items away? TRUE = discarded
+        isDeposit : 1,    // Will it be deposited in the warehouse?
+        isDisableHand : 1,    // Can not use if the right hand weapon is bare hands
+        IsTravelItem : 1,    // It is used to judge items to travel
+        isSuppleItem : 1,    // It is used to determine replenishable items
+        isFullSuppleItem : 1,    // Used to determine the replenished item
+        isEnhance : 1,    // Do you enchant with weapons?
+        isFixItem : 1,    // Is it an item to be repaired?
+        disableMultiDropShare : 1,    // Does multi-drop sharing prohibited?
+        disableUseAtColiseum : 1,    // Is it prohibited to use in the field?
+        disableUseAtOutOfColiseum : 1;    // Is it prohibited to use outside the battlefield?
 
     uint8_t
-        pad[9] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };	// Padding
+        pad[9] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };    // Padding
 
     int32_t
         vagrantItemLotId = 0, // -1: no beigrant 0: no drawing 1: ~ lottery
@@ -122,9 +121,8 @@ typedef struct ItemParameter : public Param {
 
 
 
-// Goods parameter definitions file
+// Goods parameter data manipulation class
 class ItemParamDef : public ParamDef {
-
 
 public:
     static ItemParamDef& get_instance()
@@ -144,8 +142,6 @@ public:
     }
 
 
-    // @TODO: Member data specific to this class
-
 private:
     ItemParamDef()
         : ParamDef(NULL, /*0xC30, 256,*/ sizeof(ItemParam),
@@ -159,11 +155,5 @@ public:
     ItemParamDef(ItemParamDef const&) = delete;
     void operator=(ItemParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_GOODS_PARAM_DEF_FILE_H_

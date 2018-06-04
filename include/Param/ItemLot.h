@@ -2,7 +2,7 @@
     DARK SOULS GAME FILE C++ LIBRARY
 
     Contributors to this file:
-        Sean Pesce	-	C++
+        Sean Pesce    -    C++
 
 
     Param/ItemLot.h
@@ -18,7 +18,6 @@
           https://docs.google.com/spreadsheets/d/1QX6i93H4_jGZ0So9mArDECnuv1lfkaJQhXOzkDuxdkE/edit#gid=2133439974
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_ITEM_LOT_PARAM_DEF_FILE_H_
@@ -28,7 +27,7 @@
 #include "Param.h"
 #include "GameEnum.h"
 
-// ItemLot parameter
+// ItemLot parameters
 typedef struct ItemLotParameter : public Param {
 
     int32_t
@@ -137,9 +136,8 @@ typedef struct ItemLotParameter : public Param {
 
 
 
-// ItemLot parameter definitions file
+// ItemLot parameter data manipulation class
 class ItemLotParamDef : public ParamDef {
-
 
 public:
     static ItemLotParamDef& get_instance()
@@ -159,8 +157,6 @@ public:
     }
 
 
-    // @TODO: Member data specific to this class
-
 private:
     ItemLotParamDef()
         : ParamDef(NULL, /*0x47A0, 1524,*/ sizeof(ItemLotParam),
@@ -174,11 +170,5 @@ public:
     ItemLotParamDef(ItemLotParamDef const&) = delete;
     void operator=(ItemLotParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_ITEM_LOT_PARAM_DEF_FILE_H_

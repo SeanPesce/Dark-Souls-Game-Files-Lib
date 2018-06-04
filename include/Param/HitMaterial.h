@@ -18,7 +18,6 @@
           https://docs.google.com/spreadsheets/d/1QX6i93H4_jGZ0So9mArDECnuv1lfkaJQhXOzkDuxdkE/edit#gid=2133439974
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_HIT_MATERIAL_PARAM_DEF_FILE_H_
@@ -28,9 +27,9 @@
 #include "Param.h"
 
 
-// HitMaterial parameter
+// HitMaterial parameters
 typedef struct HitMaterialParameter : public Param {
-    
+
     float
         aiVolumeRate;
 
@@ -51,9 +50,8 @@ typedef struct HitMaterialParameter : public Param {
 
 
 
-// HitMaterial parameter definitions file
+// HitMaterial parameter data manipulation class
 class HitMaterialParamDef : public ParamDef {
-
 
 public:
     static HitMaterialParamDef& get_instance()
@@ -61,7 +59,7 @@ public:
         static HitMaterialParamDef instance;
         return instance;
     }
-    
+
     HitMaterialParam *data()
     {
         return (HitMaterialParam*)ParamDef::data();
@@ -73,8 +71,6 @@ public:
     }
 
 
-    // @TODO: Member data specific to this class
-    
 private:
     HitMaterialParamDef()
         : ParamDef(NULL, sizeof(HitMaterialParam),
@@ -82,16 +78,10 @@ private:
                    "HitMtrlParam", "Hit Material")
     {
     }
-    
+
 public:
     HitMaterialParamDef(HitMaterialParamDef const&) = delete;
     void operator=(HitMaterialParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_HIT_MATERIAL_PARAM_DEF_FILE_H_

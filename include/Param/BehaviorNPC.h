@@ -2,7 +2,7 @@
     DARK SOULS GAME FILE C++ LIBRARY
 
     Contributors to this file:
-        Sean Pesce	-	C++
+        Sean Pesce    -    C++
 
 
     Param/BehaviorNPC.h
@@ -17,7 +17,6 @@
           https://docs.google.com/spreadsheets/d/1QX6i93H4_jGZ0So9mArDECnuv1lfkaJQhXOzkDuxdkE/edit#gid=2133439974
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_NPC_BEHAVIOR_PARAM_DEF_FILE_H_
@@ -27,7 +26,7 @@
 #include "Param.h"
 
 
-// NPC Behavior parameter
+// NPC Behavior parameters
 typedef struct BehaviorNpcParameter : public Param {
 
     int32_t
@@ -64,9 +63,8 @@ typedef struct BehaviorNpcParameter : public Param {
 
 
 
-// BehaviorNpc parameter definitions file
+// BehaviorNpc parameter data manipulation class
 class BehaviorNpcParamDef : public ParamDef {
-
 
 public:
     static BehaviorNpcParamDef& get_instance()
@@ -86,8 +84,6 @@ public:
     }
 
 
-    // @TODO: Member data specific to this class
-
 private:
     // WARNING: There are two different BehaviorParam files: BehaviorParam and BehaviorParam_Pc (both contain the same starting AoB)
     BehaviorNpcParamDef()
@@ -102,11 +98,5 @@ public:
     BehaviorNpcParamDef(BehaviorNpcParamDef const&) = delete;
     void operator=(BehaviorNpcParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_NPC_BEHAVIOR_PARAM_DEF_FILE_H_

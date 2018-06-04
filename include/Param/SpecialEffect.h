@@ -2,7 +2,7 @@
     DARK SOULS GAME FILE C++ LIBRARY
 
     Contributors to this file:
-        Sean Pesce	-	C++
+        Sean Pesce    -    C++
 
 
     Param/SpecialEffect.h
@@ -18,7 +18,6 @@
           https://docs.google.com/spreadsheets/d/1QX6i93H4_jGZ0So9mArDECnuv1lfkaJQhXOzkDuxdkE/edit#gid=2133439974
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_SPECIAL_EFFECT_PARAM_DEF_FILE_H_
@@ -28,7 +27,7 @@
 #include "Param.h"
 
 
-// Special Effect parameter
+// Special Effect parameters
 typedef struct SpEffectParameter : public Param {
 
     int32_t
@@ -286,9 +285,8 @@ typedef struct SpEffectParameter : public Param {
 
 
 
-// SpEffect parameter definitions file
+// SpEffect parameter data manipulation class
 class SpEffectParamDef : public ParamDef {
-
 
 public:
     static SpEffectParamDef& get_instance()
@@ -308,8 +306,6 @@ public:
     }
 
 
-    // @TODO: Member data specific to this class
-
 private:
     SpEffectParamDef()
         : ParamDef(NULL, /*0x27E4, 847,*/ sizeof(SpEffectParam),
@@ -323,11 +319,5 @@ public:
     SpEffectParamDef(SpEffectParamDef const&) = delete;
     void operator=(SpEffectParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_SPECIAL_EFFECT_PARAM_DEF_FILE_H_

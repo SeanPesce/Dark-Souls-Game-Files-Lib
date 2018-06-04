@@ -8,6 +8,8 @@
 #ifndef _DS1_PARAMDEF_BT
     #define _DS1_PARAMDEF_BT
 
+#include "Utility.bt"
+
 local uint paramdef_column_count = 0;
     
 typedef struct
@@ -22,24 +24,36 @@ typedef struct
     int Unknown4 <format=hex>;
     int Size;
     int DescriptionOffset <format=hex>;
+    local string DescriptionTmp = "";
     if (DescriptionOffset != 0)
     {
         local int oldPos = FTell();
         FSeek(DescriptionOffset);
         string Description <bgcolor=0xBB9900>;
+        DescriptionTmp = Description;
         FSeek(oldPos);
     }
     char InternalType[0x20];
     char ENName[0x20];
     int Unknown7 <format=hex>;
+    
+    // Print Japanese descriptions as byte arrays (convert to Shift JIS here: https://r12a.github.io/app-encodings/ )
+    //PrintStringCharsAsBytes(DescriptionTmp);
+    //Printf("00 81 42 7a 5a 7a 81 42 00 "); // Separate each description by ". zZz. " to be parsed as a single line
+    
     if (ExternalType[0] == 'f')
     {
         Printf("%d\t%s\t%s\t%s\t%f\t%f\t%f\t%d\n", paramdef_column_count, ENName, ExternalType, InternalType, DefaultValue, MinValue, MaxValue, Size);
+    }
+    else if (ExternalType[0] == 'u')
+    {
+        Printf("%d\t%s\t%s\t%s\t%u\t%u\t%u\t%d\n", paramdef_column_count, ENName, ExternalType, InternalType, (uint32)DefaultValue, (uint32)MinValue, (uint32)MaxValue, Size);
     }
     else
     {
         Printf("%d\t%s\t%s\t%s\t%d\t%d\t%d\t%d\n", paramdef_column_count, ENName, ExternalType, InternalType, (int32)DefaultValue, (int32)MinValue, (int32)MaxValue, Size);
     }
+    
     paramdef_column_count++;
 } ColumnStruct <read=ReadColumnStruct>;
 string ReadColumnStruct(ColumnStruct &cs)

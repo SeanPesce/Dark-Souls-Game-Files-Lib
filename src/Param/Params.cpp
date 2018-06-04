@@ -282,7 +282,7 @@ void init(bool print_output)
     //Params::_().init(files_buff[TONE_MAP_BANK_M18], print_output);
     //Params::_().init(files_buff[LIGHT_BANK_S18], print_output);
 
-    
+
     //Params::_().init(files_buff[DOF_BANK_M99], print_output);
     //Params::_().init(files_buff[ENV_LIGHT_TEX_BANK_M99], print_output);
     //Params::_().init(files_buff[FOG_BANK_M99], print_output);
@@ -295,7 +295,7 @@ void init(bool print_output)
     //Params::_().init(files_buff[TONE_CORRECT_BANK_M99], print_output);
     //Params::_().init(files_buff[TONE_MAP_BANK_M99], print_output);
     //Params::_().init(files_buff[LIGHT_BANK_S99], print_output);
-    
+
     // Restore original instructions
     unpatch();
 }

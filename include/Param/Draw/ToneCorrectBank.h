@@ -18,7 +18,6 @@
           https://docs.google.com/spreadsheets/d/1QX6i93H4_jGZ0So9mArDECnuv1lfkaJQhXOzkDuxdkE/edit#gid=2133439974
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_TONE_CORRECT_BANK_PARAM_DEF_FILE_H_
@@ -28,7 +27,7 @@
 #include "Param/Param.h"
 
 
-// ToneCorrectBank parameter
+// ToneCorrectBank parameters
 typedef struct ToneCorrectBankParameter : public Param {
 
     float
@@ -45,9 +44,8 @@ typedef struct ToneCorrectBankParameter : public Param {
 
 
 
-// ToneCorrectBank parameter definitions file
+// ToneCorrectBank parameter data manipulation class
 class ToneCorrectBankParamDef : public ParamDef {
-
 
 public:
     static ToneCorrectBankParamDef& get_instance()
@@ -67,8 +65,6 @@ public:
     }
 
 
-    // @TODO: Member data specific to this class
-
 private:
     ToneCorrectBankParamDef()
         : ParamDef(NULL, sizeof(ToneCorrectBankParam),
@@ -81,11 +77,5 @@ public:
     ToneCorrectBankParamDef(ToneCorrectBankParamDef const&) = delete;
     void operator=(ToneCorrectBankParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_TONE_CORRECT_BANK_PARAM_DEF_FILE_H_

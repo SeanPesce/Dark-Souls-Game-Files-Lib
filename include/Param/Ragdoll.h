@@ -18,7 +18,6 @@
           https://docs.google.com/spreadsheets/d/1QX6i93H4_jGZ0So9mArDECnuv1lfkaJQhXOzkDuxdkE/edit#gid=2133439974
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_RAGDOLL_PARAM_DEF_FILE_H_
@@ -28,7 +27,7 @@
 #include "Param.h"
 
 
-// Ragdoll parameter
+// Ragdoll parameters
 typedef struct RagdollParameter : public Param {
 
     float
@@ -54,9 +53,8 @@ typedef struct RagdollParameter : public Param {
 
 
 
-// Ragdoll parameter definitions file
+// Ragdoll parameter data manipulation class
 class RagdollParamDef : public ParamDef {
-
 
 public:
     static RagdollParamDef& get_instance()
@@ -76,8 +74,6 @@ public:
     }
 
 
-    // @TODO: Member data specific to this class
-
 private:
     RagdollParamDef()
         : ParamDef(NULL, sizeof(RagdollParam),
@@ -91,11 +87,5 @@ public:
     RagdollParamDef(RagdollParamDef const&) = delete;
     void operator=(RagdollParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_RAGDOLL_PARAM_DEF_FILE_H_

@@ -2,7 +2,7 @@
     DARK SOULS GAME FILE C++ LIBRARY
 
     Contributors to this file:
-        Sean Pesce	-	C++
+        Sean Pesce    -    C++
 
 
     Param/Weapon.h
@@ -18,7 +18,6 @@
           https://docs.google.com/spreadsheets/d/1QX6i93H4_jGZ0So9mArDECnuv1lfkaJQhXOzkDuxdkE/edit#gid=2133439974
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_WEAPON_PARAM_DEF_FILE_H_
@@ -28,7 +27,7 @@
 #include "Param.h"
 
 
-// Weapon parameter
+// Weapon parameters
 typedef struct WeaponParameter : public Param {
 
     int32_t
@@ -202,9 +201,8 @@ typedef struct WeaponParameter : public Param {
 
 
 
-// Weapon parameter definitions file
+// Weapon parameter data manipulation class
 class WeaponParamDef : public ParamDef {
-
 
 public:
     static WeaponParamDef& get_instance()
@@ -224,8 +222,6 @@ public:
     }
 
 
-    // @TODO: Member data specific to this class
-
 private:
     WeaponParamDef()
         : ParamDef(NULL, /*0x3A8C, 1245,*/ sizeof(WeaponParam),
@@ -239,11 +235,5 @@ public:
     WeaponParamDef(WeaponParamDef const&) = delete;
     void operator=(WeaponParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_WEAPON_PARAM_DEF_FILE_H_

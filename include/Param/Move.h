@@ -2,7 +2,7 @@
     DARK SOULS GAME FILE C++ LIBRARY
 
     Contributors to this file:
-        Sean Pesce	-	C++
+        Sean Pesce    -    C++
 
 
     Param/Move.h
@@ -18,7 +18,6 @@
           https://docs.google.com/spreadsheets/d/1QX6i93H4_jGZ0So9mArDECnuv1lfkaJQhXOzkDuxdkE/edit#gid=2133439974
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_MOVE_PARAM_DEF_FILE_H_
@@ -28,7 +27,7 @@
 #include "Param.h"
 
 
-// Move parameter
+// Move parameters
 typedef struct MoveParameter : public Param {
 
     int32_t
@@ -75,9 +74,8 @@ typedef struct MoveParameter : public Param {
 
 
 
-// Move parameter definitions file
+// Move parameter data manipulation class
 class MoveParamDef : public ParamDef {
-
 
 public:
     static MoveParamDef& get_instance()
@@ -97,8 +95,6 @@ public:
     }
 
 
-    // @TODO: Member data specific to this class
-
 private:
     MoveParamDef()
         : ParamDef(NULL, /*0x33C, 65,*/ sizeof(MoveParam),
@@ -112,11 +108,5 @@ public:
     MoveParamDef(MoveParamDef const&) = delete;
     void operator=(MoveParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_MOVE_PARAM_DEF_FILE_H_

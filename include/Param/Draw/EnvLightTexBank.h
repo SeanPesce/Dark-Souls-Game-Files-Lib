@@ -18,7 +18,6 @@
           https://docs.google.com/spreadsheets/d/1QX6i93H4_jGZ0So9mArDECnuv1lfkaJQhXOzkDuxdkE/edit#gid=2133439974
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_ENV_LIGHT_TEX_BANK_PARAM_DEF_FILE_H_
@@ -28,7 +27,7 @@
 #include "Param/Param.h"
 
 
-// EnvLightTexBank parameter
+// EnvLightTexBank parameters
 typedef struct EnvLightTexBankParameter : public Param {
 
     int8_t
@@ -203,9 +202,8 @@ typedef struct EnvLightTexBankParameter : public Param {
 
 
 
-// EnvLightTexBank parameter definitions file
+// EnvLightTexBank parameter data manipulation class
 class EnvLightTexBankParamDef : public ParamDef {
-
 
 public:
     static EnvLightTexBankParamDef& get_instance()
@@ -225,8 +223,6 @@ public:
     }
 
 
-    // @TODO: Member data specific to this class
-
 private:
     EnvLightTexBankParamDef()
         : ParamDef(NULL, sizeof(EnvLightTexBankParam), "@TODO", "EnvLightTexBankParam", "Environment Lights Texture Bank")
@@ -237,11 +233,5 @@ public:
     EnvLightTexBankParamDef(EnvLightTexBankParamDef const&) = delete;
     void operator=(EnvLightTexBankParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_ENV_LIGHT_TEX_BANK_PARAM_DEF_FILE_H_

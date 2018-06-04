@@ -17,7 +17,6 @@
 
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_BDT_ARCHIVE_FILE_H_
@@ -90,11 +89,5 @@ public:
     // Default number of Dark Souls BDT files
     static const unsigned int FILE_COUNT_DEFAULT = 4;
 } BdtArchive;
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_BDT_ARCHIVE_FILE_H_

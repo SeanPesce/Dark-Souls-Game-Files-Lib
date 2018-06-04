@@ -18,7 +18,6 @@
           https://docs.google.com/spreadsheets/d/1QX6i93H4_jGZ0So9mArDECnuv1lfkaJQhXOzkDuxdkE/edit#gid=2133439974
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_NPC_ATTACK_PARAM_DEF_FILE_H_
@@ -28,7 +27,7 @@
 #include "Param.h"
 
 
-// Attack parameter
+// Attack parameters
 typedef struct AttackNpcParameter : public Param {
 
     float
@@ -128,9 +127,8 @@ typedef struct AttackNpcParameter : public Param {
 
 
 
-// Attack parameter definitions file
+// Attack parameter data manipulation class
 class AttackNpcParamDef : public ParamDef {
-
 
 public:
     static AttackNpcParamDef& get_instance()
@@ -150,8 +148,6 @@ public:
     }
 
 
-    // @TODO: Member data specific to this class
-
 private:
     // WARNING: There are two different AtkParam files: AtkParam_Npc and AtkParam_Pc (both contain the same starting AoB)
     AttackNpcParamDef()
@@ -166,11 +162,5 @@ public:
     AttackNpcParamDef(AttackNpcParamDef const&) = delete;
     void operator=(AttackNpcParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_NPC_ATTACK_PARAM_DEF_FILE_H_

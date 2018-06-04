@@ -18,7 +18,6 @@
         https://gist.github.com/arq5x/5315739
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_DCX_ARCHIVE_FILE_H_

@@ -2,7 +2,7 @@
     DARK SOULS GAME FILE C++ LIBRARY
 
     Contributors to this file:
-        Sean Pesce	-	C++
+        Sean Pesce    -    C++
 
 
     Param/BehaviorPC.h
@@ -17,7 +17,6 @@
           https://docs.google.com/spreadsheets/d/1QX6i93H4_jGZ0So9mArDECnuv1lfkaJQhXOzkDuxdkE/edit#gid=2133439974
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_PC_BEHAVIOR_PARAM_DEF_FILE_H_
@@ -27,7 +26,7 @@
 #include "Param.h"
 
 
-// PC Behavior parameter
+// PC Behavior parameters
 typedef struct BehaviorPcParameter : public Param {
 
     int32_t
@@ -64,9 +63,8 @@ typedef struct BehaviorPcParameter : public Param {
 
 
 
-// BehaviorPc parameter definitions file
+// BehaviorPc parameter data manipulation class
 class BehaviorPcParamDef : public ParamDef {
-
 
 public:
     static BehaviorPcParamDef& get_instance()
@@ -86,8 +84,6 @@ public:
     }
 
 
-    // @TODO: Member data specific to this class
-
 private:
     // WARNING: There are two different BehaviorParam files: BehaviorParam and BehaviorParam_PC (both contain the same starting AoB)
     BehaviorPcParamDef()
@@ -102,11 +98,5 @@ public:
     BehaviorPcParamDef(BehaviorPcParamDef const&) = delete;
     void operator=(BehaviorPcParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_PC_BEHAVIOR_PARAM_DEF_FILE_H_

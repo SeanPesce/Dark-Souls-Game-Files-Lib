@@ -12,7 +12,6 @@
     NOTE: These parameters only exist in Dark Souls: Remastered.
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_LEVEL_SYNC_PARAM_DEF_FILE_H_
@@ -22,10 +21,10 @@
 #include "Param.h"
 
 
-// LevelSync parameter
+// LevelSync parameters
 typedef struct LevelSyncParameter : public Param {
 
-    // @TODO: Description comments
+    // Note: Paramdef file did not contain descriptions
 
     int16_t
         SCLUA  = 0,
@@ -162,9 +161,8 @@ typedef struct LevelSyncParameter : public Param {
 
 
 
-// LevelSync parameter definitions file
+// LevelSync parameter data manipulation class
 class LevelSyncParamDef : public ParamDef {
-
 
 public:
     static LevelSyncParamDef& get_instance()
@@ -172,7 +170,7 @@ public:
         static LevelSyncParamDef instance;
         return instance;
     }
-    
+
     LevelSyncParam *data()
     {
         return (LevelSyncParam*)ParamDef::data();
@@ -182,7 +180,7 @@ public:
     {
         return (LevelSyncParam*)ParamDef::get(index);
     }
-    
+
 private:
     LevelSyncParamDef()
         : ParamDef(NULL, sizeof(LevelSyncParam),
@@ -190,16 +188,10 @@ private:
                    "LevelSyncParam", "LevelSync")
     {
     }
-    
+
 public:
     LevelSyncParamDef(LevelSyncParamDef const&) = delete;
     void operator=(LevelSyncParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_LEVEL_SYNC_PARAM_DEF_FILE_H_

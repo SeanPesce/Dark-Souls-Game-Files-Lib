@@ -12,7 +12,6 @@
     NOTE: These parameters only exist in Dark Souls: Remastered.
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_COOL_TIME_PARAM_DEF_FILE_H_
@@ -22,10 +21,10 @@
 #include "Param.h"
 
 
-// CoolTime parameter
+// CoolTime parameters
 typedef struct CoolTimeParameter : public Param {
 
-    // @TODO: Description comments
+    // Note: Paramdef file did not contain descriptions
 
     float
         limitationTime_0  = 0.0f,
@@ -41,9 +40,8 @@ typedef struct CoolTimeParameter : public Param {
 
 
 
-// CoolTime parameter definitions file
+// CoolTime parameter data manipulation class
 class CoolTimeParamDef : public ParamDef {
-
 
 public:
     static CoolTimeParamDef& get_instance()
@@ -51,7 +49,7 @@ public:
         static CoolTimeParamDef instance;
         return instance;
     }
-    
+
     CoolTimeParam *data()
     {
         return (CoolTimeParam*)ParamDef::data();
@@ -61,7 +59,7 @@ public:
     {
         return (CoolTimeParam*)ParamDef::get(index);
     }
-    
+
 private:
     CoolTimeParamDef()
         : ParamDef(NULL, sizeof(CoolTimeParam),
@@ -69,16 +67,10 @@ private:
                    "CoolTimeParam", "CoolTime")
     {
     }
-    
+
 public:
     CoolTimeParamDef(CoolTimeParamDef const&) = delete;
     void operator=(CoolTimeParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_COOL_TIME_PARAM_DEF_FILE_H_

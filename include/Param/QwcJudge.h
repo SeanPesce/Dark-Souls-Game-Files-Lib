@@ -18,7 +18,6 @@
           https://docs.google.com/spreadsheets/d/1QX6i93H4_jGZ0So9mArDECnuv1lfkaJQhXOzkDuxdkE/edit#gid=2133439974
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_QWC_JUDGE_PARAM_DEF_FILE_H_
@@ -28,9 +27,9 @@
 #include "Param.h"
 
 
-// QwcJudge parameter
+// QwcJudge parameters
 typedef struct QwcJudgeParameter : public Param {
-    
+
     int16_t
         pcJudgeUnderWB,
         pcJudgeTopWB,
@@ -45,9 +44,8 @@ typedef struct QwcJudgeParameter : public Param {
 
 
 
-// QwcJudge parameter definitions file
+// QwcJudge parameter data manipulation class
 class QwcJudgeParamDef : public ParamDef {
-
 
 public:
     static QwcJudgeParamDef& get_instance()
@@ -55,7 +53,7 @@ public:
         static QwcJudgeParamDef instance;
         return instance;
     }
-    
+
     QwcJudgeParam *data()
     {
         return (QwcJudgeParam*)ParamDef::data();
@@ -67,25 +65,17 @@ public:
     }
 
 
-    // @TODO: Member data specific to this class
-    
 private:
     QwcJudgeParamDef()
         : ParamDef(NULL, sizeof(QwcJudgeParam),
-                   "?? ?? ?? ?? ?? ?? 01 00 01 00 ?? ?? 51 57 43 5F 4A 55 44 47 45 5F 50 41 52 41 4D 5F 53 54 00", 
+                   "?? ?? ?? ?? ?? ?? 01 00 01 00 ?? ?? 51 57 43 5F 4A 55 44 47 45 5F 50 41 52 41 4D 5F 53 54 00",
                    "QwcJudgeParam", "World Tendency Judge")
     {
     }
-    
+
 public:
     QwcJudgeParamDef(QwcJudgeParamDef const&) = delete;
     void operator=(QwcJudgeParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_QWC_JUDGE_PARAM_DEF_FILE_H_

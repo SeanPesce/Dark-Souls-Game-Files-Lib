@@ -8,7 +8,6 @@
     Archive/Archive.h
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_GAME_ARCHIVE_FILE_H_

@@ -18,7 +18,6 @@
           https://docs.google.com/spreadsheets/d/1QX6i93H4_jGZ0So9mArDECnuv1lfkaJQhXOzkDuxdkE/edit#gid=2133439974
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_QWC_CHANGE_PARAM_DEF_FILE_H_
@@ -28,9 +27,9 @@
 #include "Param.h"
 
 
-// QwcChange parameter
+// QwcChange parameters
 typedef struct QwcChangeParameter : public Param {
-    
+
     int16_t
         pcAttrB,
         pcAttrW,
@@ -45,9 +44,8 @@ typedef struct QwcChangeParameter : public Param {
 
 
 
-// QwcChange parameter definitions file
+// QwcChange parameter data manipulation class
 class QwcChangeParamDef : public ParamDef {
-
 
 public:
     static QwcChangeParamDef& get_instance()
@@ -55,7 +53,7 @@ public:
         static QwcChangeParamDef instance;
         return instance;
     }
-    
+
     QwcChangeParam *data()
     {
         return (QwcChangeParam*)ParamDef::data();
@@ -67,25 +65,17 @@ public:
     }
 
 
-    // @TODO: Member data specific to this class
-    
 private:
     QwcChangeParamDef()
         : ParamDef(NULL, sizeof(QwcChangeParam),
-                   "?? ?? ?? ?? ?? ?? 01 00 01 00 ?? ?? 51 57 43 5F 43 48 41 4E 47 45 5F 50 41 52 41 4D 5F 53 54 00", 
+                   "?? ?? ?? ?? ?? ?? 01 00 01 00 ?? ?? 51 57 43 5F 43 48 41 4E 47 45 5F 50 41 52 41 4D 5F 53 54 00",
                    "QwcChangeParam", "World Tendency Change")
     {
     }
-    
+
 public:
     QwcChangeParamDef(QwcChangeParamDef const&) = delete;
     void operator=(QwcChangeParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_QWC_CHANGE_PARAM_DEF_FILE_H_

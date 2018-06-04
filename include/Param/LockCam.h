@@ -2,7 +2,7 @@
     DARK SOULS GAME FILE C++ LIBRARY
 
     Contributors to this file:
-        Sean Pesce	-	C++
+        Sean Pesce    -    C++
 
 
     Param/LockCam.h
@@ -18,7 +18,6 @@
           https://docs.google.com/spreadsheets/d/1QX6i93H4_jGZ0So9mArDECnuv1lfkaJQhXOzkDuxdkE/edit#gid=2133439974
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_LOCK_CAM_PARAM_DEF_FILE_H_
@@ -28,7 +27,7 @@
 #include "Param.h"
 
 
-// LockCam parameter
+// LockCam parameters
 typedef struct LockCamParameter : public Param {
     float camDistTarget = 4.0f;           // For camera
     float rotRangeMinX = -40.0f;          // For camera
@@ -41,9 +40,8 @@ typedef struct LockCamParameter : public Param {
 
 
 
-// LockCam parameter definitions file
+// LockCam parameter data manipulation class
 class LockCamParamDef : public ParamDef {
-
 
 public:
     static LockCamParamDef& get_instance()
@@ -63,8 +61,6 @@ public:
     }
 
 
-    // @TODO: Member data specific to this class
-
 private:
     LockCamParamDef()
         : ParamDef(NULL, /*0x1F8, 38,*/ sizeof(LockCamParam),
@@ -78,11 +74,5 @@ public:
     LockCamParamDef(LockCamParamDef const&) = delete;
     void operator=(LockCamParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_LOCK_CAM_PARAM_DEF_FILE_H_

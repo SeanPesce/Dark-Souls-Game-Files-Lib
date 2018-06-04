@@ -18,7 +18,6 @@
           https://docs.google.com/spreadsheets/d/1QX6i93H4_jGZ0So9mArDECnuv1lfkaJQhXOzkDuxdkE/edit#gid=2133439974
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_OBJECT_ACTION_PARAM_DEF_FILE_H_
@@ -28,7 +27,7 @@
 #include "Param.h"
 
 
-// ObjectAction parameter
+// ObjectAction parameters
 typedef struct ObjectActionParameter : public Param {
 
     int32_t
@@ -60,9 +59,8 @@ typedef struct ObjectActionParameter : public Param {
 
 
 
-// ObjectAction parameter definitions file
+// ObjectAction parameter data manipulation class
 class ObjectActionParamDef : public ParamDef {
-
 
 public:
     static ObjectActionParamDef& get_instance()
@@ -70,7 +68,7 @@ public:
         static ObjectActionParamDef instance;
         return instance;
     }
-    
+
     ObjectActionParam *data()
     {
         return (ObjectActionParam*)ParamDef::data();
@@ -82,25 +80,17 @@ public:
     }
 
 
-    // @TODO: Member data specific to this class
-    
 private:
     ObjectActionParamDef()
         : ParamDef(NULL, sizeof(ObjectActionParam),
-                   "?? ?? ?? ?? ?? ?? 00 00 01 00 ?? ?? 4F 42 4A 5F 41 43 54 5F 50 41 52 41 4D 5F 53 54 00", 
+                   "?? ?? ?? ?? ?? ?? 00 00 01 00 ?? ?? 4F 42 4A 5F 41 43 54 5F 50 41 52 41 4D 5F 53 54 00",
                    "ObjectActParam", "Object Action")
     {
     }
-    
+
 public:
     ObjectActionParamDef(ObjectActionParamDef const&) = delete;
     void operator=(ObjectActionParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_OBJECT_ACTION_PARAM_DEF_FILE_H_

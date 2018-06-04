@@ -18,7 +18,6 @@
           https://docs.google.com/spreadsheets/d/1QX6i93H4_jGZ0So9mArDECnuv1lfkaJQhXOzkDuxdkE/edit#gid=2133439974
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_POINT_LIGHT_BANK_PARAM_DEF_FILE_H_
@@ -28,7 +27,7 @@
 #include "Param/Param.h"
 
 
-// PointLightBank parameter
+// PointLightBank parameters
 typedef struct PointLightBankParameter : public Param {
 
     float
@@ -45,9 +44,8 @@ typedef struct PointLightBankParameter : public Param {
 
 
 
-// PointLightBank parameter definitions file
+// PointLightBank parameter data manipulation class
 class PointLightBankParamDef : public ParamDef {
-
 
 public:
     static PointLightBankParamDef& get_instance()
@@ -67,8 +65,6 @@ public:
     }
 
 
-    // @TODO: Member data specific to this class
-
 private:
     PointLightBankParamDef()
         : ParamDef(NULL, sizeof(PointLightBankParam),
@@ -81,11 +77,5 @@ public:
     PointLightBankParamDef(PointLightBankParamDef const&) = delete;
     void operator=(PointLightBankParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_POINT_LIGHT_BANK_PARAM_DEF_FILE_H_

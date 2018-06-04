@@ -17,7 +17,6 @@
         https://dl.dropboxusercontent.com/content_link/wd8jBOsCqMIaO2ibj1ICwHjyIZY72AQjkSK7YFLSTXFIlxckp1I1or3w9oYj5zDz/file?dl=1
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_TAE_ANIMATION_FILE_H_

@@ -2,7 +2,7 @@
     DARK SOULS GAME FILE C++ LIBRARY
 
     Contributors to this file:
-        Sean Pesce	-	C++
+        Sean Pesce    -    C++
 
 
     Param/AiStandardInfo.h
@@ -18,7 +18,6 @@
           https://docs.google.com/spreadsheets/d/1QX6i93H4_jGZ0So9mArDECnuv1lfkaJQhXOzkDuxdkE/edit#gid=2133439974
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_AI_STANDARD_INFO_PARAM_DEF_FILE_H_
@@ -28,7 +27,7 @@
 #include "Param.h"
 
 
-// AI Standard Info parameter
+// AI Standard Info parameters
 typedef struct AiStandardInfoParameter : public Param {
 
     uint16_t
@@ -111,9 +110,8 @@ typedef struct AiStandardInfoParameter : public Param {
 
 
 
-// AiStandardInfo parameter definitions file
+// AiStandardInfo parameter data manipulation class
 class AiStandardInfoParamDef : public ParamDef {
-
 
 public:
     static AiStandardInfoParamDef& get_instance()
@@ -133,8 +131,6 @@ public:
     }
 
 
-    // @TODO: Member data specific to this class
-
 private:
     AiStandardInfoParamDef()
         : ParamDef(NULL, /*0x230, 40,*/ sizeof(AiStandardInfoParam),
@@ -148,11 +144,5 @@ public:
     AiStandardInfoParamDef(AiStandardInfoParamDef const&) = delete;
     void operator=(AiStandardInfoParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_AI_STANDARD_INFO_PARAM_DEF_FILE_H_

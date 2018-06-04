@@ -18,7 +18,6 @@
           https://docs.google.com/spreadsheets/d/1QX6i93H4_jGZ0So9mArDECnuv1lfkaJQhXOzkDuxdkE/edit#gid=2133439974
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_LIGHT_BANK_PARAM_DEF_FILE_H_
@@ -28,7 +27,7 @@
 #include "Param/Param.h"
 
 
-// LightBank parameter
+// LightBank parameters
 typedef struct LightBankParameter : public Param {
 
     int16_t
@@ -85,9 +84,8 @@ typedef struct LightBankParameter : public Param {
 
 
 
-// LightBank parameter definitions file
+// LightBank parameter data manipulation class
 class LightBankParamDef : public ParamDef {
-
 
 public:
     static LightBankParamDef& get_instance()
@@ -107,8 +105,6 @@ public:
     }
 
 
-    // @TODO: Member data specific to this class
-
 private:
     LightBankParamDef()
         : ParamDef(NULL, sizeof(LightBankParam),
@@ -121,11 +117,5 @@ public:
     LightBankParamDef(LightBankParamDef const&) = delete;
     void operator=(LightBankParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_LIGHT_BANK_PARAM_DEF_FILE_H_

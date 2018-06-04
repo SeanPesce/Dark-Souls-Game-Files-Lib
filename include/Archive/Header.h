@@ -6,7 +6,6 @@
 
     Archive/Header.h
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_ARCHIVE_FILE_HEADER_H_

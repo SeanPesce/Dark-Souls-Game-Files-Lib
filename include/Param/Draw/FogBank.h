@@ -18,7 +18,6 @@
           https://docs.google.com/spreadsheets/d/1QX6i93H4_jGZ0So9mArDECnuv1lfkaJQhXOzkDuxdkE/edit#gid=2133439974
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_FOG_BANK_PARAM_DEF_FILE_H_
@@ -28,14 +27,14 @@
 #include "Param/Param.h"
 
 
-// FogBank parameter
+// FogBank parameters
 typedef struct FogBankParameter : public Param {
 
     int16_t
         fogBeginZ = 0, // Starting distance of fog
-        fogEndZ = 100, // End distance of fog
-        degRotZ = 0, // Dummy (??)
-        degRotW = 100, // Normally you should set it to 100 (0 means fog is not applied)
+        fogEndZ   = 100, // End distance of fog
+        degRotZ   = 0, // Dummy (??)
+        degRotW   = 100, // Normally you should set it to 100 (0 means fog is not applied)
         colR = 255, // Fog color
         colG = 255, // Fog color
         colB = 255, // Fog color
@@ -45,9 +44,8 @@ typedef struct FogBankParameter : public Param {
 
 
 
-// FogBank parameter definitions file
+// FogBank parameter data manipulation class
 class FogBankParamDef : public ParamDef {
-
 
 public:
     static FogBankParamDef& get_instance()
@@ -67,8 +65,6 @@ public:
     }
 
 
-    // @TODO: Member data specific to this class
-
 private:
     FogBankParamDef()
         : ParamDef(NULL, sizeof(FogBankParam),
@@ -81,11 +77,5 @@ public:
     FogBankParamDef(FogBankParamDef const&) = delete;
     void operator=(FogBankParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_FOG_BANK_PARAM_DEF_FILE_H_

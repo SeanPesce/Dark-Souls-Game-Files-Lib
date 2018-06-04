@@ -4,7 +4,7 @@
     Contributors to this file:
         HotPocketRemix  -  Reversing and obtaining game enums
         Meowmaritus     -  Reversing and obtaining game constants
-        Sean Pesce	    -  Converting other contributers' data to C++ formatting, and obtaining other constant/enum values
+        Sean Pesce        -  Converting other contributers' data to C++ formatting, and obtaining other constant/enum values
 
 
     GameEnum.h

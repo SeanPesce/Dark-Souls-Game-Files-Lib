@@ -18,7 +18,6 @@
           https://docs.google.com/spreadsheets/d/1QX6i93H4_jGZ0So9mArDECnuv1lfkaJQhXOzkDuxdkE/edit#gid=2133439974
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_ARMOR_REINFORCEMENT_PARAM_DEF_FILE_H_
@@ -28,7 +27,7 @@
 #include "Param.h"
 
 
-// ArmorReinforce parameter
+// ArmorReinforce parameters
 typedef struct ArmorReinforceParameter : public Param {
 
     float
@@ -54,9 +53,8 @@ typedef struct ArmorReinforceParameter : public Param {
 
 
 
-// ArmorReinforce parameter definitions file
+// ArmorReinforce parameter data manipulation class
 class ArmorReinforceParamDef : public ParamDef {
-
 
 public:
     static ArmorReinforceParamDef& get_instance()
@@ -76,8 +74,6 @@ public:
     }
 
 
-    // @TODO: Member data specific to this class
-
 private:
     ArmorReinforceParamDef()
         : ParamDef(NULL, sizeof(ArmorReinforceParam),
@@ -91,11 +87,5 @@ public:
     ArmorReinforceParamDef(ArmorReinforceParamDef const&) = delete;
     void operator=(ArmorReinforceParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_ARMOR_REINFORCEMENT_PARAM_DEF_FILE_H_

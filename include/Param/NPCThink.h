@@ -2,7 +2,7 @@
     DARK SOULS GAME FILE C++ LIBRARY
 
     Contributors to this file:
-        Sean Pesce	-	C++
+        Sean Pesce    -    C++
 
 
     Param/NpcThink.h
@@ -18,7 +18,6 @@
           https://docs.google.com/spreadsheets/d/1QX6i93H4_jGZ0So9mArDECnuv1lfkaJQhXOzkDuxdkE/edit#gid=2133439974
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_NPC_THINK_PARAM_DEF_FILE_H_
@@ -28,7 +27,7 @@
 #include "Param.h"
 
 
-// NpcThink parameter
+// NpcThink parameters
 typedef struct NpcThinkParameter : public Param {
 
     int32_t
@@ -106,9 +105,8 @@ typedef struct NpcThinkParameter : public Param {
 
 
 
-// NpcThink parameter definitions file
+// NpcThink parameter data manipulation class
 class NpcThinkParamDef : public ParamDef {
-
 
 public:
     static NpcThinkParamDef& get_instance()
@@ -128,8 +126,6 @@ public:
     }
 
 
-    // @TODO: Member data specific to this class
-
 private:
     NpcThinkParamDef()
         : ParamDef(NULL, /*0x1680, 476,*/ sizeof(NpcThinkParam),
@@ -143,11 +139,5 @@ public:
     NpcThinkParamDef(NpcThinkParamDef const&) = delete;
     void operator=(NpcThinkParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_NPC_THINK_PARAM_DEF_FILE_H_

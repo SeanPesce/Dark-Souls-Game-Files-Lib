@@ -58,11 +58,17 @@
     <ClInclude Include="include\Param\Draw\DofBank.h" />
     <ClInclude Include="include\Param\Draw\EnvLightTexBank.h" />
     <ClInclude Include="include\Param\Draw\FogBank.h" />
+    <ClInclude Include="include\Param\Draw\LensFlareBank.h" />
+    <ClInclude Include="include\Param\Draw\LensFlareExBank.h" />
     <ClInclude Include="include\Param\Draw\LightBank.h" />
+    <ClInclude Include="include\Param\Draw\LightScatteringBank.h" />
+    <ClInclude Include="include\Param\Draw\LodBank.h" />
     <ClInclude Include="include\Param\Draw\PointLightBank.h" />
+    <ClInclude Include="include\Param\Draw\ShadowBank.h" />
     <ClInclude Include="include\Param\Draw\ToneCorrectBank.h" />
     <ClInclude Include="include\Param\Draw\ToneMapBank.h" />
     <ClInclude Include="include\Param\EnemyStandardInfo.h" />
+    <ClInclude Include="include\Param\FaceGeneration.h" />
     <ClInclude Include="include\Param\GameArea.h" />
     <ClInclude Include="include\Param\HitMaterial.h" />
     <ClInclude Include="include\Param\KnockBack.h" />

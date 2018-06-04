@@ -18,7 +18,6 @@
           https://docs.google.com/spreadsheets/d/1QX6i93H4_jGZ0So9mArDECnuv1lfkaJQhXOzkDuxdkE/edit#gid=2133439974
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_WEAPON_REINFORCEMENT_PARAM_DEF_FILE_H_
@@ -28,7 +27,7 @@
 #include "Param.h"
 
 
-// WeaponReinforce parameter
+// WeaponReinforce parameters
 typedef struct WeaponReinforceParameter : public Param {
 
     float
@@ -69,9 +68,8 @@ typedef struct WeaponReinforceParameter : public Param {
 
 
 
-// WeaponReinforce parameter definitions file
+// WeaponReinforce parameter data manipulation class
 class WeaponReinforceParamDef : public ParamDef {
-
 
 public:
     static WeaponReinforceParamDef& get_instance()
@@ -91,8 +89,6 @@ public:
     }
 
 
-    // @TODO: Member data specific to this class
-
 private:
     WeaponReinforceParamDef()
         : ParamDef(NULL, sizeof(WeaponReinforceParam),
@@ -106,11 +102,5 @@ public:
     WeaponReinforceParamDef(WeaponReinforceParamDef const&) = delete;
     void operator=(WeaponReinforceParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_WEAPON_REINFORCEMENT_PARAM_DEF_FILE_H_

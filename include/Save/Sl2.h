@@ -18,7 +18,6 @@
 
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_SL2_SAVE_FILE_H_
@@ -127,7 +126,7 @@ public:
 
     /*
         Note: Save slot title is not the same as character name.
-        
+
         Slot titles are null-terminated wide-character strings following a preset format:
             "USER_DATA***", where "***" is the save slot index ("000" to "999")
 
@@ -180,7 +179,7 @@ public:
                     int32_t status = PLAYER_STATUS::HUMAN; // Human = 0, hollow = 8, etc
                 } CharStats;
 
-                
+
                 Hp hp;
                 UnknownStatPoints unknown_stat0;
                 uint32_t unknown_stat1 = 0;
@@ -247,7 +246,7 @@ public:
                 uint32_t ring_left_slot = ITEM::empty;
                 uint32_t ring_right_slot = ITEM::empty;
                 uint32_t belt_quantities[5] = { ITEM::empty, ITEM::empty, ITEM::empty, ITEM::empty, ITEM::empty }; // Belt item quantities
-                uint32_t wield_type = 1; // One-hand (1) vs 2-hand (3) 
+                uint32_t wield_type = 1; // One-hand (1) vs 2-hand (3)
                 // Next 3 were labelled as "switches" seemed to only be on (1) or off (0)
                 uint32_t hand_left = 1; // ??
                 uint32_t hand_right = 1; // ??
@@ -410,7 +409,7 @@ public:
         typedef class OnlineData {
         public:
             static const uint32_t trailing_data_length = 88; // Trailing data always seems to be the same length (88 bytes)
-            
+
             class OnlineContainer {
             public:
                 uint32_t length; // Empty containers have length == 8
@@ -555,7 +554,7 @@ public:
             public:
                 int32_t *start_flag; // = 0x00000001;  // I've never seen a value other than 1 here
                 uint32_t *length;
-                char (*steam_id)[16]; // Steam64ID (Not null-terminated) or Steam name (null-terminated) (if Steam name is < 16 chars) 
+                char (*steam_id)[16]; // Steam64ID (Not null-terminated) or Steam name (null-terminated) (if Steam name is < 16 chars)
                 uint8_t (*unknown_data)[12]; // Unknown data (12 bytes)
                 Ds1Pos  *position;
                 uint8_t *animation_data; // Unknown anmation data specifies animations played, player rotations, timings, etc in the player's death sequence
@@ -625,7 +624,7 @@ public:
             public:
                 int32_t *start_flag; // Should be 1 (or 0?)
                 uint32_t *length;
-                char(*steam_id)[16]; // Steam64ID (Not null-terminated) or Steam name (null-terminated) (if Steam name is < 16 chars) 
+                char(*steam_id)[16]; // Steam64ID (Not null-terminated) or Steam name (null-terminated) (if Steam name is < 16 chars)
                 uint8_t(*unknown_data)[12]; // Unknown data (12 bytes)
                 Ds1Pos  *position;
                 uint32_t *padding;
@@ -669,7 +668,7 @@ public:
                 // Destructor
                 ~SummonSignContainer() {}
             } SummonSigns;
-            
+
             // "CHR " header contains data about which enemies are already dead in the host world
             uint32_t *chr_header_length;
             uint8_t *chr_header; // Array of bytes with length = char_header_length
@@ -703,7 +702,7 @@ public:
 
                 bool containers_initialized = false;
                 while (!containers_initialized) {
-                    
+
                     switch (*(container.index)) {
                         case 0:
                             // Empty save slot
@@ -732,7 +731,7 @@ public:
                             empty_containers.push_back(OnlineContainer(container.start()));
                             break;
                     }
-                    
+
                     if ((*(container.index)) == 0x0000FFFF || (*(container.index)) == 0) {
                         // Last container found
                         containers_initialized = true;
@@ -759,7 +758,7 @@ public:
             uint8_t padding[12];
         } EndData;
         #pragma pack(pop)
-        
+
 
         StartData *start_data;
         MultiplayerData multiplayer_data; // Multiplayer data varies in size
@@ -791,7 +790,7 @@ public:
         }
 
         uint32_t calculate_checksums(std::vector<uint8_t> &store_primary, std::vector<uint8_t> &store_secondary) {
-            
+
             uint32_t return_val = FileUtil::calculate_md5_hash(((uint8_t*)(start_data->checksum_header)) + 20, size() - 36, 16, store_secondary);
             if (return_val)
                 return return_val;
@@ -814,7 +813,7 @@ public:
         bool verify_checksums() {
             std::vector<uint8_t> calculated_primary = std::vector<uint8_t>();
             std::vector<uint8_t> calculated_secondary = std::vector<uint8_t>();
-            
+
             // Calculate footer checksum
             FileUtil::calculate_md5_hash(((uint8_t*)(start_data->checksum_header)) + 20, size() - 36, 16, calculated_secondary);
             for (int b = 0; b < (int)sizeof(Sl2SaveFile::CHECKSUM_FOOTER_DEFAULT); b++) {
@@ -945,7 +944,7 @@ public:
         MainMenuSlot(void *new_file_start, SaveHeader *new_header) : file_start(new_file_start), header(new_header)
         {
             title = (wchar_t*)(file_start_val() + header->title_offset);
-            
+
             start_data = (StartData*)(file_start_val() + header->offset);
             char_previews = (CharData*)(start_data + 1);
             checksum_footer = (uint8_t(*)[16])((((uint32_t)start_data) + header->slot_size) - 16);
@@ -1187,7 +1186,7 @@ public:
             }
             memcpy_s((void*)(((uint32_t)buff) + tmp_offset), Sl2SaveFile::SAVE_FILE_SIZE_DEFAULT - tmp_offset, &tmp_save_header, sizeof(Sl2SaveFile::SaveSlotHeader));
             tmp_offset += sizeof(Sl2SaveFile::SaveSlotHeader);
-            
+
             // Write save slot title data
             std::wstring index_str = L"0";
             if (i < 10) {
@@ -1197,7 +1196,7 @@ public:
             tmp_save_title.index[1] = index_str.c_str()[1];
             tmp_save_title.index[2] = index_str.c_str()[2];
             memcpy_s((void*)(((uint32_t)buff) + tmp_save_header.title_offset), Sl2SaveFile::SAVE_FILE_SIZE_DEFAULT - tmp_save_header.title_offset, &tmp_save_title, sizeof(Sl2SaveFile::SaveSlotTitle));
-        
+
             memcpy_s((void*)(((uint32_t)buff) + tmp_save_header.offset), Sl2SaveFile::SAVE_FILE_SIZE_DEFAULT - tmp_save_header.offset, Sl2SaveFile::CHECKSUM_HEADER_DEFAULT, sizeof(Sl2SaveFile::CHECKSUM_HEADER_DEFAULT));
             *(uint32_t*)(((uint32_t)buff) + tmp_save_header.offset + sizeof(Sl2SaveFile::CHECKSUM_HEADER_DEFAULT)) = (Sl2SaveFile::SAVE_SLOT_SIZE_DEFAULT - (sizeof(Sl2SaveFile::CHECKSUM_HEADER_DEFAULT) + sizeof(Sl2SaveFile::CHECKSUM_FOOTER_DEFAULT)));
         }
@@ -1313,7 +1312,7 @@ public:
             SetLastError(ERROR_INVALID_ADDRESS);
             return false;
         }
-        
+
         if (header->slot_count >= 999) {
             SetLastError(ERROR_TOO_MANY_NAMES);
             return false;
@@ -1342,7 +1341,7 @@ public:
         memcpy_s(buffer, new_size, header, sizeof(Header) + (sizeof(SaveSlotHeader) * header->slot_count));
         ((Header*)buffer)->slot_count = header->slot_count + 1;
         ((Header*)buffer)->size += sizeof(SaveSlotHeader) + sizeof(SaveSlotTitle) + align_offset;
-        
+
         // Copy and update save slot header data
         memcpy_s(new_end_slot_header, sizeof(SaveSlotHeader), &(slot_headers[header->slot_count - 1]), sizeof(SaveSlotHeader));
         new_slot_header->slot_size = Sl2SaveFile::SAVE_SLOT_SIZE_DEFAULT - 12;
@@ -1355,7 +1354,7 @@ public:
 
         // Copy and update save slot title data
         memcpy_s(new_end_slot_header + 1, sizeof(SaveSlotTitle) * header->slot_count, slot_titles, sizeof(SaveSlotTitle) * header->slot_count);
-        
+
         // Build new save slot title string
         std::wstring new_slot_title_string = Sl2SaveFile::SLOT_TITLE_PREFIX_DEFAULT_W;
         if (header->slot_count + 1 < 100) {
@@ -1398,11 +1397,5 @@ public:
 
 } SaveFile;
 typedef Sl2SaveFile Sl2;
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_SL2_SAVE_FILE_H_

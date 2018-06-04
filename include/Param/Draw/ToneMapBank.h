@@ -18,7 +18,6 @@
           https://docs.google.com/spreadsheets/d/1QX6i93H4_jGZ0So9mArDECnuv1lfkaJQhXOzkDuxdkE/edit#gid=2133439974
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_TONE_MAP_BANK_PARAM_DEF_FILE_H_
@@ -28,7 +27,7 @@
 #include "Param/Param.h"
 
 
-// ToneMapBank parameter
+// ToneMapBank parameters
 typedef struct ToneMapBankParameter : public Param {
 
     int8_t
@@ -59,9 +58,8 @@ typedef struct ToneMapBankParameter : public Param {
 
 
 
-// ToneMapBank parameter definitions file
+// ToneMapBank parameter data manipulation class
 class ToneMapBankParamDef : public ParamDef {
-
 
 public:
     static ToneMapBankParamDef& get_instance()
@@ -81,8 +79,6 @@ public:
     }
 
 
-    // @TODO: Member data specific to this class
-
 private:
     ToneMapBankParamDef()
         : ParamDef(NULL, sizeof(ToneMapBankParam),
@@ -95,11 +91,5 @@ public:
     ToneMapBankParamDef(ToneMapBankParamDef const&) = delete;
     void operator=(ToneMapBankParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_TONE_MAP_BANK_PARAM_DEF_FILE_H_

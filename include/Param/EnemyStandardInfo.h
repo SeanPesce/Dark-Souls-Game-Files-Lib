@@ -18,7 +18,6 @@
           https://docs.google.com/spreadsheets/d/1QX6i93H4_jGZ0So9mArDECnuv1lfkaJQhXOzkDuxdkE/edit#gid=2133439974
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_ENEMY_STANDARD_INFO_PARAM_DEF_FILE_H_
@@ -28,7 +27,7 @@
 #include "Param.h"
 
 
-// EnemyStandardInfo parameter
+// EnemyStandardInfo parameters
 typedef struct EnemyStandardInfoParameter : public Param {
 
     int32_t
@@ -81,9 +80,8 @@ typedef struct EnemyStandardInfoParameter : public Param {
 
 
 
-// EnemyStandardInfo parameter definitions file
+// EnemyStandardInfo parameter data manipulation class
 class EnemyStandardInfoParamDef : public ParamDef {
-
 
 public:
     static EnemyStandardInfoParamDef& get_instance()
@@ -103,8 +101,6 @@ public:
     }
 
 
-    // @TODO: Member data specific to this class
-
 private:
     EnemyStandardInfoParamDef()
         : ParamDef(NULL, sizeof(EnemyStandardInfoParam),
@@ -118,11 +114,5 @@ public:
     EnemyStandardInfoParamDef(EnemyStandardInfoParamDef const&) = delete;
     void operator=(EnemyStandardInfoParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_ENEMY_STANDARD_INFO_PARAM_DEF_FILE_H_

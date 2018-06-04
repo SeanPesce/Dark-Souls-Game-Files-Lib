@@ -2,7 +2,7 @@
     DARK SOULS GAME FILE C++ LIBRARY
 
     Contributors to this file:
-        Sean Pesce	-	C++
+        Sean Pesce    -    C++
 
 
     Param/ShopLineup.h
@@ -18,7 +18,6 @@
           https://docs.google.com/spreadsheets/d/1QX6i93H4_jGZ0So9mArDECnuv1lfkaJQhXOzkDuxdkE/edit#gid=2133439974
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_SHOP_LINEUP_PARAM_DEF_FILE_H_
@@ -28,7 +27,7 @@
 #include "Param.h"
 
 
-// ShopLineup parameter
+// ShopLineup parameters
 typedef struct ShopLineupParameter : public Param {
 
     int32_t
@@ -51,9 +50,8 @@ typedef struct ShopLineupParameter : public Param {
 
 
 
-// ShopLineup parameter definitions file
+// ShopLineup parameter data manipulation class
 class ShopLineupParamDef : public ParamDef {
-
 
 public:
     static ShopLineupParamDef& get_instance()
@@ -73,8 +71,6 @@ public:
     }
 
 
-    // @TODO: Member data specific to this class
-
 private:
     ShopLineupParamDef()
         : ParamDef(NULL, /*0x1284, 391,*/ sizeof(ShopLineupParam),
@@ -88,11 +84,5 @@ public:
     ShopLineupParamDef(ShopLineupParamDef const&) = delete;
     void operator=(ShopLineupParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_SHOP_LINEUP_PARAM_DEF_FILE_H_

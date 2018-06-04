@@ -2,7 +2,7 @@
     DARK SOULS GAME FILE C++ LIBRARY
 
     Contributors to this file:
-        Sean Pesce	-	C++
+        Sean Pesce    -    C++
 
 
     Param/Param.h
@@ -10,7 +10,6 @@
 
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_GENERIC_GET_PARAMS_DEF_FILE_H_

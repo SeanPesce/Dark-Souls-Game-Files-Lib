@@ -2,7 +2,7 @@
     DARK SOULS GAME FILE C++ LIBRARY
 
     Contributors to this file:
-        Sean Pesce	-	C++
+        Sean Pesce    -    C++
 
 
     Param/MaterialSet.h
@@ -18,7 +18,6 @@
           https://docs.google.com/spreadsheets/d/1QX6i93H4_jGZ0So9mArDECnuv1lfkaJQhXOzkDuxdkE/edit#gid=2133439974
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_EQUP_MATERIAL_SET_PARAM_DEF_FILE_H_
@@ -28,7 +27,7 @@
 #include "Param.h"
 
 
-// MaterialSet parameter
+// MaterialSet parameters
 typedef struct MaterialSetParameter : public Param {
 
     int32_t
@@ -60,9 +59,8 @@ typedef struct MaterialSetParameter : public Param {
 
 
 
-// MaterialSet parameter definitions file
+// MaterialSet parameter data manipulation class
 class MaterialSetParamDef : public ParamDef {
-
 
 public:
     static MaterialSetParamDef& get_instance()
@@ -82,8 +80,6 @@ public:
     }
 
 
-    // @TODO: Member data specific to this class
-
 private:
     MaterialSetParamDef()
         : ParamDef(NULL, /*0xD20, 276,*/ sizeof(MaterialSetParam),
@@ -97,11 +93,5 @@ public:
     MaterialSetParamDef(MaterialSetParamDef const&) = delete;
     void operator=(MaterialSetParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_EQUP_MATERIAL_SET_PARAM_DEF_FILE_H_

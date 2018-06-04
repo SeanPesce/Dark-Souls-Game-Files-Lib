@@ -2,7 +2,7 @@
     DARK SOULS GAME FILE C++ LIBRARY
 
     Contributors to this file:
-        Sean Pesce	-	C++
+        Sean Pesce    -    C++
 
 
     Param/CharInit.h
@@ -18,7 +18,6 @@
           https://docs.google.com/spreadsheets/d/1QX6i93H4_jGZ0So9mArDECnuv1lfkaJQhXOzkDuxdkE/edit#gid=2133439974
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_CHAR_INIT_PARAM_DEF_FILE_H_
@@ -28,7 +27,7 @@
 #include "Param.h"
 
 
-// CharInit parameter
+// CharInit parameters
 typedef struct CharInitParameter : public Param {
 
     float
@@ -142,9 +141,8 @@ typedef struct CharInitParameter : public Param {
 
 
 
-// CharInit parameter definitions file
+// CharInit parameter data manipulation class
 class CharInitParamDef : public ParamDef {
-
 
 public:
     static CharInitParamDef& get_instance()
@@ -164,8 +162,6 @@ public:
     }
 
 
-    // @TODO: Member data specific to this class
-
 private:
     CharInitParamDef()
         : ParamDef(NULL, /*0xED0, 312,*/ sizeof(CharInitParam),
@@ -179,11 +175,5 @@ public:
     CharInitParamDef(CharInitParamDef const&) = delete;
     void operator=(CharInitParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_CHAR_INIT_PARAM_DEF_FILE_H_

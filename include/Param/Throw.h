@@ -2,7 +2,7 @@
     DARK SOULS GAME FILE C++ LIBRARY
 
     Contributors to this file:
-        Sean Pesce	-	C++
+        Sean Pesce    -    C++
 
 
     Param/Throw.h
@@ -18,7 +18,6 @@
           https://docs.google.com/spreadsheets/d/1QX6i93H4_jGZ0So9mArDECnuv1lfkaJQhXOzkDuxdkE/edit#gid=2133439974
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_THROW_PARAM_DEF_FILE_H_
@@ -28,7 +27,7 @@
 #include "Param.h"
 
 
-// Throw parameter
+// Throw parameters
 typedef struct ThrowParameter : public Param {
 
     int32_t
@@ -76,9 +75,8 @@ typedef struct ThrowParameter : public Param {
 
 
 
-// Throw parameter definitions file
+// Throw parameter data manipulation class
 class ThrowParamDef : public ParamDef {
-
 
 public:
     static ThrowParamDef& get_instance()
@@ -98,8 +96,6 @@ public:
     }
 
 
-    // @TODO: Member data specific to this class
-
 private:
     ThrowParamDef()
         : ParamDef(NULL, /*0x954, 195,*/ sizeof(ThrowParam),
@@ -113,11 +109,5 @@ public:
     ThrowParamDef(ThrowParamDef const&) = delete;
     void operator=(ThrowParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_THROW_PARAM_DEF_FILE_H_

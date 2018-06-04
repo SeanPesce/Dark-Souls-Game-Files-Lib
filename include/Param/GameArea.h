@@ -18,7 +18,6 @@
           https://docs.google.com/spreadsheets/d/1QX6i93H4_jGZ0So9mArDECnuv1lfkaJQhXOzkDuxdkE/edit#gid=2133439974
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_GAME_AREA_PARAM_DEF_FILE_H_
@@ -28,7 +27,7 @@
 #include "Param.h"
 
 
-// GameArea parameter
+// GameArea parameters
 typedef struct GameAreaParameter : public Param {
 
     uint32_t
@@ -54,9 +53,8 @@ typedef struct GameAreaParameter : public Param {
 
 
 
-// GameArea parameter definitions file
+// GameArea parameter data manipulation class
 class GameAreaParamDef : public ParamDef {
-
 
 public:
     static GameAreaParamDef& get_instance()
@@ -76,8 +74,6 @@ public:
     }
 
 
-    // @TODO: Member data specific to this class
-
 private:
     GameAreaParamDef()
         : ParamDef(NULL, sizeof(GameAreaParam),
@@ -91,11 +87,5 @@ public:
     GameAreaParamDef(GameAreaParamDef const&) = delete;
     void operator=(GameAreaParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_GAME_AREA_PARAM_DEF_FILE_H_

@@ -2,7 +2,7 @@
     DARK SOULS GAME FILE C++ LIBRARY
 
     Contributors to this file:
-        Sean Pesce	-	C++
+        Sean Pesce    -    C++
 
 
     Param/Armor.h
@@ -21,7 +21,6 @@
           https://docs.google.com/spreadsheets/d/1QX6i93H4_jGZ0So9mArDECnuv1lfkaJQhXOzkDuxdkE/edit#gid=2133439974
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_ARMOR_PARAM_DEF_EQUIP_PROTECTOR_H_
@@ -135,9 +134,8 @@ typedef struct ArmorParameter : public Param { // Armor
 
 
 
-// Armor parameter definitions file
+// Armor parameter data manipulation class
 class ArmorParamDef : public ParamDef {
-
 
 public:
     static ArmorParamDef& get_instance()
@@ -180,11 +178,5 @@ public:
     ArmorParamDef(ArmorParamDef const&) = delete;
     void operator=(ArmorParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_ARMOR_PARAM_DEF_EQUIP_PROTECTOR_H_

@@ -2,7 +2,7 @@
     DARK SOULS GAME FILE C++ LIBRARY
 
     Contributors to this file:
-        Sean Pesce	-	C++
+        Sean Pesce    -    C++
 
 
     Param/Magic.h
@@ -18,7 +18,6 @@
           https://docs.google.com/spreadsheets/d/1QX6i93H4_jGZ0So9mArDECnuv1lfkaJQhXOzkDuxdkE/edit#gid=2133439974
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_MAGIC_PARAM_DEF_FILE_H_
@@ -28,7 +27,7 @@
 #include "Param.h"
 
 
-// Magic parameter
+// Magic parameters
 typedef struct MagicParameter : public Param {
 
     int32_t
@@ -103,9 +102,8 @@ typedef struct MagicParameter : public Param {
 
 
 
-// Magic parameter definitions file
+// Magic parameter data manipulation class
 class MagicParamDef : public ParamDef {
-
 
 public:
     static MagicParamDef& get_instance()
@@ -125,8 +123,6 @@ public:
     }
 
 
-    // @TODO: Member data specific to this class
-
 private:
     MagicParamDef()
         : ParamDef(NULL, /*0x6CC, 141,*/ sizeof(MagicParam),
@@ -140,11 +136,5 @@ public:
     MagicParamDef(MagicParamDef const&) = delete;
     void operator=(MagicParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_MAGIC_PARAM_DEF_FILE_H_

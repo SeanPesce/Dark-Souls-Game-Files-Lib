@@ -18,7 +18,6 @@
           https://docs.google.com/spreadsheets/d/1QX6i93H4_jGZ0So9mArDECnuv1lfkaJQhXOzkDuxdkE/edit#gid=2133439974
 
 */
-
 #pragma once
 
 #ifndef _DS1_OVERHAUL_FACE_GENERATION_PARAM_DEF_FILE_H_
@@ -28,7 +27,7 @@
 #include "Param.h"
 
 
-// FaceGen parameter
+// FaceGen parameters
 typedef struct FaceGenParameter : public Param {
     uint8_t
         faceGeoData[50],
@@ -46,9 +45,8 @@ typedef struct FaceGenParameter : public Param {
 
 
 
-// FaceGen parameter definitions file
+// FaceGen parameter data manipulation class
 class FaceGenParamDef : public ParamDef {
-
 
 public:
     static FaceGenParamDef& get_instance()
@@ -56,7 +54,7 @@ public:
         static FaceGenParamDef instance;
         return instance;
     }
-    
+
     FaceGenParam *data()
     {
         return (FaceGenParam*)ParamDef::data();
@@ -68,8 +66,6 @@ public:
     }
 
 
-    // @TODO: Member data specific to this class
-    
 private:
     FaceGenParamDef()
         : ParamDef(NULL, sizeof(FaceGenParam),
@@ -78,16 +74,10 @@ private:
                    "FaceGenParam", "Face Generation")
     {
     }
-    
+
 public:
     FaceGenParamDef(FaceGenParamDef const&) = delete;
     void operator=(FaceGenParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // _DS1_OVERHAUL_FACE_GENERATION_PARAM_DEF_FILE_H_

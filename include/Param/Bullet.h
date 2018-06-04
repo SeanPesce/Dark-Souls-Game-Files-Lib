@@ -2,7 +2,7 @@
     DARK SOULS GAME FILE C++ LIBRARY
 
     Contributors to this file:
-        Sean Pesce	-	C++
+        Sean Pesce    -    C++
 
 
     Param/Bullet.h
@@ -18,7 +18,6 @@
           https://docs.google.com/spreadsheets/d/1QX6i93H4_jGZ0So9mArDECnuv1lfkaJQhXOzkDuxdkE/edit#gid=2133439974
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_BULLET_PARAM_DEF_FILE_H_
@@ -28,7 +27,7 @@
 #include "Param.h"
 
 
-// Bullet parameter
+// Bullet parameters
 typedef struct BulletParameter : public Param {
 
     int32_t
@@ -120,9 +119,8 @@ typedef struct BulletParameter : public Param {
 
 
 
-// Bullet parameter definitions file
+// Bullet parameter data manipulation class
 class BulletParamDef : public ParamDef {
-
 
 public:
     static BulletParamDef& get_instance()
@@ -142,8 +140,6 @@ public:
     }
 
 
-    // @TODO: Member data specific to this class
-
 private:
     BulletParamDef()
         : ParamDef(NULL, /*0x1DC4, 631,*/ sizeof(BulletParam),
@@ -157,11 +153,5 @@ public:
     BulletParamDef(BulletParamDef const&) = delete;
     void operator=(BulletParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_BULLET_PARAM_DEF_FILE_H_

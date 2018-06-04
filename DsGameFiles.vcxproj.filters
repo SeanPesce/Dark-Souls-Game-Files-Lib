@@ -263,5 +263,23 @@
     <ClInclude Include="include\Param\WhiteCoolTime.h">
       <Filter>Header Files\Param</Filter>
     </ClInclude>
+    <ClInclude Include="include\Param\FaceGeneration.h">
+      <Filter>Header Files\Param</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Param\Draw\LodBank.h">
+      <Filter>Header Files\Param\Draw</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Param\Draw\LensFlareBank.h">
+      <Filter>Header Files\Param\Draw</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Param\Draw\LensFlareExBank.h">
+      <Filter>Header Files\Param\Draw</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Param\Draw\LightScatteringBank.h">
+      <Filter>Header Files\Param\Draw</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Param\Draw\ShadowBank.h">
+      <Filter>Header Files\Param\Draw</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

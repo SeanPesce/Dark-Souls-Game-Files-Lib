@@ -18,7 +18,6 @@
           https://docs.google.com/spreadsheets/d/1QX6i93H4_jGZ0So9mArDECnuv1lfkaJQhXOzkDuxdkE/edit#gid=2133439974
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_TALK_PARAM_DEF_FILE_H_
@@ -28,19 +27,19 @@
 #include "Param.h"
 
 
-// Talk parameter
+// Talk parameters
 typedef struct TalkParameter : public Param {
 
     int32_t
-        msgId,
-        voiceId,
-        motionId,
-        returnPos,
-        reactionId,
-        eventId;
+        msgId,      // Specify message -> menu
+        voiceId,    // Specify Voice -> Sound
+        motionId,   // Specify motion -> character
+        returnPos,  // Relative position of restored conversation -> conversation
+        reactionId, // Conversation designation upon return -> conversation
+        eventId;    // Event ID-> Event
 
     uint8_t
-        isMotionLoop;
+        isMotionLoop; // Do you want a motion loop?
 
     uint8_t
         padding[7];
@@ -49,9 +48,8 @@ typedef struct TalkParameter : public Param {
 
 
 
-// Talk parameter definitions file
+// Talk parameter data manipulation class
 class TalkParamDef : public ParamDef {
-
 
 public:
     static TalkParamDef& get_instance()
@@ -59,7 +57,7 @@ public:
         static TalkParamDef instance;
         return instance;
     }
-    
+
     TalkParam *data()
     {
         return (TalkParam*)ParamDef::data();
@@ -71,8 +69,6 @@ public:
     }
 
 
-    // @TODO: Member data specific to this class
-    
 private:
     TalkParamDef()
         : ParamDef(NULL, sizeof(TalkParam),
@@ -80,16 +76,10 @@ private:
                    "TalkParam", "Talk")
     {
     }
-    
+
 public:
     TalkParamDef(TalkParamDef const&) = delete;
     void operator=(TalkParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_TALK_PARAM_DEF_FILE_H_

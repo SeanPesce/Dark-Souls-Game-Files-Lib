@@ -13,7 +13,6 @@
 
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_BND4_ARCHIVE_FILE_H_

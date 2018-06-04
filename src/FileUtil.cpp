@@ -2,7 +2,7 @@
     DARK SOULS GAME FILE C++ LIBRARY
 
     Contributors to this file:
-        Sean Pesce	-	C++
+        Sean Pesce    -    C++
 */
 
 
@@ -386,7 +386,7 @@ uint32_t FileUtil::calculate_md5_hash(uint8_t *data, uint32_t size, uint32_t has
         SetLastError(ERROR_OUTOFMEMORY);
         return ERROR_OUTOFMEMORY;
     }
-    
+
     // Get handle to crypto provider
     if (!CryptAcquireContext(&hash_provider, NULL, NULL,
                              PROV_RSA_FULL, CRYPT_VERIFYCONTEXT))

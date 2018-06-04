@@ -18,7 +18,6 @@
           https://docs.google.com/spreadsheets/d/1QX6i93H4_jGZ0So9mArDECnuv1lfkaJQhXOzkDuxdkE/edit#gid=2133439974
 
 */
-
 #pragma once
 
 #ifndef DS1_FILE_LIB_OBJECT_PARAM_DEF_FILE_H_
@@ -28,7 +27,7 @@
 #include "Param.h"
 
 
-// Object parameter
+// Object parameters
 typedef struct ObjectParameter : public Param {
 
     int16_t
@@ -70,9 +69,8 @@ typedef struct ObjectParameter : public Param {
 
 
 
-// Object parameter definitions file
+// Object parameter data manipulation class
 class ObjectParamDef : public ParamDef {
-
 
 public:
     static ObjectParamDef& get_instance()
@@ -92,8 +90,6 @@ public:
     }
 
 
-    // @TODO: Member data specific to this class
-
 private:
     ObjectParamDef()
         : ParamDef(NULL, sizeof(ObjectParam),
@@ -107,11 +103,5 @@ public:
     ObjectParamDef(ObjectParamDef const&) = delete;
     void operator=(ObjectParamDef const&) = delete;
 };
-
-
-
-
-
-
 
 #endif // DS1_FILE_LIB_OBJECT_PARAM_DEF_FILE_H_
