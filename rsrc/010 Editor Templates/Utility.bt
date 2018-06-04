@@ -10,6 +10,35 @@
     #define _SP_UTILITY_BT
 
 
+string ByteToString(byte b)
+{
+    local string byte_to_string_str = "";
+    if(b < 16) {
+        byte_to_string_str = "0";
+    }
+    SPrintf(byte_to_string_str, "%s%x", byte_to_string_str, b);
+    return byte_to_string_str;
+}
+
+string UByteToString(ubyte b)
+{
+    local string ubyte_to_string_str = "";
+    if(b < 16) {
+        ubyte_to_string_str = "0";
+    }
+    SPrintf(ubyte_to_string_str, "%s%x", ubyte_to_string_str, b);
+    return ubyte_to_string_str;
+}
+
+void PrintStringCharsAsBytes(string s)
+{
+    local uint i = 0;
+    for (i = 0; i < Strlen(s); i++)
+    {
+        Printf("%x ", (ubyte)s[i]);
+    }
+}
+
 string GetDecAndHexValuesUInt(uint val) {
     local string ret_str = "";
     SPrintf(ret_str, "%d (0x%x)", val, val);
