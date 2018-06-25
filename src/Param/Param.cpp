@@ -25,6 +25,3 @@ const char *ParamDef::game_param_bnd = "/param/GameParam/GameParam.parambnd";
 // Name string for GameParam.parambnd.dcx (used for comparing hashes)
 const char *ParamDef::game_param_dcx = "/param/GameParam/GameParam.parambnd.dcx";
 
-// Record struct for GameParam.param.dcx (from dvdbnd1.bhd5)
-Bhd5Record ParamDef::game_param_dcx_record;
-

@@ -66,7 +66,7 @@
 #include "Param/Draw/ToneCorrectBank.h"
 #include "Param/Draw/ToneMapBank.h"
 
-#include "SP_AsmInject_x86.hpp"
+#include "sp\memory\injection\asm\x64.h"
 
 
 #define TOTAL_PARAM_COUNT 170

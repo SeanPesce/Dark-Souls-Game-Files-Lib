@@ -21,10 +21,10 @@
     #define DS1_FILE_LIB_GENERIC_BASE_PARAM_DEF_FILE_H_
 
 
+#include <sstream>
 #include "PluginImports.h"
-#include "SP_AoB_Scan.hpp"
+#include "sp/memory/aob_scan.h"
 #include <map>
-#include "Archive/Bhd5.h"
 
 // Macro for testing paramdef objects
 #define _test_param_def_(pd,p,attribute) {print_console(#p);int i = 0; p *param; for(i = 0; i < 5; i++){param = pd.get(i);print_console(std::to_string(i) + ":     "#attribute"=" + std::to_string(param->attribute));}i = pd.param_count-1;param=pd.get(i);print_console(std::to_string(i) + ":     "#attribute"=" + std::to_string(param->attribute) + "\n");}
@@ -86,9 +86,6 @@ public:
     static const char    *FILE_EXT;   //  ".paramdef" (wide char)
     static const wchar_t *FILE_EXT_W; // L".paramdef" (char)
 
-    // Record struct for GameParam.param.dcx in dvdbnd1.bhd5
-    static Bhd5Record game_param_dcx_record;
-
 protected:
     ParamDef(void *base_init = NULL,
              size_t param_size_init = sizeof(Param),
@@ -125,7 +122,7 @@ protected:
         if ((*start) != NULL && !re_init)
             return (*start);
 
-        (*start) = aob_scan(aob);
+        (*start) = sp::mem::aob_scan(aob);
 
         if ((*start) != NULL && print_result) {
             // Get number of parameters and file header title:
@@ -141,7 +138,7 @@ protected:
                 id_to_index.insert(std::make_pair(info[i].id, i));
 
             std::stringstream hex_stream;
-            hex_stream << std::hex << (int)(*start);
+            hex_stream << std::hex << (uint64_t)(*start);
             print_console(std::string("    Found param file: " + this->file + Param::FILE_EXT + " (\"" + this->header_title + "\"; Location: 0x").append(hex_stream.str()).append(") containing " + std::to_string(param_count) + " parameters"));
         } else if (print_result) {
             print_console(std::string("    ERROR: Failed to locate parameter data file (").append(this->file + Param::FILE_EXT) + ")");
@@ -209,7 +206,7 @@ public:
 
         if (print_result) {
             std::stringstream hex_stream;
-            hex_stream << std::hex << (int)new_base;
+            hex_stream << std::hex << (uint64_t)new_base;
             print_console(std::string("    Found param file: " + this->file + Param::FILE_EXT + " (\"" + this->header_title + "\"; Location: 0x").append(hex_stream.str()).append(") containing " + std::to_string(param_count) + " parameters"));
         }
         return new_base;

@@ -29,7 +29,7 @@
 #include <vector>
 #include <fstream>
 #include "Archive/Header.h"
-#include "SP_AoB_Scan.hpp"
+#include "sp/memory/aob_scan.h"
 
 
 
@@ -258,7 +258,7 @@ public:
         }
 
         if (!from_file) {
-            Header *new_header_start = (Header*)aob_scan(scan_pattern);
+            Header *new_header_start = (Header*)sp::mem::aob_scan(scan_pattern);
             if (new_header_start) {
                 return init_from_memory(new_header_start);
             }

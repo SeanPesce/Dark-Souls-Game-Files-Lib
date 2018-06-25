@@ -1,0 +1,3 @@
+[submodule "lib/Cpp-Utilities"]
+	path = lib/Cpp-Utilities
+	url = https://github.com/SeanPesce/Cpp-Utilities.git

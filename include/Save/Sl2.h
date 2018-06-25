@@ -20,6 +20,8 @@
 */
 #pragma once
 
+#if 0
+
 #ifndef DS1_FILE_LIB_SL2_SAVE_FILE_H_
     #define DS1_FILE_LIB_SL2_SAVE_FILE_H_
 
@@ -1399,3 +1401,5 @@ public:
 typedef Sl2SaveFile Sl2;
 
 #endif // DS1_FILE_LIB_SL2_SAVE_FILE_H_
+
+#endif

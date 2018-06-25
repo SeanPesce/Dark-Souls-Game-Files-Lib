@@ -6,9 +6,9 @@
 */
 
 
-
+#include <sstream>
 #include "Shlobj.h"
-#include "SP_IO.hpp"
+#include "sp/file.h"
 #include "FileUtil.h"
 #include "FileList.h"
 #include <Wincrypt.h>
@@ -30,6 +30,27 @@ bool FileUtil::file_exists(const wchar_t* file)
     bool exists = check_file.good();
     check_file.close();
     return exists;
+}
+
+static int string_wide_to_mb(wchar_t* in_string, std::string &out_string) {
+    size_t len = std::wstring(in_string).length();
+    if (len == 0)
+        return 0;
+
+    char *buffer = (char*)malloc(sizeof(char) * (len + 1));
+
+    errno_t ret_val = 0;
+    if (ret_val = wcstombs_s(NULL, buffer, len + 1, in_string, sizeof(wchar_t)*(len + 1)))
+    {
+        // Error converting from wide char to char
+        free(buffer);
+        return 1;
+    }
+
+    out_string.append(buffer);
+
+    free(buffer);
+    return 0;
 }
 
 // Obtains the size of the specified file (in bytes)

@@ -26,7 +26,9 @@ bool all_loaded()
 }
 
 // Injected function that saves the location of each param file loaded by the game
-static uint32_t param_load_asm_return = 0;
+static uint64_t param_load_asm_return = 0;
+void asm_param_load_check();
+#if 0
 void __declspec(naked) __stdcall asm_param_load_check() {
     __asm
     {
@@ -72,24 +74,24 @@ void __declspec(naked) __stdcall asm_param_load_check() {
         jmp param_load_asm_return;
     }
 }
+#endif
 
 // Injects code to capture starting address of each parameter file as it is loaded by the game
 void patch()
 {
     memset(files_buff, 0, sizeof(files_buff));
-    void *injection_address = (void*)(0xD21120); // Alt: DARKSOULS.exe+0x921120 // AoB: 8B 4E 20 83 C4 0C 8D 54 24 10
-    set_mem_protection(injection_address, 6, MEM_PROTECT_RWX);
-    inject_jmp_5b((uint8_t*)injection_address, &param_load_asm_return, 1, asm_param_load_check);
+    void *injection_address = (void*)(0x14051BF5E); // AoB: 48 89 5C 24 38 48 8D 4C 24 38
+    sp::mem::code::x64::inject_jmp_14b((uint8_t*)injection_address, &param_load_asm_return, 1, asm_param_load_check);
 }
 
 // Restores original code that was patched to capture starting addresses of all param files.
 //   (Call this after all params have been loaded)
 void unpatch()
 {
-    void *write_address = (void*)(0xD21120); // Alt: DARKSOULS.exe+0x921120
-    uint8_t original_bytes[6] = { 0x8B, 0x4E, 0x20, 0x83, 0xC4, 0x0C };
-    set_mem_protection(write_address, 6, MEM_PROTECT_RWX);
-    memcpy_s(write_address, 6, original_bytes, 6);
+    void *write_address = (void*)(0x14051BF5E);
+    uint8_t original_bytes[15] = { 0x48, 0x89, 0x5C, 0x24, 0x38, 0x48, 0x8D, 0x4C, 0x24, 0x38, 0xE8, 0xF3, 0x21, 0x0, 0x0 };
+    sp::mem::set_protection(write_address, 15, MEM_PROTECT_RWX);
+    memcpy_s(write_address, 15, original_bytes, 15);
 }
 
 // Initializes all param file instances
