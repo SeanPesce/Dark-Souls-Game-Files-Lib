@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -19,10 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Archive\Archive.cpp" />
-    <ClCompile Include="src\Archive\Bdt.cpp" />
-    <ClCompile Include="src\Archive\Bhd5.cpp" />
-    <ClCompile Include="src\Archive\Bnd3.cpp" />
     <ClCompile Include="src\Archive\Dcx.cpp" />
     <ClCompile Include="src\FileUtil.cpp" />
     <ClCompile Include="src\GameEnum.cpp" />
@@ -31,11 +27,6 @@
     <ClCompile Include="src\Save\Sl2.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\Archive\Archive.h" />
-    <ClInclude Include="include\Archive\Bdt.h" />
-    <ClInclude Include="include\Archive\Bhd5.h" />
-    <ClInclude Include="include\Archive\Bnd3.h" />
-    <ClInclude Include="include\Archive\Bnd4.h" />
     <ClInclude Include="include\Archive\Dcx.h" />
     <ClInclude Include="include\Archive\Header.h" />
     <ClInclude Include="include\Asset\Animation\Tae.h" />
@@ -101,38 +92,41 @@
     <ClInclude Include="include\Save\Enum.h" />
     <ClInclude Include="include\Save\Sl2.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="src\Param\Params.asm" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{29CC3166-257B-452B-A015-7CB81C320105}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>DsGameFiles</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -207,6 +201,9 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>lib;lib\Cpp-Utilities\include;lib\DirectX\Include;lib\D3DFont;lib\curl-7.56.1\include;lib\zlib-1.2.11;lib\zlib-1.2.11\src;include;lib\Detours;C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;C:\Program Files\Microsoft DirectX SDK (June 2010)\Include</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <OmitFramePointers>false</OmitFramePointers>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

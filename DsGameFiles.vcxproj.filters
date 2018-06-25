@@ -45,23 +45,11 @@
     <ClCompile Include="src\GameEnum.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Archive\Bdt.cpp">
-      <Filter>Source Files\Archive</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Archive\Bhd5.cpp">
-      <Filter>Source Files\Archive</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Archive\Bnd3.cpp">
-      <Filter>Source Files\Archive</Filter>
-    </ClCompile>
     <ClCompile Include="src\Archive\Dcx.cpp">
       <Filter>Source Files\Archive</Filter>
     </ClCompile>
     <ClCompile Include="src\Save\Sl2.cpp">
       <Filter>Source Files\Save</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Archive\Archive.cpp">
-      <Filter>Source Files\Archive</Filter>
     </ClCompile>
     <ClCompile Include="src\Param\Param.cpp">
       <Filter>Source Files\Param</Filter>
@@ -79,9 +67,6 @@
     </ClInclude>
     <ClInclude Include="include\GameEnum.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Archive\Archive.h">
-      <Filter>Header Files\Archive</Filter>
     </ClInclude>
     <ClInclude Include="include\Param\AIStandardInfo.h">
       <Filter>Header Files\Param</Filter>
@@ -145,15 +130,6 @@
     </ClInclude>
     <ClInclude Include="include\Param\Weapon.h">
       <Filter>Header Files\Param</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Archive\Bdt.h">
-      <Filter>Header Files\Archive</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Archive\Bhd5.h">
-      <Filter>Header Files\Archive</Filter>
-    </ClInclude>
-    <ClInclude Include="include\Archive\Bnd3.h">
-      <Filter>Header Files\Archive</Filter>
     </ClInclude>
     <ClInclude Include="include\Archive\Dcx.h">
       <Filter>Header Files\Archive</Filter>
@@ -224,9 +200,6 @@
     <ClInclude Include="include\Asset\Animation\Tae.h">
       <Filter>Header Files\Asset\Animation</Filter>
     </ClInclude>
-    <ClInclude Include="include\Archive\Bnd4.h">
-      <Filter>Header Files\Archive</Filter>
-    </ClInclude>
     <ClInclude Include="include\Save\Enum.h">
       <Filter>Header Files\Save</Filter>
     </ClInclude>
@@ -281,5 +254,10 @@
     <ClInclude Include="include\Param\Draw\ShadowBank.h">
       <Filter>Header Files\Param\Draw</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\Param\Params.asm">
+      <Filter>Source Files\Param</Filter>
+    </None>
   </ItemGroup>
 </Project>
