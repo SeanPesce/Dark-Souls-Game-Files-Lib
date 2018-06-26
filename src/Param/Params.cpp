@@ -81,7 +81,7 @@ void patch()
 {
     memset(files_buff, 0, sizeof(files_buff));
     void *injection_address = (void*)(0x14051BF5E); // AoB: 48 89 5C 24 38 48 8D 4C 24 38
-    sp::mem::code::x64::inject_jmp_14b((uint8_t*)injection_address, &param_load_asm_return, 1, asm_param_load_check);
+    sp::mem::code::x64::inject_jmp_14b((uint8_t*)injection_address, &param_load_asm_return, 1, &asm_param_load_check);
 }
 
 // Restores original code that was patched to capture starting addresses of all param files.
