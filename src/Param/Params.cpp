@@ -27,7 +27,7 @@ bool all_loaded()
 
 // Injected function that saves the location of each param file loaded by the game
 static uint64_t param_load_asm_return = 0;
-void asm_param_load_check();
+extern void asm_param_load_check();
 #if 0
 void __declspec(naked) __stdcall asm_param_load_check() {
     __asm

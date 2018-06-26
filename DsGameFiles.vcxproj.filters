@@ -256,8 +256,8 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="src\Param\Params.asm">
+    <MASM Include="src\Param\Params.asm">
       <Filter>Source Files\Param</Filter>
-    </None>
+    </MASM>
   </ItemGroup>
 </Project>
