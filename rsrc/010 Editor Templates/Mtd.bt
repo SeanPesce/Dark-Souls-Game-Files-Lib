@@ -3,7 +3,8 @@
 //
 // File: Dark Souls .MTD (Material Definition)
 // Author: Jed "Nyxojaele" Lang
-// Revision: 1
+// Edited: TKGP
+// Revision: 2
 //--------------------------------------
 #ifndef _DS1_MTD_BT
     #define _DS1_MTD_BT
@@ -42,6 +43,17 @@ string ReadIntStruct(IntStruct &intStruct)
 {
     string ret;
     SPrintf(ret, "%d", intStruct.Value);
+    return ret;
+}
+
+typedef struct {
+    int Value1;
+    int Value2;
+} Int2Struct <read=ReadInt2Struct, bgcolor=0xFFFF00>;
+string ReadInt2Struct(Int2Struct &int2Struct)
+{
+    string ret;
+    SPrintf(ret, "%d, %d", int2Struct.Value1, int2Struct.Value2);
     return ret;
 }
 
@@ -92,17 +104,26 @@ string ReadFloat4Struct(Float4Struct &float4Struct)
 }
 
 typedef struct {
-    int Unknown1[4] <bgcolor=0x0000FF>; //2nd value seems to always match for ExternalParams with the same name in other files, but sometimes matches other ExternalParams in this file
+    int Unknown1 <bgcolor=0x0000FF>;    //Always 0
+    int Unknown2 <bgcolor=0x0000FF>;    //Seems to always match for ExternalParams with the same name in other files, but sometimes matches other ExternalParams in this file
+    int Unknown3 <bgcolor=0x0000FF>;    //Always 4
+    int Unknown4 <bgcolor=0x0000FF>;    //Always 4
     PaddedMarker EOD;
     StringStruct Name;
     StringStruct Type;
-    byte Unknown2[0x8] <bgcolor=0x0000FF>;
-    int DataSize <bgcolor=0xAAAA00>;    //Size of Unknown4 and Value together
-    byte Unknown4[0x10] <bgcolor=0x0000FF>;
+    int Unknown5 <bgcolor=0x0000FF>;    //Always 1
+    int Unknown6 <bgcolor=0x0000FF>;    //Always 0
+    int DataSize <bgcolor=0xAAAA00>;    //Size of Unknown7 through Value
+    int Unknown7 <bgcolor=0x0000FF>;
+    int Unknown8 <bgcolor=0x0000FF>;    //Always 1
+    int Unknown9 <bgcolor=0x0000FF>;
+    int Unknown10 <bgcolor=0x0000FF>;
     if (Type.Text == "bool")
         BoolStruct Value;
     else if (Type.Text == "int")
         IntStruct Value;
+    else if (Type.Text == "int2")
+        Int2Struct Value;
     else if (Type.Text == "float")
         FloatStruct Value;
     else if (Type.Text == "float2")
@@ -114,7 +135,7 @@ typedef struct {
     else
         Printf("Undocumented Internal Parameter Type: %s", Type.Text);
     PaddedMarker EOD;
-    byte Unknown5[4] <bgcolor=0x0000FF>;
+    int Unknown11 <bgcolor=0x0000FF>;   //Always 0
 } InternalParameterStruct <read=ReadInternalParameterStruct, bgcolor=0x00DEDE>;
 string ReadInternalParameterStruct(InternalParameterStruct &ips)
 {
@@ -123,6 +144,8 @@ string ReadInternalParameterStruct(InternalParameterStruct &ips)
         SPrintf(ret, "%s (%s): %s", ips.Name.Text, ips.Type.Text, ips.Value.Value == 0 ? "false" : "true");
     else if (ips.Type.Text == "int")
         SPrintf(ret, "%s (%s): %d", ips.Name.Text, ips.Type.Text, ips.Value.Value);
+    else if (ips.Type.Text == "int2")
+        SPrintf(ret, "%s (%s): %d, %d", ips.Name.Text, ips.Type.Text, ips.Value.Value1, ips.Value.Value2);
     else if (ips.Type.Text == "float")
         SPrintf(ret, "%s (%s): %f", ips.Name.Text, ips.Type.Text, ips.Value.Value);
     else if (ips.Type.Text == "float2")
@@ -135,10 +158,13 @@ string ReadInternalParameterStruct(InternalParameterStruct &ips)
 }
 
 typedef struct {
-    int Unknown1[4] <bgcolor=0x0000FF>; //2nd value seems to always match for ExternalParams with the same name in other files
+    int Unknown1 <bgcolor=0x0000FF>;    //Always 0
+    int Unknown2 <bgcolor=0x0000FF>;    //2nd value seems to always match for ExternalParams with the same name in other files
+    int Unknown3 <bgcolor=0x0000FF>;    //Always 0x2000
+    int Unknown4 <bgcolor=0x0000FF>;    //Always 3
     PaddedMarker EOD;
     StringStruct Name;
-    int Unknown2 <bgcolor=0x0000FF>;
+    int Unknown5 <bgcolor=0x0000FF>;
     PaddedMarker EOD;
     int ShaderDataOffset;   //Seems unique amongst ExternalParams in this file, but the same for ExternalParams with the same name in other files
 } ExternalParameterStruct <read=ReadExternalParameterStruct, bgcolor=0x00DEDE>;
@@ -150,24 +176,42 @@ string ReadExternalParameterStruct(ExternalParameterStruct &eps)
 }
 
 //Base Header
-int Unknown1 <bgcolor=0x0000FF>;
+int Unknown1 <bgcolor=0x0000FF>;    //Always 0
 int FileSize <bgcolor=0xAAAA00>;    //Size of all data following this point
 
 //Main Header
-int Unknown2 <bgcolor=0x0000FF>;
-int Unknown3 <bgcolor=0x0000FF>;
-int Unknown4[7] <bgcolor=0x0000FF>;
+int Unknown2 <bgcolor=0x0000FF>;    //Always 0
+int Unknown3 <bgcolor=0x0000FF>;    //Always 3
+int Unknown4 <bgcolor=0x0000FF>;
+int Unknown5 <bgcolor=0x0000FF>;    //Always 0
+int Unknown6 <bgcolor=0x0000FF>;    //Always 0x1C
+int Unknown7 <bgcolor=0x0000FF>;    //Always 1
+int Unknown8 <bgcolor=0x0000FF>;    //Always 2
+int Unknown9 <bgcolor=0x0000FF>;
+int Unknown10 <bgcolor=0x0000FF>;   //Always 4
 byte Signature[4] <bgcolor=0x995555>;
-int Unknown5[4] <bgcolor=0x0000FF>;
+int Unknown11 <bgcolor=0x0000FF>;
+int Unknown12 <bgcolor=0x0000FF>;   //Always 0x3E8
+int Unknown13 <bgcolor=0x0000FF>;
+int Unknown14 <bgcolor=0x0000FF>;   //Always 0
 
 //Some Data?
 int DataSize <bgcolor=0xAAAA00>;    //Size of all data following this point
-int Unknown9[3] <bgcolor=0x0000FF>;
+int Unknown15 <bgcolor=0x0000FF>;   //Always 2
+int Unknown16 <bgcolor=0x0000FF>;   //Always 4
+int Unknown17 <bgcolor=0x0000FF>;
 StringStruct OriginalFile;
 StringStruct Description;
 
 //Internal Parameters
-byte Unknown6[0x20] <bgcolor=0x0000FF>;
+int Unknown18 <bgcolor=0x0000FF>;   //Always 1
+int Unknown19 <bgcolor=0x0000FF>;   //Always 0
+int Unknown20 <bgcolor=0x0000FF>;
+int Unknown21 <bgcolor=0x0000FF>;   //Always 3
+int Unknown22 <bgcolor=0x0000FF>;   //Always 4
+int Unknown23 <bgcolor=0x0000FF>;
+int Unknown24 <bgcolor=0x0000FF>;   //Always 0
+int Unknown25 <bgcolor=0x0000FF>;
 int InternalParameterCount <bgcolor=0xAAAA00>;
 struct
 {
@@ -175,7 +219,7 @@ struct
 } InternalParams;
 
 //External Parameters
-byte Unknown7[4] <bgcolor=0x0000FF>;
+byte Unknown26[4] <bgcolor=0x0000FF>;
 int ExternalParameterCount <bgcolor=0xAAAA00>;
 struct
 {
@@ -183,6 +227,11 @@ struct
 } ExternalParams;
 
 //Some More Data?
-int Unknown8[6] <bgcolor=0x0000FF>;
+int Unknown26 <bgcolor=0x0000FF>;
+int Unknown27 <bgcolor=0x0000FF>;   //Always 0
+int Unknown28 <bgcolor=0x0000FF>;
+int Unknown29 <bgcolor=0x0000FF>;   //Always 0
+int Unknown30 <bgcolor=0x0000FF>;
+int Unknown31 <bgcolor=0x0000FF>;   //Always 0
 
 #endif // _DS1_MTD_BT
