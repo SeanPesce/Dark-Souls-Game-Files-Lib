@@ -3,6 +3,7 @@
 //
 // File: Dark Souls .PARAMDEF (Parameter Definition File)
 // Author: Jed "Nyxojaele" Lang
+// Other contributors: Sean Pesce
 // Revision: 1
 //--------------------------------------
 #ifndef _DS1_PARAMDEF_BT
@@ -11,10 +12,21 @@
 #include "Utility.bt"
 
 local uint paramdef_column_count = 0;
-    
+
+
 typedef struct
 {
     char JPName[0x40];
+} ParamDefJPName <read=ParamDefJPName_to_shift_jis>;
+
+wstring ParamDefJPName_to_shift_jis(ParamDefJPName& in_jp_name) {
+    return StringToWString(in_jp_name.JPName, CHARSET_JAPANESE);
+}
+
+
+typedef struct
+{
+    ParamDefJPName JPName;
     char ExternalType[8];
     char StrFormat[8];
     int Unknown2 <format=hex>;
@@ -29,7 +41,7 @@ typedef struct
     {
         local int oldPos = FTell();
         FSeek(DescriptionOffset);
-        string Description <bgcolor=0xBB9900>;
+        string Description <bgcolor=0xBB9900, read=str_to_shift_jis>;
         DescriptionTmp = Description;
         FSeek(oldPos);
     }

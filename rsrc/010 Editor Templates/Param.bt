@@ -3,10 +3,13 @@
 //
 // File: Dark Souls .PARAM (Parameter File)
 // Author: Jed "Nyxojaele" Lang
+// Other contributors: Sean Pesce
 // Revision: 1
 //--------------------------------------
 #ifndef _DS1_PARAM_BT
     #define _DS1_PARAM_BT
+
+#include "Utility.bt"
 
 typedef struct(int dataSize)
 {
@@ -28,20 +31,21 @@ typedef struct(int dataSize)
     {
         oldPos = FTell();
         FSeek(NameOffset);
-        string Name <bgcolor=0xBB9900>;
+        string Name <bgcolor=0xBB9900, read=str_to_shift_jis>;
         FSeek(oldPos);
     }
 } RowStruct <read=ReadRowStruct>;
-string ReadRowStruct(RowStruct &rs)
+wstring ReadRowStruct(RowStruct &rs)
 {
     if (exists(rs.Name))
     {
         string ret;
-        SPrintf(ret, "%d: %s", rs.Id, rs.Name);
-        return ret;
+        SPrintf(ret, "%d: ", rs.Id);
+        wstring wret = StringToWString(ret) + str_to_shift_jis(rs.Name);
+        return wret;
     }
     else
-        return "<empty>";
+        return L"<empty>";
 }
 
 int StringsOffset <format=hex>;
