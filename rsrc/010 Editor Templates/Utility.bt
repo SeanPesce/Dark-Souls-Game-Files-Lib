@@ -105,5 +105,9 @@ string ChecksumToString(Checksum &cs) {
     return hash_str;
 }
 
+wstring str_to_shift_jis(string& in_str) {
+    return StringToWString(in_str, CHARSET_JAPANESE);
+}
+
 
 #endif // _SP_UTILITY_BT
