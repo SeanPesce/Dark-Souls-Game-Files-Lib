@@ -1,0 +1,116 @@
+//----------------------------------------------------------------------------
+//--- 010 Editor v5.0 Binary Template
+//
+// File: BreakObj.bt
+// Author: Sean Pesce
+// Revision: 0.0.1
+// Purpose: Parsing Dark Souls *.breakobj files
+//----------------------------------------------------------------------------
+#ifndef _SP_BREAK_OBJ_BT
+    #define _SP_BREAK_OBJ_BT
+
+typedef struct
+{
+    char   BJBO[4];
+    uint32 version <format=hex, comment="Always 0x8051701">; // Might not be version, but this value is constant and verified at run-time (DARKSOULS.exe+0xA941EA)
+} BreakObjSignature <read=read_breakobj_signature>;
+
+
+string read_breakobj_signature(BreakObjSignature& sig)
+{
+    local string tmp_breakobj_sig;
+    SPrintf(tmp_breakobj_sig, "\"%s\"  |  0x%x", sig.BJBO, sig.version);
+    return tmp_breakobj_sig;
+}
+
+
+typedef struct
+{
+    BreakObjSignature signature <bgcolor=0x7AA3E8>;
+    uint32 subheader_size_modifier <comment=read_breakobj_subheader_size>; // ??
+    byte unknown[get_subheader_size(subheader_size_modifier)] <bgcolor=0xC6C9CE>;
+} BreakObjHeader;
+
+uint get_subheader_size(uint32 modifier)
+{
+    return ((modifier + 7) >> 3);
+}
+
+string read_breakobj_subheader_size(uint32& modifier)
+{
+    local string tmp_breakobj_subheader_size_str;
+    SPrintf(tmp_breakobj_subheader_size_str, "Subheader size = %u", get_subheader_size(modifier));
+    return tmp_breakobj_subheader_size_str;
+}
+
+
+typedef struct (uint size)
+{
+    byte unknown[size];
+} BreakObjEntry <optimize=false>;
+
+
+// Temporary storage used for printing total size of each group
+local ubyte last_group_entry_count = 0;
+
+typedef struct
+{
+    ubyte count; // Number of entries in this group (??)
+    last_group_entry_count = count;
+    ubyte size_modifier <comment=read_breakobj_group_size>;
+    //BreakObjEntry entries(get_breakobj_group_size(count, size_modifier)-2)[count];
+    BreakObjEntry entry_data(get_breakobj_group_size(count, size_modifier)-2);
+} BreakObjGroup <optimize=false>;
+
+uint get_breakobj_group_size(ubyte entry_count, ubyte modifier)
+{
+    //local uint tmp_breakobj_group_size = ((entry_count >> 3) << 8);
+    local uint tmp_breakobj_group_size = entry_count;
+    tmp_breakobj_group_size >>= 3;
+    tmp_breakobj_group_size <<= 8;
+    tmp_breakobj_group_size |= modifier;
+    return tmp_breakobj_group_size;
+}
+
+string read_breakobj_group_size(ubyte modifier)
+{
+    local string tmp_breakobj_group_size_str;
+    SPrintf(tmp_breakobj_group_size_str, "Total size = %u", get_breakobj_group_size(last_group_entry_count, modifier));
+    return tmp_breakobj_group_size_str;
+}
+
+
+// Check header signature
+if (ReadString(0,4) != "BJBO")
+{
+    Printf("WARNING - SIGNATURE MISMATCH: File might not be a valid .breakobj file\n");
+}
+if (ReadUInt(4) != 0x8051701)
+{
+    Printf("WARNING - VERSION MISMATCH:   File might not be a valid .breakobj file\n");
+}
+
+
+BreakObjHeader header;
+
+
+local uint32 current_offset = FTell();
+local uint   group_count    = 0;
+while (current_offset < FileSize())
+{
+    //if (ReadUByte(current_offset) != 1)
+    //{
+    //    Printf("Multiple entries in group: offset=0x%x \tindex=%u \tentry_count=%u \tmodifier=%u \ttotal_size=%u\n", current_offset, group_count, ReadUByte(current_offset), ReadUByte(current_offset+1), get_breakobj_group_size(ReadUByte(current_offset), ReadUByte(current_offset+1)));
+    //}
+
+    current_offset += get_breakobj_group_size(ReadUByte(current_offset), ReadUByte(current_offset+1));
+    group_count++;
+}
+
+if (group_count > 0)
+{
+    BreakObjGroup data[group_count];
+}
+
+
+#endif // _SP_BREAK_OBJ_BT
