@@ -1,0 +1,265 @@
+//-----------------------------------------------------------------------------------------------------------------------------------
+//--- 010 Editor v7 Binary Template
+//
+// File: .FSB (FMOD Sound Bank file v4.0)
+// Author: Sean Pesce*
+// Revision: 1
+// *NOTE: Most of the code in this template was copied or modified from code found in the vgmstream audio library or the FMOD forums:
+//        https://github.com/kode54/vgmstream/blob/master/src/meta/fsb.c
+//        https://www.fmod.org/questions/question/forum-4928/
+//-----------------------------------------------------------------------------------------------------------------------------------
+#ifndef _DS1_FSB4_BT
+    #define _DS1_FSB4_BT
+
+BitfieldDisablePadding();
+local string fsb_version = "";
+local float  cumulative_duration = 0.0f;
+
+
+/* ************************************************************************************************************
+ * FSB defines, copied from the public spec (https://www.fmod.org/questions/question/forum-4928/)
+ * The format is mostly compatible for FSB1/2/3/4, but not FSB5. Headers always use LE. A FSB contains
+ *  main header + sample header(s) + raw data. In multistreams N sample headers are stored (and
+ *  if the BASICHEADERS flag is set, all headers but the first use HEADER_BASIC = numsamples + datasize)
+ * ************************************************************************************************************ */
+#define FMOD_FSB_NAMELEN               30
+/* These flags are used for FMOD_FSB_HEADER::mode */
+#define FMOD_FSB_SOURCE_FORMAT         0x00000001  /* all samples stored in their original compressed format */
+#define FMOD_FSB_SOURCE_BASICHEADERS   0x00000002  /* samples should use the basic header structure */
+#define FMOD_FSB_SOURCE_ENCRYPTED      0x00000004  /* all sample data is encrypted */
+#define FMOD_FSB_SOURCE_BIGENDIANPCM   0x00000008  /* pcm samples have been written out in big-endian format */
+#define FMOD_FSB_SOURCE_NOTINTERLEAVED 0x00000010  /* Sample data is not interleaved. */
+#define FMOD_FSB_SOURCE_MPEG_PADDED    0x00000020  /* Mpeg frames are now rounded up to the nearest 2 bytes for normal sounds, or 16 bytes for multichannel. */
+#define FMOD_FSB_SOURCE_MPEG_PADDED4   0x00000040  /* Mpeg frames are now rounded up to the nearest 4 bytes for normal sounds, or 16 bytes for multichannel. */
+
+/* These flags are used for FMOD_FSB_HEADER::version */
+#define FMOD_FSB_VERSION_3_0         0x00030000  /* FSB version 3.0 */
+#define FMOD_FSB_VERSION_3_1         0x00030001  /* FSB version 3.1 */
+#define FMOD_FSB_VERSION_4_0         0x00040000  /* FSB version 4.0 */
+
+/* FMOD 3 defines.  These flags are used for FMOD_FSB_SAMPLE_HEADER::mode */
+#define FSOUND_LOOP_OFF              0x00000001  /* For non looping samples. */
+#define FSOUND_LOOP_NORMAL           0x00000002  /* For forward looping samples. */
+#define FSOUND_LOOP_BIDI             0x00000004  /* For bidirectional looping samples.  (no effect if in hardware). */
+#define FSOUND_8BITS                 0x00000008  /* For 8 bit samples. */
+#define FSOUND_16BITS                0x00000010  /* For 16 bit samples. */
+#define FSOUND_MONO                  0x00000020  /* For mono samples. */
+#define FSOUND_STEREO                0x00000040  /* For stereo samples. */
+#define FSOUND_UNSIGNED              0x00000080  /* For user created source data containing unsigned samples. */
+#define FSOUND_SIGNED                0x00000100  /* For user created source data containing signed data. */
+#define FSOUND_MPEG                  0x00000200  /* For MPEG layer 2/3 data. */
+#define FSOUND_CHANNELMODE_ALLMONO   0x00000400  /* Sample is a collection of mono channels. */
+#define FSOUND_CHANNELMODE_ALLSTEREO 0x00000800  /* Sample is a collection of stereo channel pairs */
+#define FSOUND_HW3D                  0x00001000  /* Attempts to make samples use 3d hardware acceleration. (if the card supports it) */
+#define FSOUND_2D                    0x00002000  /* Tells software (not hardware) based sample not to be included in 3d processing. */
+#define FSOUND_SYNCPOINTS_NONAMES    0x00004000  /* Specifies that syncpoints are present with no names */
+#define FSOUND_DUPLICATE             0x00008000  /* This subsound is a duplicate of the previous one i.e. it uses the same sample data but w/different mode bits */
+#define FSOUND_CHANNELMODE_PROTOOLS  0x00010000  /* Sample is 6ch and uses L C R LS RS LFE standard. */
+#define FSOUND_MPEGACCURATE          0x00020000  /* For FSOUND_Stream_Open - for accurate FSOUND_Stream_GetLengthMs/FSOUND_Stream_SetTime.  WARNING, see FSOUND_Stream_Open for inital opening time performance issues. */
+#define FSOUND_HW2D                  0x00080000  /* 2D hardware sounds.  allows hardware specific effects */
+#define FSOUND_3D                    0x00100000  /* 3D software sounds */
+#define FSOUND_32BITS                0x00200000  /* For 32 bit (float) samples. */
+#define FSOUND_IMAADPCM              0x00400000  /* Contents are stored compressed as IMA ADPCM */
+#define FSOUND_VAG                   0x00800000  /* For PS2 only - Contents are compressed as Sony VAG format */
+#define FSOUND_XMA                   0x01000000  /* For Xbox360 only - Contents are compressed as XMA format */
+#define FSOUND_GCADPCM               0x02000000  /* For Gamecube only - Contents are compressed as Gamecube DSP-ADPCM format */
+#define FSOUND_MULTICHANNEL          0x04000000  /* For PS2 and Gamecube only - Contents are interleaved into a multi-channel (more than stereo) format */
+#define FSOUND_OGG                   0x08000000  /* For vorbis encoded ogg data */
+#define FSOUND_CELT                  0x08000000  /* For vorbis encoded ogg data */
+#define FSOUND_MPEG_LAYER3           0x10000000  /* Data is in MP3 format. */
+#define FSOUND_MPEG_LAYER2           0x00040000  /* Data is in MP2 format. */
+#define FSOUND_LOADMEMORYIOP         0x20000000  /* For PS2 only - &quot;name&quot; will be interpreted as a pointer to data for streaming and samples.  The address provided will be an IOP address */
+#define FSOUND_IMAADPCMSTEREO        0x20000000  /* Signify IMA ADPCM is actually stereo not two interleaved mono */
+#define FSOUND_IGNORETAGS            0x40000000  /* Skips id3v2 etc tag checks when opening a stream, to reduce seek/read overhead when opening files (helps with CD performance) */
+#define FSOUND_SYNCPOINTS            0x80000000  /* Specifies that syncpoints are present */
+
+/* These flags are used for FMOD_FSB_SAMPLE_HEADER::mode */
+#define FSOUND_CHANNELMODE_MASK      (FSOUND_CHANNELMODE_ALLMONO | FSOUND_CHANNELMODE_ALLSTEREO | FSOUND_CHANNELMODE_PROTOOLS)
+#define FSOUND_CHANNELMODE_DEFAULT   0x00000000  /* Determine channel assignment automatically from channel count. */
+#define FSOUND_CHANNELMODE_RESERVED  0x00000C00
+#define FSOUND_NORMAL                (FSOUND_16BITS | FSOUND_SIGNED | FSOUND_MONO)
+#define FSB_SAMPLE_DATA_ALIGN        32
+
+
+/* Main FSB file header */
+typedef struct {
+
+    char id[4] <bgcolor=0xFFFFFF, fgcolor=cBlue>; /* "FSB4" */
+    if (id != "FSB4"){
+        Printf("[WARNING] File may not be a valid FSB4 container\n");
+    }
+    uint32 count; /* Number of audio files ("samples"/"tracks") stored in this container file */
+    uint32 header_size <bgcolor=0xFFCFB2>;
+    uint32 data_size <bgcolor=0xEFCFB2>;
+    ushort version_minor <hidden=true, fgcolor=cDkGray>;
+    SPrintf(fsb_version, "%u.%u", ReadUShort(FTell()), version_minor);
+    ushort version <read=get_fsb_version, fgcolor=cBlue>;
+    uint32 mode <read=get_fsb_mode_string, comment=get_bitfield_as_string, bgcolor=0xC0C40C>; /* Flags that apply to all samples in this FSB */
+    uint64 hash <bgcolor=0x0CFCCC, format=hex>; /* Truncated MD5 hash generated using only information which would break FEV/FSB combatibility */
+    ubyte guid[16] <bgcolor=0x0CCCCC, format=hex>; /* Unique identifier */
+} FMOD_FSB4_HEADER <bgcolor=0xC4C4FC>; /* 48 bytes */
+
+
+
+/* Sub-header containing metadata for a packed audio file */
+typedef struct {
+
+    ushort subheader_size <bgcolor=0xFFCFB2>;
+    char file_name[FMOD_FSB_NAMELEN] <fgcolor=cBlue>;
+    uint32 samples;
+    uint32 data_size;
+    uint32 loop_start;
+    uint32 loop_end;   // loop_end = samples-1 (Always?)
+    
+    uint32 mode <format=hex, comment=get_bitfield_as_string>; /* Bit field */
+    int32  default_frequency;
+    ushort default_volume;
+    short  default_pan;  /* @TODO: Clarify this variable */
+    ushort default_pri;  /* @TODO: Clarify this variable */
+    
+    /* Add to cumulative audio duration */
+    cumulative_duration += ((float)samples/(float)default_frequency);
+    
+    ushort channels;
+    float  min_dist;
+    float  max_dist;
+    uint32 var_frequency;
+    ushort var_volume;
+    short  var_pan;
+
+} FMOD_FSB_SAMPLE_HEADER <bgcolor=0xEBFFD8, read=get_fsb4_sample_file_name, comment=calculate_fsb4_sample_stats>; /* 80 bytes */
+
+
+/* Container for audio track header data */
+typedef struct (uint64 count) {
+    FMOD_FSB_SAMPLE_HEADER data[count] <optimize=false>;
+} FMOD_FSB_SAMPLE_HEADER_SEGMENT;
+
+/* Unknown data */
+typedef struct (uint64 size) {
+    ubyte data[size];
+} BLOB;
+
+/* Unused/ignored data */
+typedef struct BLOB PADDING <bgcolor=0xCCCCCC>;
+
+/* Compressed audio data */
+typedef struct BLOB FMOD_FSB_AUDIO_SAMPLE;
+
+
+/* Read all header data */
+FMOD_FSB4_HEADER header;
+FMOD_FSB_SAMPLE_HEADER_SEGMENT sample_headers(header.count) <read=get_cumulative_duration>;
+
+/* Pad for alignment */
+if ((FTell() % FSB_SAMPLE_DATA_ALIGN) != 0) {
+    PADDING pad(FTell()%FSB_SAMPLE_DATA_ALIGN);
+}
+
+struct {
+    /* Determine audio file boundaries */
+    local uint64 i = 0;
+    for (i = 0; i < header.count; i++) {
+        if (GetBackColor() == 0xFFCEE1) {
+            SetBackColor(0xFFCFCE);
+        } else {
+            SetBackColor(0xFFCEE1);
+        }
+        FMOD_FSB_AUDIO_SAMPLE audio(sample_headers.data[i].data_size); /* @TODO: Parse audio data? (not likely) */
+    }
+} FMOD_FSB_AUDIO_DATA_SEGMENT;
+
+SetBackColor(cNone);
+
+
+/* Any remaining bytes are padding/unused */
+if ((FileSize() > FTell()) > 0) {
+    PADDING eof_pad(FileSize() - FTell()) <bgcolor=0xCCCCCC>;
+}
+
+
+/* Finished reading FSB file */
+
+
+
+string get_fsb_mode_string(uint32& mode) {
+    local string s = "";
+    if ((mode & FMOD_FSB_SOURCE_FORMAT)) {
+        SPrintf(s, "%s%s | ", s, "FMOD_FSB_SOURCE_FORMAT");
+    }
+    if ((mode & FMOD_FSB_SOURCE_BASICHEADERS)) {
+        SPrintf(s, "%s%s | ", s, "FMOD_FSB_SOURCE_BASICHEADERS");
+    }
+    if ((mode & FMOD_FSB_SOURCE_ENCRYPTED)) {
+        SPrintf(s, "%s%s | ", s, "FMOD_FSB_SOURCE_ENCRYPTED");
+    }
+    if ((mode & FMOD_FSB_SOURCE_BIGENDIANPCM)) {
+        SPrintf(s, "%s%s | ", s, "FMOD_FSB_SOURCE_BIGENDIANPCM");
+    }
+    if ((mode & FMOD_FSB_SOURCE_NOTINTERLEAVED)) {
+        SPrintf(s, "%s%s | ", s, "FMOD_FSB_SOURCE_NOTINTERLEAVED");
+    }
+    if ((mode & FMOD_FSB_SOURCE_MPEG_PADDED)) {
+        SPrintf(s, "%s%s | ", s, "FMOD_FSB_SOURCE_MPEG_PADDED");
+    }
+    if ((mode & FMOD_FSB_SOURCE_MPEG_PADDED4)) {
+        SPrintf(s, "%s%s | ", s, "FMOD_FSB_SOURCE_MPEG_PADDED4");
+    }
+    
+    if (Strlen(s) > 0 && s[Strlen(s)-1] == ' ') {
+        s[Strlen(s)-3] = '\0';
+    }
+    if (Strlen(s) > 0) {
+        SPrintf(s, "0x%x = ( %s )", mode, s);
+    }
+    return s;
+}
+
+
+string get_bitfield_as_string(uint32& mode) {
+    local string s = "";
+    local ubyte index;
+    local uint32 mask;
+    for (index = 0; index < 32; index++) {
+        mask = 1;
+        mask <<= index;
+        if ((mask & mode)) {
+            SPrintf(s, "1%s", s);
+        } else {
+            SPrintf(s, "0%s", s);
+        }
+        if (index > 0 && ((index+1) % 4 == 0)) {
+            SPrintf(s, " %s", s);
+        }
+    }
+    return s;
+}
+
+
+string get_cumulative_duration(FMOD_FSB_SAMPLE_HEADER_SEGMENT& h) {
+    local string s;
+    local string plural = "s";
+    if (header.count == 1) {
+        plural = "";
+    }
+    SPrintf(s, "%u track%s;   Total duration = %.3f second%s", header.count, plural, cumulative_duration, plural);
+    return s;
+}
+
+
+string get_fsb_version(ushort& v) {
+    return fsb_version;
+}
+
+
+string get_fsb4_sample_file_name(FMOD_FSB_SAMPLE_HEADER& h) {
+    return h.file_name;
+}
+
+string calculate_fsb4_sample_stats(FMOD_FSB_SAMPLE_HEADER& h) {
+    local string s;
+    SPrintf(s, "%.2f bits per sample;    Duration=%.3f secs", ((float)(h.data_size*8)/(float)h.samples)/(float)h.channels, ((float)h.samples/(float)h.default_frequency));
+    return s;
+}
+
+#endif // _DS1_FSB4_BT
