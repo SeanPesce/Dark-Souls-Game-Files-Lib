@@ -1,86 +1,134 @@
 //----------------------------------------------------------------------------
-//--- 010 Editor v5.0 Binary Template
+//--- 010 Editor Binary Template
 //
 // File: BreakObj.bt
 // Author: Sean Pesce
-// Revision: 0.0.1
+// Revision: 1
 // Purpose: Parsing Dark Souls *.breakobj files
 //----------------------------------------------------------------------------
 #ifndef _SP_BREAK_OBJ_BT
     #define _SP_BREAK_OBJ_BT
 
+//#define SP_DEBUG
+
+#include "Utility.bt"
+
+
+// Maximum number of entries found in a vanilla DS1 .breakobj file
+#define MAX_BREAK_OBJ_ENTRIES 517
+
+
+///////////////////////////////////////////
+/////////////// Debug stuff ///////////////
+string get_all_unsigned_32bit_datatypes_at_offset_as_str(uint64 pos)
+{
+    local string tmp_str_contents;
+    SPrintf(tmp_str_contents, "%s%u  \t%u  \t%u  \t%f"/*  \t%f"*/, tmp_str_contents, ReadUByte(pos), ReadUShort(pos), ReadUInt(pos), ReadHFloat(pos)/*, ReadFloat(pos)*/);
+    return tmp_str_contents;
+}
+/////////////// End of debug stuff ///////////////
+//////////////////////////////////////////////////
+
+
+
+
+// File signature definition
 typedef struct
 {
-    char   BJBO[4];
+    char   BJBO[4]; // Always "BJBO"
     uint32 version <format=hex, comment="Always 0x8051701">; // Might not be version, but this value is constant and verified at run-time (DARKSOULS.exe+0xA941EA)
 } BreakObjSignature <read=read_breakobj_signature>;
 
 
+// File signature utility functions
 string read_breakobj_signature(BreakObjSignature& sig)
 {
     local string tmp_breakobj_sig;
-    SPrintf(tmp_breakobj_sig, "\"%s\"  |  0x%x", sig.BJBO, sig.version);
+    SPrintf(tmp_breakobj_sig, "\"%s\"    0x%x", sig.BJBO, sig.version);
     return tmp_breakobj_sig;
 }
 
 
+
+// File header structure definition
 typedef struct
 {
     BreakObjSignature signature <bgcolor=0x7AA3E8>;
-    uint32 subheader_size_modifier <comment=read_breakobj_subheader_size>; // ??
-    byte unknown[get_subheader_size(subheader_size_modifier)] <bgcolor=0xC6C9CE>;
+    uint32 subheader_bit_count <comment=read_breakobj_subheader_size>; // Each subheader bit is a flag indicating whether this file contains a corresponding segment
+    // Note: Number of 1 bits corresponds to number of entries in the file
+    byte flags[get_subheader_size(subheader_bit_count)] <bgcolor=0xC6C9CE>;
 } BreakObjHeader;
 
+
+// File header utility functions
 uint get_subheader_size(uint32 modifier)
 {
-    return ((modifier + 7) >> 3);
+    return ((modifier + 7) / 8);
 }
 
-string read_breakobj_subheader_size(uint32& modifier)
+string read_breakobj_subheader_size(uint32 modifier)
 {
-    local string tmp_breakobj_subheader_size_str;
-    SPrintf(tmp_breakobj_subheader_size_str, "Subheader size = %u", get_subheader_size(modifier));
-    return tmp_breakobj_subheader_size_str;
+    return "Subheader size = " + uint32_to_string(get_subheader_size(modifier)) + " bytes";
 }
 
 
+
+// Main data structure definition
 typedef struct (uint size)
 {
-    byte unknown[size];
-} BreakObjEntry <optimize=false>;
+    local uint start_pos = FTell();
+    size -= 2; // Adjust for first 2 bytes parsed in parent structure
+
+    
+    
+    size -= (FTell() - start_pos);
+    byte unknown_data[size];
+} BreakObjEntry <optimize=false, bgcolor=0xEBFFD8>;
 
 
-// Temporary storage used for printing total size of each group
-local ubyte last_group_entry_count = 0;
 
+// Data container structure definition
 typedef struct
 {
-    ubyte count; // Number of entries in this group (??)
-    last_group_entry_count = count;
-    ubyte size_modifier <comment=read_breakobj_group_size>;
-    //BreakObjEntry entries(get_breakobj_group_size(count, size_modifier)-2)[count];
-    BreakObjEntry entry_data(get_breakobj_group_size(count, size_modifier)-2);
-} BreakObjGroup <optimize=false>;
+    // Flags & lower 5 bits of size are stored in a single byte, like so (f=flag bit, s=size bit):
+    // sssssfff
+    ubyte flags_and_size_high_bits <bgcolor=0xFFCFB2, hidden=true>;
+    local ubyte flags[3];
+    flags[0] = flags_and_size_high_bits & 1;
+    flags[1] = flags_and_size_high_bits & 2;
+    flags[2] = flags_and_size_high_bits & 4;
+    
+    local uint size_low_pos = FTell();
+    ubyte size_low_bits <bgcolor=0xFFCFB2, hidden=true>;
+    local uint size <bgcolor=0xFFCFB2, hidden=false> = get_breakobj_group_size(flags_and_size_high_bits, size_low_bits);
+    
+    BreakObjEntry entry_data(size);
+    
+} BreakObjGroup <optimize=false, read=get_breakobj_group_description>;
 
-uint get_breakobj_group_size(ubyte entry_count, ubyte modifier)
+
+// Data container utility functions
+uint get_breakobj_group_size(ubyte high_bits, ubyte low_bits)
 {
-    //local uint tmp_breakobj_group_size = ((entry_count >> 3) << 8);
-    local uint tmp_breakobj_group_size = entry_count;
-    tmp_breakobj_group_size >>= 3;
-    tmp_breakobj_group_size <<= 8;
-    tmp_breakobj_group_size |= modifier;
+    local uint tmp_breakobj_group_size = high_bits;
+    //tmp_breakobj_group_size >>= 3;
+    //tmp_breakobj_group_size <<= 8;
+    tmp_breakobj_group_size /= 8; // 2^3
+    tmp_breakobj_group_size *= 256; // 2^8
+    tmp_breakobj_group_size |= low_bits;
     return tmp_breakobj_group_size;
 }
 
-string read_breakobj_group_size(ubyte modifier)
+
+string get_breakobj_group_description(BreakObjGroup& g)
 {
-    local string tmp_breakobj_group_size_str;
-    SPrintf(tmp_breakobj_group_size_str, "Total size = %u", get_breakobj_group_size(last_group_entry_count, modifier));
-    return tmp_breakobj_group_size_str;
+    return "Size=" + uint_to_string(g.size) + " bytes        Flags: " + ubyte_to_string(g.flags[0]) + " " + ubyte_to_string(g.flags[1]) + " " + ubyte_to_string(g.flags[2]);
 }
 
 
-// Check header signature
+
+
+// Check for valid header signature
 if (ReadString(0,4) != "BJBO")
 {
     Printf("WARNING - SIGNATURE MISMATCH: File might not be a valid .breakobj file\n");
@@ -91,25 +139,43 @@ if (ReadUInt(4) != 0x8051701)
 }
 
 
-BreakObjHeader header;
+// Total number of data entries stored as a string
+local string total_entry_count_str;
 
 
-local uint32 current_offset = FTell();
-local uint   group_count    = 0;
-while (current_offset < FileSize())
+// Parse file header
+BreakObjHeader header<read=read_total_entry_count>;
+
+
+// Count data containers before parsing
+local uint32 post_header_offset = FTell();
+local uint   group_count = 0;
+while (post_header_offset < FileSize())
 {
-    //if (ReadUByte(current_offset) != 1)
-    //{
-    //    Printf("Multiple entries in group: offset=0x%x \tindex=%u \tentry_count=%u \tmodifier=%u \ttotal_size=%u\n", current_offset, group_count, ReadUByte(current_offset), ReadUByte(current_offset+1), get_breakobj_group_size(ReadUByte(current_offset), ReadUByte(current_offset+1)));
-    //}
-
-    current_offset += get_breakobj_group_size(ReadUByte(current_offset), ReadUByte(current_offset+1));
+    post_header_offset += get_breakobj_group_size(ReadUByte(post_header_offset), ReadUByte(post_header_offset+1));
     group_count++;
 }
 
+
+// Parse main file data
 if (group_count > 0)
 {
     BreakObjGroup data[group_count];
+}
+
+
+// Store total number of data entries as a string
+SPrintf(total_entry_count_str, "%u entries", group_count);
+string read_total_entry_count(BreakObjHeader& dummy_arg)
+{
+    return total_entry_count_str;
+}
+
+
+// Check that all bytes were parsed
+if (FTell() < FileSize())
+{
+    Printf("WARNING: %u bytes of unparsed data at EOF.\n", FileSize()-FTell());
 }
 
 
