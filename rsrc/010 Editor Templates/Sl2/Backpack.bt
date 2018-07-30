@@ -104,7 +104,9 @@ typedef struct (uint size, uint used){
     if(size >= (0xFFFFFFFF - 64) || size <= 0) {
         size = 2048;
     }
-    Backpack used_box[used] <optimize=false>;
+    if (used > 0) {
+        Backpack used_box[used] <optimize=false>;
+    }
     if(size - used > 0) {
         Backpack empty_box[size-used] <optimize=false, comment="Empty box part">;
     }

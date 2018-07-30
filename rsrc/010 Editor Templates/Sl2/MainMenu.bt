@@ -114,8 +114,10 @@ typedef struct {
                                     secondary_hash_calc_start,
                                     header_hash_start, footer_hash_start, header_hash_calculated,
                                     footer_hash_calculated, header_hash_recalculated);
-    if (hash_verified[0] == 0) {
+    if (ReadUInt(FTell()+16) != 0 && hash_verified[0] == 0) {
         SetForeColor(cRed);
+    } else if (ReadUInt(FTell()+16) == 0) {
+        SetForeColor(cGray);
     }
     Checksum header(16);
     SetForeColor(cNone);

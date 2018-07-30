@@ -338,6 +338,10 @@ typedef struct{
     //if(slot_size <= 0 || slot_size >= 0xFFFFFFFF || slot_size >= meta.chunks[slots].block_size || (meta.chunks[slots].start + slot_size) >= meta.chunks[slots + 1].start) {
         while(last_index != 0x0000FFFF && last_index != 0) {
             current_container_length = ReadUInt(FTell());
+            if ((FTell() + current_container_length + 4) >= FileSize()) {
+                Printf("Found EOF while reading multiplayer data segment\n");
+                break;
+            }
             last_index = ReadInt(FTell() + current_container_length + 4);
             if (last_index == 7) {
                 SoapstoneMessagesContainer player_messages <comment="Orange Soapstone messages">;
