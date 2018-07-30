@@ -26,6 +26,10 @@ string get_all_unsigned_32bit_datatypes_at_offset_as_str(uint64 pos)
     SPrintf(tmp_str_contents, "%s%u  \t%u  \t%u  \t%f"/*  \t%f"*/, tmp_str_contents, ReadUByte(pos), ReadUShort(pos), ReadUInt(pos), ReadHFloat(pos)/*, ReadFloat(pos)*/);
     return tmp_str_contents;
 }
+/* Unknown data chunk */
+typedef struct (uint64 size) {
+    ubyte data[size];
+} BLOB;
 /////////////// End of debug stuff ///////////////
 //////////////////////////////////////////////////
 
@@ -73,16 +77,25 @@ string read_breakobj_subheader_size(uint32 modifier)
 
 
 
+typedef struct (uint size)
+{
+    // @TODO
+    ubyte data[size];
+} BreakObjItem <optimize=false, bgcolor=0xEBFFB8>;
+
+
 // Main data structure definition
 typedef struct (uint size)
 {
     local uint start_pos = FTell();
     size -= 2; // Adjust for first 2 bytes parsed in parent structure
-
     
+    ubyte item_count;
+    local uint item_size = (size-1) / item_count; // item_size = 8 (always?)
+    BreakObjItem items(item_size)[item_count] <optimize=false>;
     
-    size -= (FTell() - start_pos);
-    byte unknown_data[size];
+    //size -= (FTell() - start_pos);
+    //byte unknown_data[size];
 } BreakObjEntry <optimize=false, bgcolor=0xEBFFD8>;
 
 
