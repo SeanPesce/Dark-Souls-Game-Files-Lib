@@ -14,6 +14,7 @@
 BitfieldDisablePadding();
 local string fsb_version = "";
 local float  cumulative_duration = 0.0f;
+local uint   current_track = 0;
 
 
 /* ************************************************************************************************************
@@ -78,6 +79,7 @@ local float  cumulative_duration = 0.0f;
 #define FSOUND_CHANNELMODE_DEFAULT   0x00000000  /* Determine channel assignment automatically from channel count. */
 #define FSOUND_CHANNELMODE_RESERVED  0x00000C00
 #define FSOUND_NORMAL                (FSOUND_16BITS | FSOUND_SIGNED | FSOUND_MONO)
+
 #define FSB_SAMPLE_DATA_ALIGN        32
 
 
@@ -94,7 +96,7 @@ typedef struct {
     ushort version_minor <hidden=true, fgcolor=cDkGray>;
     SPrintf(fsb_version, "%u.%u", ReadUShort(FTell()), version_minor);
     ushort version <read=get_fsb_version, fgcolor=cBlue>;
-    uint32 mode <read=get_fsb_mode_string, comment=get_bitfield_as_string, bgcolor=0xC0C40C>; /* Flags that apply to all samples in this FSB */
+    uint32 mode <read=get_fsb4_global_mode_string, comment=get_bitfield_as_string, bgcolor=0xC0C40C>; /* Flags that apply to all samples in this FSB */
     uint64 hash <bgcolor=0x0CFCCC, format=hex>; /* Truncated MD5 hash generated using only information which would break FEV/FSB combatibility */
     ubyte guid[16] <bgcolor=0x0CCCCC, format=hex>; /* Unique identifier */
 } FMOD_FSB4_HEADER <bgcolor=0xC4C4FC>; /* 48 bytes */
@@ -104,6 +106,7 @@ typedef struct {
 /* Sub-header containing metadata for a packed audio file */
 typedef struct {
 
+    local uint64 offset = FTell();
     ushort subheader_size <bgcolor=0xFFCFB2>;
     char file_name[FMOD_FSB_NAMELEN] <fgcolor=cBlue>;
     uint32 samples;
@@ -112,6 +115,8 @@ typedef struct {
     uint32 loop_end;   // loop_end = samples-1 (Always?)
     
     uint32 mode <format=hex, comment=get_bitfield_as_string>; /* Bit field */
+    //Printf("%s\n", get_fsb4_sample_header_mode_string(mode));
+    //Printf("%s\n", get_fsb4_sample_header_mode_bool_string(mode));
     int32  default_frequency;
     ushort default_volume;
     short  default_pan;  /* @TODO: Clarify this variable */
@@ -126,6 +131,15 @@ typedef struct {
     uint32 var_frequency;
     ushort var_volume;
     short  var_pan;
+    
+    // index    filename    header_offset    header_size    data_offset    data_size    freq    samples    duration    channels    loop_start    loop_end    min_dist    max_dist    def_vol    def_pan    def_pri    var_freq    var_vol    var_pan    mode
+    //Printf("%u    %s    0x%x    %u    0x%x    %u    %d    %u    %f    %u    %u    %u    %f    %f    %u    %d    %u    %u    %u    %d    0x%x\n",
+    //        current_track, file_name, offset, subheader_size, 0, data_size, default_frequency, samples, ((float)samples/(float)default_frequency), channels, loop_start, loop_end, min_dist, max_dist, default_volume, default_pan, default_pri, var_frequency, var_volume, var_pan, mode);
+    
+    // index    filename    header_offset    header_size    data_offset    data_size    freq    samples    duration    channels    loop_start    loop_end    min_dist    max_dist    def_vol    def_pan    def_pri    var_freq    var_vol    var_pan    mode    mode_flags_string
+    Printf("%u    %s    0x%x    %u    0x%x    %u    %d    %u    %f    %u    %u    %u    %f    %f    %u    %d    %u    %u    %u    %d    0x%x    %s\n",
+            current_track, file_name, offset, subheader_size, 0, data_size, default_frequency, samples, ((float)samples/(float)default_frequency), channels, loop_start, loop_end, min_dist, max_dist, default_volume, default_pan, default_pri, var_frequency, var_volume, var_pan, mode, get_fsb4_sample_header_mode_bool_string(mode));
+    current_track++;
 
 } FMOD_FSB_SAMPLE_HEADER <bgcolor=0xEBFFD8, read=get_fsb4_sample_file_name, comment=calculate_fsb4_sample_stats>; /* 80 bytes */
 
@@ -137,6 +151,7 @@ typedef struct (uint64 count) {
 
 /* Unknown data */
 typedef struct (uint64 size) {
+    local uint64 offset = FTell();
     ubyte data[size];
 } BLOB;
 
@@ -165,6 +180,7 @@ struct {
         } else {
             SetBackColor(0xFFCEE1);
         }
+        //Printf("0x%x\n", FTell());
         FMOD_FSB_AUDIO_SAMPLE audio(sample_headers.data[i].data_size); /* @TODO: Parse audio data? (not likely) */
     }
 } FMOD_FSB_AUDIO_DATA_SEGMENT;
@@ -182,7 +198,7 @@ if ((FileSize() > FTell()) > 0) {
 
 
 
-string get_fsb_mode_string(uint32& mode) {
+string get_fsb4_global_mode_string(uint32& mode) {
     local string s = "";
     if ((mode & FMOD_FSB_SOURCE_FORMAT)) {
         SPrintf(s, "%s%s | ", s, "FMOD_FSB_SOURCE_FORMAT");
@@ -212,6 +228,334 @@ string get_fsb_mode_string(uint32& mode) {
     if (Strlen(s) > 0) {
         SPrintf(s, "0x%x = ( %s )", mode, s);
     }
+    return s;
+}
+
+
+string get_fsb4_sample_header_mode_string(uint32& mode) {
+    local string s = "";
+    if ((mode & FSOUND_LOOP_OFF)) {
+        SPrintf(s, "%s%s | ", s, "FSOUND_LOOP_OFF");
+    }
+    if ((mode & FSOUND_LOOP_NORMAL)) {
+        SPrintf(s, "%s%s | ", s, "FSOUND_LOOP_NORMAL");
+    }
+    if ((mode & FSOUND_LOOP_BIDI)) {
+        SPrintf(s, "%s%s | ", s, "FSOUND_LOOP_BIDI");
+    }
+    if ((mode & FSOUND_8BITS)) {
+        SPrintf(s, "%s%s | ", s, "FSOUND_8BITS");
+    }
+    if ((mode & FSOUND_16BITS)) {
+        SPrintf(s, "%s%s | ", s, "FSOUND_16BITS");
+    }
+    if ((mode & FSOUND_MONO)) {
+        SPrintf(s, "%s%s | ", s, "FSOUND_MONO");
+    }
+    if ((mode & FSOUND_STEREO)) {
+        SPrintf(s, "%s%s | ", s, "FSOUND_STEREO");
+    }
+    if ((mode & FSOUND_UNSIGNED)) {
+        SPrintf(s, "%s%s | ", s, "FSOUND_UNSIGNED");
+    }
+    if ((mode & FSOUND_SIGNED)) {
+        SPrintf(s, "%s%s | ", s, "FSOUND_SIGNED");
+    }
+    if ((mode & FSOUND_MPEG)) {
+        SPrintf(s, "%s%s | ", s, "FSOUND_MPEG");
+    }
+    if ((mode & FSOUND_CHANNELMODE_ALLMONO)) {
+        SPrintf(s, "%s%s | ", s, "FSOUND_CHANNELMODE_ALLMONO");
+    }
+    if ((mode & FSOUND_CHANNELMODE_ALLSTEREO)) {
+        SPrintf(s, "%s%s | ", s, "FSOUND_CHANNELMODE_ALLSTEREO");
+    }
+    if ((mode & FSOUND_HW3D)) {
+        SPrintf(s, "%s%s | ", s, "FSOUND_HW3D");
+    }
+    if ((mode & FSOUND_2D)) {
+        SPrintf(s, "%s%s | ", s, "FSOUND_2D");
+    }
+    if ((mode & FSOUND_SYNCPOINTS_NONAMES)) {
+        SPrintf(s, "%s%s | ", s, "FSOUND_SYNCPOINTS_NONAMES");
+    }
+    if ((mode & FSOUND_DUPLICATE)) {
+        SPrintf(s, "%s%s | ", s, "FSOUND_DUPLICATE");
+    }
+    if ((mode & FSOUND_CHANNELMODE_PROTOOLS)) {
+        SPrintf(s, "%s%s | ", s, "FSOUND_CHANNELMODE_PROTOOLS");
+    }
+    if ((mode & FSOUND_MPEGACCURATE)) {
+        SPrintf(s, "%s%s | ", s, "FSOUND_MPEGACCURATE");
+    }
+    if ((mode & FSOUND_HW2D)) {
+        SPrintf(s, "%s%s | ", s, "FSOUND_HW2D");
+    }
+    if ((mode & FSOUND_3D)) {
+        SPrintf(s, "%s%s | ", s, "FSOUND_3D");
+    }
+    if ((mode & FSOUND_32BITS)) {
+        SPrintf(s, "%s%s | ", s, "FSOUND_32BITS");
+    }
+    if ((mode & FSOUND_IMAADPCM)) {
+        SPrintf(s, "%s%s | ", s, "FSOUND_IMAADPCM");
+    }
+    if ((mode & FSOUND_VAG)) {
+        SPrintf(s, "%s%s | ", s, "FSOUND_VAG");
+    }
+    if ((mode & FSOUND_XMA)) {
+        SPrintf(s, "%s%s | ", s, "FSOUND_XMA");
+    }
+    if ((mode & FSOUND_GCADPCM)) {
+        SPrintf(s, "%s%s | ", s, "FSOUND_GCADPCM");
+    }
+    if ((mode & FSOUND_MULTICHANNEL)) {
+        SPrintf(s, "%s%s | ", s, "FSOUND_MULTICHANNEL");
+    }
+    if ((mode & FSOUND_OGG)) {
+        SPrintf(s, "%s%s | ", s, "FSOUND_OGG");
+    }
+    if ((mode & FSOUND_CELT)) {
+        SPrintf(s, "%s%s | ", s, "FSOUND_CELT");
+    }
+    if ((mode & FSOUND_MPEG_LAYER3)) {
+        SPrintf(s, "%s%s | ", s, "FSOUND_MPEG_LAYER3");
+    }
+    if ((mode & FSOUND_MPEG_LAYER2)) {
+        SPrintf(s, "%s%s | ", s, "FSOUND_MPEG_LAYER2");
+    }
+    if ((mode & FSOUND_LOADMEMORYIOP)) {
+        SPrintf(s, "%s%s | ", s, "FSOUND_LOADMEMORYIOP");
+    }
+    if ((mode & FSOUND_IMAADPCMSTEREO)) {
+        SPrintf(s, "%s%s | ", s, "FSOUND_IMAADPCMSTEREO");
+    }
+    if ((mode & FSOUND_IGNORETAGS)) {
+        SPrintf(s, "%s%s | ", s, "FSOUND_IGNORETAGS");
+    }
+    if ((mode & FSOUND_SYNCPOINTS)) {
+        SPrintf(s, "%s%s | ", s, "FSOUND_SYNCPOINTS");
+    }
+    if ((mode & FSOUND_CHANNELMODE_MASK)) {
+        SPrintf(s, "%s%s | ", s, "FSOUND_CHANNELMODE_MASK");
+    }
+    if ((mode & FSOUND_CHANNELMODE_DEFAULT)) {
+        SPrintf(s, "%s%s | ", s, "FSOUND_CHANNELMODE_DEFAULT");
+    }
+    if ((mode & FSOUND_CHANNELMODE_RESERVED)) {
+        SPrintf(s, "%s%s | ", s, "FSOUND_CHANNELMODE_RESERVED");
+    }
+    if ((mode & FSOUND_NORMAL)) {
+        SPrintf(s, "%s%s | ", s, "FSOUND_NORMAL");
+    }
+    
+    if (Strlen(s) > 0 && s[Strlen(s)-1] == ' ') {
+        s[Strlen(s)-3] = '\0';
+    }
+    if (Strlen(s) > 0) {
+        SPrintf(s, "0x%x = ( %s )", mode, s);
+    }
+    return s;
+}
+
+
+string get_fsb4_sample_header_mode_bool_string(uint32& mode) {
+    local string s = "";
+        if ((mode & FSOUND_LOOP_OFF)) {
+        SPrintf(s, "%s    %s", s, "TRUE");
+    } else {
+        SPrintf(s, "%s    %s", s, "FALSE");
+    }
+    if ((mode & FSOUND_LOOP_NORMAL)) {
+        SPrintf(s, "%s    %s", s, "TRUE");
+    } else {
+        SPrintf(s, "%s    %s", s, "FALSE");
+    }
+    if ((mode & FSOUND_LOOP_BIDI)) {
+        SPrintf(s, "%s    %s", s, "TRUE");
+    } else {
+        SPrintf(s, "%s    %s", s, "FALSE");
+    }
+    if ((mode & FSOUND_8BITS)) {
+        SPrintf(s, "%s    %s", s, "TRUE");
+    } else {
+        SPrintf(s, "%s    %s", s, "FALSE");
+    }
+    if ((mode & FSOUND_16BITS)) {
+        SPrintf(s, "%s    %s", s, "TRUE");
+    } else {
+        SPrintf(s, "%s    %s", s, "FALSE");
+    }
+    if ((mode & FSOUND_MONO)) {
+        SPrintf(s, "%s    %s", s, "TRUE");
+    } else {
+        SPrintf(s, "%s    %s", s, "FALSE");
+    }
+    if ((mode & FSOUND_STEREO)) {
+        SPrintf(s, "%s    %s", s, "TRUE");
+    } else {
+        SPrintf(s, "%s    %s", s, "FALSE");
+    }
+    if ((mode & FSOUND_UNSIGNED)) {
+        SPrintf(s, "%s    %s", s, "TRUE");
+    } else {
+        SPrintf(s, "%s    %s", s, "FALSE");
+    }
+    if ((mode & FSOUND_SIGNED)) {
+        SPrintf(s, "%s    %s", s, "TRUE");
+    } else {
+        SPrintf(s, "%s    %s", s, "FALSE");
+    }
+    if ((mode & FSOUND_MPEG)) {
+        SPrintf(s, "%s    %s", s, "TRUE");
+    } else {
+        SPrintf(s, "%s    %s", s, "FALSE");
+    }
+    if ((mode & FSOUND_CHANNELMODE_ALLMONO)) {
+        SPrintf(s, "%s    %s", s, "TRUE");
+    } else {
+        SPrintf(s, "%s    %s", s, "FALSE");
+    }
+    if ((mode & FSOUND_CHANNELMODE_ALLSTEREO)) {
+        SPrintf(s, "%s    %s", s, "TRUE");
+    } else {
+        SPrintf(s, "%s    %s", s, "FALSE");
+    }
+    if ((mode & FSOUND_HW3D)) {
+        SPrintf(s, "%s    %s", s, "TRUE");
+    } else {
+        SPrintf(s, "%s    %s", s, "FALSE");
+    }
+    if ((mode & FSOUND_2D)) {
+        SPrintf(s, "%s    %s", s, "TRUE");
+    } else {
+        SPrintf(s, "%s    %s", s, "FALSE");
+    }
+    if ((mode & FSOUND_SYNCPOINTS_NONAMES)) {
+        SPrintf(s, "%s    %s", s, "TRUE");
+    } else {
+        SPrintf(s, "%s    %s", s, "FALSE");
+    }
+    if ((mode & FSOUND_DUPLICATE)) {
+        SPrintf(s, "%s    %s", s, "TRUE");
+    } else {
+        SPrintf(s, "%s    %s", s, "FALSE");
+    }
+    if ((mode & FSOUND_CHANNELMODE_PROTOOLS)) {
+        SPrintf(s, "%s    %s", s, "TRUE");
+    } else {
+        SPrintf(s, "%s    %s", s, "FALSE");
+    }
+    if ((mode & FSOUND_MPEGACCURATE)) {
+        SPrintf(s, "%s    %s", s, "TRUE");
+    } else {
+        SPrintf(s, "%s    %s", s, "FALSE");
+    }
+    if ((mode & FSOUND_HW2D)) {
+        SPrintf(s, "%s    %s", s, "TRUE");
+    } else {
+        SPrintf(s, "%s    %s", s, "FALSE");
+    }
+    if ((mode & FSOUND_3D)) {
+        SPrintf(s, "%s    %s", s, "TRUE");
+    } else {
+        SPrintf(s, "%s    %s", s, "FALSE");
+    }
+    if ((mode & FSOUND_32BITS)) {
+        SPrintf(s, "%s    %s", s, "TRUE");
+    } else {
+        SPrintf(s, "%s    %s", s, "FALSE");
+    }
+    if ((mode & FSOUND_IMAADPCM)) {
+        SPrintf(s, "%s    %s", s, "TRUE");
+    } else {
+        SPrintf(s, "%s    %s", s, "FALSE");
+    }
+    if ((mode & FSOUND_VAG)) {
+        SPrintf(s, "%s    %s", s, "TRUE");
+    } else {
+        SPrintf(s, "%s    %s", s, "FALSE");
+    }
+    if ((mode & FSOUND_XMA)) {
+        SPrintf(s, "%s    %s", s, "TRUE");
+    } else {
+        SPrintf(s, "%s    %s", s, "FALSE");
+    }
+    if ((mode & FSOUND_GCADPCM)) {
+        SPrintf(s, "%s    %s", s, "TRUE");
+    } else {
+        SPrintf(s, "%s    %s", s, "FALSE");
+    }
+    if ((mode & FSOUND_MULTICHANNEL)) {
+        SPrintf(s, "%s    %s", s, "TRUE");
+    } else {
+        SPrintf(s, "%s    %s", s, "FALSE");
+    }
+    if ((mode & FSOUND_OGG)) {
+        SPrintf(s, "%s    %s", s, "TRUE");
+    } else {
+        SPrintf(s, "%s    %s", s, "FALSE");
+    }
+    if ((mode & FSOUND_CELT)) {
+        SPrintf(s, "%s    %s", s, "TRUE");
+    } else {
+        SPrintf(s, "%s    %s", s, "FALSE");
+    }
+    if ((mode & FSOUND_MPEG_LAYER3)) {
+        SPrintf(s, "%s    %s", s, "TRUE");
+    } else {
+        SPrintf(s, "%s    %s", s, "FALSE");
+    }
+    if ((mode & FSOUND_MPEG_LAYER2)) {
+        SPrintf(s, "%s    %s", s, "TRUE");
+    } else {
+        SPrintf(s, "%s    %s", s, "FALSE");
+    }
+    if ((mode & FSOUND_LOADMEMORYIOP)) {
+        SPrintf(s, "%s    %s", s, "TRUE");
+    } else {
+        SPrintf(s, "%s    %s", s, "FALSE");
+    }
+    if ((mode & FSOUND_IMAADPCMSTEREO)) {
+        SPrintf(s, "%s    %s", s, "TRUE");
+    } else {
+        SPrintf(s, "%s    %s", s, "FALSE");
+    }
+    if ((mode & FSOUND_IGNORETAGS)) {
+        SPrintf(s, "%s    %s", s, "TRUE");
+    } else {
+        SPrintf(s, "%s    %s", s, "FALSE");
+    }
+    if ((mode & FSOUND_SYNCPOINTS)) {
+        SPrintf(s, "%s    %s", s, "TRUE");
+    } else {
+        SPrintf(s, "%s    %s", s, "FALSE");
+    }
+    if ((mode & FSOUND_CHANNELMODE_MASK)) {
+        SPrintf(s, "%s    %s", s, "TRUE");
+    } else {
+        SPrintf(s, "%s    %s", s, "FALSE");
+    }
+    if ((mode & FSOUND_CHANNELMODE_DEFAULT)) {
+        SPrintf(s, "%s    %s", s, "TRUE");
+    } else {
+        SPrintf(s, "%s    %s", s, "FALSE");
+    }
+    if ((mode & FSOUND_CHANNELMODE_RESERVED)) {
+        SPrintf(s, "%s    %s", s, "TRUE");
+    } else {
+        SPrintf(s, "%s    %s", s, "FALSE");
+    }
+    if ((mode & FSOUND_NORMAL)) {
+        SPrintf(s, "%s    %s", s, "TRUE");
+    } else {
+        SPrintf(s, "%s    %s", s, "FALSE");
+    }
+    
+    if (Strlen(s) >= 4) {
+        s = SubStr(s, 4);
+    }
+    
     return s;
 }
 
