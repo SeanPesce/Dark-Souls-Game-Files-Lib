@@ -1,0 +1,237 @@
+//------------------------------------------------------------------------------------------------------------------------------------------
+//--- 010 Editor v7 Binary Template
+//
+// File: .NVM (Dark Souls 1 Navimesh data)
+// Author: Sean Pesce*
+// Revision: 1
+// *This template is based on HotPocketRemix's Navimesh research:
+//      https://cdn.discordapp.com/attachments/337365605869027339/460887054969077781/DS1Navimesh.zip
+//------------------------------------------------------------------------------------------------------------------------------------------
+#ifndef _DS1_NVM_BT
+    #define _DS1_NVM_BT
+
+BitfieldDisablePadding();
+
+/* Navimesh flags (from WorldNvmMan) */
+#define NVM_TRI_DISABLE             0x0001   // "Solid"
+#define NVM_TRI_GATE                0x0002   // "Exit"
+#define NVM_TRI_BLOCK               0x0004   // "Obstacle"
+#define NVM_TRI_WALL                0x0008   // "Wall"
+#define NVM_TRI_DEGENERATE          0x0010   // Seems to be for triangles that are inside others and should be ignored.
+#define NVM_TRI_FLOOR_TO_WALL       0x0020   // "Wall-touching Floor"
+#define NVM_TRI_LANDING_POINT       0x0040   // "Landing Point"
+#define NVM_TRI_EVENT               0x0080   // "Event"
+#define NVM_TRI_EDGE                0x0100   // "Cliff"
+#define NVM_TRI_LARGE_SPACE         0x0200   // "Open Space" / "Wide"
+#define NVM_TRI_LADDER              0x0400   // "Ladder"
+#define NVM_TRI_HOLE                0x0800   // "Hole"
+#define NVM_TRI_DOOR                0x1000   // "Door"
+#define NVM_TRI_CLOSED_DOOR         0x2000   // "Closed Door"
+#define NVM_TRI_BLOCK_GATE          0x4000   // Seems to be for joining meshes between maps.
+#define NVM_TRI_INSIDE_WALL         0x8000   // Only used in New Londo, provides paths for Ghosts.
+#define NVM_TRI_WALL_GIANT          0x010000 // Not used, only referenced in WorldNvmMan.
+#define NVM_TRI_FLOOR_TO_WALL_GIANT 0x020000
+
+
+local uint64 contained_tri_count    = 0;
+local uint64 first_rec_prism_offset = 0;
+
+
+typedef struct {
+    uint32 unknown <bgcolor=0xCCCCCC>; // 01 00 00 00 (Version?)
+    if (unknown != 1) {
+        Printf("[WARNING] File may not be a valid Navimesh file\n");
+    }
+    uint32 vertex_count <bgcolor=0xFFCFB2>;
+    uint32 vertex_data_offset <bgcolor=0xEBFFD8>;
+    uint32 tri_count <bgcolor=0xFFCFB2, fgcolor=cDkRed>;
+    uint32 tri_data_offset <bgcolor=0xEBFFD8, fgcolor=cDkRed>;
+    uint32 root_rec_prism_offset <bgcolor=0xEBFFD8>; // Points to the root RecPrism in the RecPrism table, which is usually the last record
+    first_rec_prism_offset = root_rec_prism_offset;
+    if (FTell() < vertex_data_offset) {
+        ubyte padding[vertex_data_offset - FTell()] <bgcolor=0xCCCCCC>; // Zeroes
+    }
+} NvmHeader; /* 24 bytes + padding */
+
+
+typedef struct {
+    float x <fgcolor=cDkRed>;
+    float y <fgcolor=cDkGreen>;
+    float z <fgcolor=cDkBlue>;
+} Nvm3DCoordinates; /* 12 bytes */
+
+typedef struct Nvm3DCoordinates NvmVertex;
+typedef struct Nvm3DCoordinates NvmCorner;
+
+
+typedef struct {
+    int32 vertices[3] <bgcolor=0xFFCFB2>; // Indexes the vertex table to produce a triangle
+    // tri_adj values index the triangle table (-1 = none) for adjacent triangles
+    int32 tri_adj_to_v0v1_edge <bgcolor=0xEBFFD8>;
+    int32 tri_adj_to_v2v3_edge <bgcolor=0xEBFFD8>;
+    int32 tri_adj_to_v1v3_edge <bgcolor=0xEBFFD8>;
+    uint16 obstacle_count <bgcolor=cLtPurple>; // Only applies to BLOCK-type triangles.
+                           //   The two least-significant bits are always 0; the actual
+                           //   count of (breakable) obstacles on the triangle are stored
+                           //   in the upper 14 bits, although all actual navimesh triangles
+                           //   use at most 3 bits. For example, reading 0x0004 means 1 obstacle,
+                           //   and 0x01c means 7 obstacles.
+    // Flags to indicate the type of triangle.
+    //   The navimesh flags are as follows: (according to their names in WorldNvmMan)
+    //   Their names in the event script documentation are also provided.
+    //   Once unpacked as a little-endian 16-bit int, the flags are read
+    //   in little-endian bit order, so reading 0x0001 corresponds to INSIDE_WALL.
+    //   The enum values below are left alone so that they still match the event
+    //   script enum, but in principle could be reversed to make parsing easier.
+    uint16 flags <format=hex, read=get_nvm_tri_flags_string, bgcolor=cLtRed, fgcolor=cDkAqua>; 
+} NvmTriangle <read=get_nvm_tri_flags_string_from_tri>; /* 28 bytes */
+
+
+typedef struct {
+    NvmCorner corner1 <bgcolor=cLtPurple>;
+    uint32 tri_count <bgcolor=0xFFCFB2>; // Number of records to read from contained_triangles
+    NvmCorner corner2 <bgcolor=cLtPurple>; // Opposite from corner1
+    uint32 tri_offset <bgcolor=0xEBFFD8>; // Offset to the previous table (or 0 for none). Used to record the triangles this prism contains
+    uint32 child_prisms[4] <bgcolor=cLtGray, fgcolor=cDkAqua>; // Offsets to the start of other NvmRecPrism records (or 0 for none).
+                            //   These four prisms subdivide the original NvmRecPrism.
+                            //   Only 4 subprisms are used, because the prism is only split along X and Z, not Y.
+    uint32 unknown[4] <bgcolor=cLtGray>; // ? May be used if the prism is to be split into 8 subprisms?
+} NvmRecPrism; /* 64 bytes */
+
+
+
+// This version reads the rectangular prisms via recursion, which changes the order in the output pane
+uint read_rectangular_prisms_recursively(uint64 offset) {
+    if (offset == 0) {
+        return 0;
+    }
+    if (offset < first_rec_prism_offset) {
+        first_rec_prism_offset = offset;
+    }
+    FSeek(offset);
+    NvmRecPrism rectangular_prism;
+    local uint32 children[4];
+    children[0] = rectangular_prism.child_prisms[0];
+    children[1] = rectangular_prism.child_prisms[1];
+    children[2] = rectangular_prism.child_prisms[2];
+    children[3] = rectangular_prism.child_prisms[3];
+    contained_tri_count += rectangular_prism.tri_count;
+    local uint count = read_rectangular_prisms_recursively(children[0]);
+    count += read_rectangular_prisms_recursively(children[1]);
+    count += read_rectangular_prisms_recursively(children[2]);
+    count += read_rectangular_prisms_recursively(children[3]);
+    return count + 1;
+}
+
+// Counts total number of rectangular prisms (without reading any data or moving the file pointer)
+uint count_rectangular_prisms(uint64 offset) {
+    if (offset == 0) {
+        return 0;
+    }
+    if (offset < first_rec_prism_offset) {
+        first_rec_prism_offset = offset;
+    }
+    local uint32 children[4];
+    children[0] = ReadUInt(offset + 32); // rectangular_prism.child_prisms[0]
+    children[1] = ReadUInt(offset + 36); // rectangular_prism.child_prisms[1]
+    children[2] = ReadUInt(offset + 40); // rectangular_prism.child_prisms[2]
+    children[3] = ReadUInt(offset + 44); // rectangular_prism.child_prisms[3]
+    contained_tri_count += ReadUInt(offset + 12); // rectangular_prism.tri_count
+    local uint count = count_rectangular_prisms(children[0]);
+    count += count_rectangular_prisms(children[1]);
+    count += count_rectangular_prisms(children[2]);
+    count += count_rectangular_prisms(children[3]);
+    return count + 1;
+}
+
+// Reads triangle flags bitfield and formats it as a readable string
+string get_nvm_tri_flags_string(uint16& flags) {
+    local string s = "";
+    if (flags == 0) {
+        return "Flags:    0x0";
+    }
+    
+    if ((flags & NVM_TRI_DISABLE)) {
+        SPrintf(s,"%s%s | ", s, "DISABLE");
+    }
+    if ((flags & NVM_TRI_GATE)) {
+        SPrintf(s,"%s%s | ", s, "GATE");
+    }
+    if ((flags & NVM_TRI_BLOCK)) {
+        SPrintf(s,"%s%s | ", s, "BLOCK");
+    }
+    if ((flags & NVM_TRI_WALL)) {
+        SPrintf(s,"%s%s | ", s, "WALL");
+    }
+    if ((flags & NVM_TRI_DEGENERATE)) {
+        SPrintf(s,"%s%s | ", s, "DEGENERATE");
+    }
+    if ((flags & NVM_TRI_FLOOR_TO_WALL)) {
+        SPrintf(s,"%s%s | ", s, "FLOOR_TO_WALL");
+    }
+    if ((flags & NVM_TRI_LANDING_POINT)) {
+        SPrintf(s,"%s%s | ", s, "LANDING_POINT");
+    }
+    if ((flags & NVM_TRI_EVENT)) {
+        SPrintf(s,"%s%s | ", s, "EVENT");
+    }
+    if ((flags & NVM_TRI_EDGE)) {
+        SPrintf(s,"%s%s | ", s, "EDGE");
+    }
+    if ((flags & NVM_TRI_LARGE_SPACE)) {
+        SPrintf(s,"%s%s | ", s, "LARGE_SPACE");
+    }
+    if ((flags & NVM_TRI_LADDER)) {
+        SPrintf(s,"%s%s | ", s, "LADDER");
+    }
+    if ((flags & NVM_TRI_HOLE)) {
+        SPrintf(s,"%s%s | ", s, "HOLE");
+    }
+    if ((flags & NVM_TRI_DOOR)) {
+        SPrintf(s,"%s%s | ", s, "DOOR");
+    }
+    if ((flags & NVM_TRI_CLOSED_DOOR)) {
+        SPrintf(s,"%s%s | ", s, "CLOSED_DOOR");
+    }
+    if ((flags & NVM_TRI_BLOCK_GATE)) {
+        SPrintf(s,"%s%s | ", s, "BLOCK_GATE");
+    }
+    if ((flags & NVM_TRI_INSIDE_WALL)) {
+        SPrintf(s,"%s%s | ", s, "INSIDE_WALL");
+    }
+    if ((flags & NVM_TRI_WALL_GIANT)) {
+        SPrintf(s,"%s%s | ", s, "WALL_GIANT");
+    }
+    if ((flags & NVM_TRI_FLOOR_TO_WALL_GIANT)) {
+        SPrintf(s,"%s%s | ", s, "FLOOR_TO_WALL_GIANT");
+    }
+    
+    if (Strlen(s) > 0 && s[Strlen(s)-1] == ' ') {
+        s[Strlen(s)-3] = '\0';
+    }
+    if (Strlen(s) > 0) {
+        SPrintf(s, "Flags:    0x%x = ( %s )", flags, s);
+    }
+    return s;
+}
+
+string get_nvm_tri_flags_string_from_tri(NvmTriangle& tri) {
+    return get_nvm_tri_flags_string(tri.flags);
+}
+
+
+
+// Parse file:
+
+NvmHeader header;
+NvmVertex vertices[header.vertex_count] <bgcolor=cLtPurple>;
+NvmTriangle triangles[header.tri_count];
+
+local uint prism_count = count_rectangular_prisms(header.root_rec_prism_offset);
+uint32 contained_triangles[contained_tri_count] <bgcolor=cLtGray, fgcolor=cDkAqua>; // Indexes the previous triangles table
+NvmRecPrism rectangular_prisms[prism_count];
+
+
+
+
+#endif // _DS1_NVM_BT
