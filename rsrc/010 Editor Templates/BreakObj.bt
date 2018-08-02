@@ -18,25 +18,14 @@
 #define MAX_BREAK_OBJ_ENTRIES 517
 
 
-///////////////////////////////////////////
-/////////////// Debug stuff ///////////////
-string get_all_unsigned_32bit_datatypes_at_offset_as_str(uint64 pos)
-{
-    local string tmp_str_contents;
-    SPrintf(tmp_str_contents, "%s%u  \t%u  \t%u  \t%f"/*  \t%f"*/, tmp_str_contents, ReadUByte(pos), ReadUShort(pos), ReadUInt(pos), ReadHFloat(pos)/*, ReadFloat(pos)*/);
-    return tmp_str_contents;
-}
 /* Unknown data chunk */
 typedef struct (uint64 size) {
     ubyte data[size];
 } BLOB;
-/////////////// End of debug stuff ///////////////
-//////////////////////////////////////////////////
 
 
 
-
-// File signature definition
+// File signature
 typedef struct
 {
     char   BJBO[4]; // Always "BJBO"
@@ -44,7 +33,6 @@ typedef struct
 } BreakObjSignature <read=read_breakobj_signature>;
 
 
-// File signature utility functions
 string read_breakobj_signature(BreakObjSignature& sig)
 {
     local string tmp_breakobj_sig;
@@ -54,7 +42,7 @@ string read_breakobj_signature(BreakObjSignature& sig)
 
 
 
-// File header structure definition
+// Main file header structure
 typedef struct
 {
     BreakObjSignature signature <bgcolor=0x7AA3E8>;
@@ -77,11 +65,59 @@ string read_breakobj_subheader_size(uint32 modifier)
 
 
 
-typedef struct (uint size)
+// Structure parsing instructions:
+// PtDE: DARKSOULS.exe+AD0BD5  -  0F BE 0E  -  movsx ecx,byte ptr [esi]
+// DSR:  0x1402ACC3B to 0x1402ACE1C; final coordinates (allegedly) stored in xmm3
+typedef struct
 {
-    // @TODO
-    ubyte data[size];
-} BreakObjItem <optimize=false, bgcolor=0xEBFFB8>;
+    local uint64 file_offset = FTell();
+    byte unknown0 <fgcolor=0x8C8C8C, read=vec_ubyte_to_float>;
+    byte v_rot <fgcolor=cBlue, read=vec_ubyte_to_float>;
+    byte h_rot <fgcolor=cBlue, read=vec_ubyte_to_float>;
+    //ubyte x <fgcolor=cDkPurple, read=vec_ubyte_to_float>; // x? magnitude?
+    byte unknown1 <fgcolor=0x8C8C8C, read=vec_ubyte_to_float, comment="x?">; // flags? x?
+    byte x <fgcolor=cDkPurple, read=vec_ubyte_to_float>; // x? magnitude?
+    byte y <fgcolor=cDkPurple, read=vec_ubyte_to_float>; // Vertical position/offset: Y = (y - 127.0f) / 127.0f
+    byte z <fgcolor=cDkPurple, read=vec_ubyte_to_float>;
+    byte w <fgcolor=cDkPurple, read=vec_ubyte_to_float>; // Magnitude/scaling (?)
+} BreakObjFragment <optimize=false, bgcolor=0xEEFFDD, read=read_breakobj_fragment>;
+
+
+// B3LYP's technique for reading positional vec8
+string read_breakobj_fragment1(BreakObjFragment& f) {
+    local string s;
+    local uint32 dw1 = ReadUInt(f.file_offset);
+    local uint32 dw2 = ReadUInt(f.file_offset+4);
+    local int32  v4  = (((dw2 & 7) | dw1) >> 15) & 0x1FFF8;
+    local float  f0  = (float)((dw1 << 14) >> 14) * 0.01f;
+    local float  f1  = (float)((((v4 << 15) | v4) >> 2) >> 15) * 0.01f;
+    local float  f2  = (float)(((dw2 >> 3) << 14) >> 14) * 0.01f;
+    local float  f3  = (float)(3.14f * (1.0f / 64.0f)) * ((float)(dw2 >> 25) - 64.0f);
+    SPrintf(s, "%f  %f  %f  %f", f0, f1, f2, f3);
+    return s;
+}
+
+Printf("@TODO: Finish read_breakobj_fragment()\n");
+string read_breakobj_fragment(BreakObjFragment& f) {
+    local string s;
+    local float  modifier = (((float)f.v_rot * 0.01f) * ((float)f.v_rot * 0.01f));
+    local float  rot0 = ((1.0f - (((float)f.unknown0 * 0.01f) * ((float)f.unknown0 * 0.01f))) - modifier);
+    SPrintf(s, "%f  %f  ", modifier, rot0);
+    return s;
+}
+
+
+string vec_byte_to_float(byte b) {
+    local string s;
+    SPrintf(s, "%f", (float)((float)b-(float)127.0f)/(float)127.0f); // This conversion is probably wrong
+    return s;
+}
+
+string vec_ubyte_to_float(ubyte b) {
+    local string s;
+    SPrintf(s, "%f", (float)((float)b-(float)127.0f)/(float)127.0f); // This conversion is probably wrong
+    return s;
+}
 
 
 // Main data structure definition
@@ -90,13 +126,12 @@ typedef struct (uint size)
     local uint start_pos = FTell();
     size -= 2; // Adjust for first 2 bytes parsed in parent structure
     
-    ubyte item_count;
-    local uint item_size = (size-1) / item_count; // item_size = 8 (always?)
-    BreakObjItem items(item_size)[item_count] <optimize=false>;
+    ubyte fragment_count <bgcolor=0xFFCFB2>;
+    BreakObjFragment fragments[fragment_count] <optimize=false>;
     
     //size -= (FTell() - start_pos);
     //byte unknown_data[size];
-} BreakObjEntry <optimize=false, bgcolor=0xEBFFD8>;
+} BreakObjEntry <optimize=false>;
 
 
 
@@ -105,14 +140,14 @@ typedef struct
 {
     // Flags & lower 5 bits of size are stored in a single byte, like so (f=flag bit, s=size bit):
     // sssssfff
-    ubyte flags_and_size_high_bits <bgcolor=0xFFCFB2, hidden=true>;
+    ubyte flags_and_size_high_bits <bgcolor=0xFFCFB2, fgcolor=0x8C8C8C, hidden=true>;
     local ubyte flags[3];
     flags[0] = flags_and_size_high_bits & 1;
     flags[1] = flags_and_size_high_bits & 2;
     flags[2] = flags_and_size_high_bits & 4;
     
     local uint size_low_pos = FTell();
-    ubyte size_low_bits <bgcolor=0xFFCFB2, hidden=true>;
+    ubyte size_low_bits <bgcolor=0xFFCFB2, fgcolor=0x8C8C8C, hidden=true>;
     local uint size <bgcolor=0xFFCFB2, hidden=false> = get_breakobj_group_size(flags_and_size_high_bits, size_low_bits);
     
     BreakObjEntry entry_data(size);
