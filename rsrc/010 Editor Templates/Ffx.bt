@@ -1,29 +1,97 @@
-//--------------------------------------
+//-------------------------------------------
 //--- 010 Editor v5.0 Binary Template
 //
 // File: Dark Souls .FFX (Particle Effects)
-// Author: Jed "Nyxojaele" Lang
+// Author: Jed "Nyxojaele" Lang & Sean Pesce
 // Revision: 1
-//--------------------------------------
+//-------------------------------------------
 #ifndef _DS1_FFX_BT
     #define _DS1_FFX_BT
 
-byte Signature[4] <bgcolor=0xCCFFCC>;
-int Unknown1;   //Version?
-int HeaderSize <format=hex, bgcolor=0x88EE88>;
-int Data1Size <format=hex, bgcolor=0x88EE88>;
-int Data2Count <bgcolor=0x88EE88>;
-int Data3Count <bgcolor=0x88EE88>;
-int Unknown4;
-int Unknown5;
+local ubyte FFX64 = false;
+if (ReadUInt(8) == 0x30)
+{
+    FFX64 = true;
+}
+
+typedef struct
+{
+    if (FFX64)
+    {
+        int64 val <hidden=true>;
+    }
+    else
+    {
+        int32 val <hidden=true>;
+    }
+} ffx_int_t <read=read_ffx_int_t>;
+
+typedef struct
+{
+    if (FFX64)
+    {
+        uint64 val <hidden=true>;
+    }
+    else
+    {
+        uint32 val <hidden=true>;
+    }
+} ffx_uint_t <read=read_ffx_uint_t>;
+
+string read_ffx_int_t(ffx_int_t& i) {
+    local string s;
+    SPrintf(s, "%ld", i.val);
+    return s;
+}
+
+string read_ffx_uint_t(ffx_uint_t& i) {
+    local string s;
+    SPrintf(s, "%lu", i.val);
+    return s;
+}
+
+
+// Check for valid header signature
+if (ReadString(0,4) != "FXR")
+{
+    Printf("WARNING - SIGNATURE MISMATCH: File might not be a valid .ffx file\n");
+}
+if (ReadUInt(4) != 65536)
+{
+    Printf("WARNING - VERSION MISMATCH: File might not be a valid .ffx file\n");
+}
+if ((FFX64 && ReadUInt64(0x30) != 133) || ((!FFX64) && ReadUInt(0x20) != 133))
+{
+    Printf("WARNING: Data1.UnknownCount != 133\n");
+}
+
+
+typedef struct
+{
+    char Signature[4] <bgcolor=0xCCFFCC>; // "FXR\0"
+    int Unknown1;   // Version? (Always 65536?)
+    ffx_int_t HeaderSize <format=hex, bgcolor=0x88EE88>; // PtDE = 0x20; DSR = 0x30
+    int Data1Size <format=hex, bgcolor=0x88EE88>;
+    int Data2Count <bgcolor=0x88EE88>;
+    int Data3Count <bgcolor=0x88EE88>;
+    ffx_int_t Unknown4; // Always 1?
+    if (FTell() < HeaderSize.val)
+    {
+        ubyte Padding[HeaderSize.val-FTell()];
+    }
+} FfxHeader;
+
+FfxHeader Header;
+
 
 struct
 {
-    int UnknownCount;
+    ffx_int_t UnknownCount;
     int ParticleEffectId <bgcolor=0xEE5599, fgcolor=0xFFFFFF>;
-    byte Data1[Data1Size-HeaderSize-8] <bgcolor=0xCCCCCC>;
+    byte Data1[Header.Data1Size-Header.HeaderSize.val-8] <bgcolor=0xCCCCCC>;
 } Data1;
-int Data2[Data2Count] <bgcolor=0x999999>;
-int Data3[Data3Count] <bgcolor=0x555555, fgcolor=0xFFFFFF>;
+int Data2[Header.Data2Count] <bgcolor=0x999999>;
+int Data3[Header.Data3Count] <bgcolor=0x555555, fgcolor=0xFFFFFF>;
+
 
 #endif // _DS1_FFX_BT
