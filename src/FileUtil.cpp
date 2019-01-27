@@ -225,6 +225,22 @@ void *FileUtil::read_from_offset(const char* file, unsigned long offset, size_t 
     return buffer;
 }
 
+inline std::string& rtrim(std::string& s, const char* t)
+{
+    s.erase(s.find_last_not_of(t) + 1);
+    return s;
+}
+
+inline std::string& ltrim(std::string& s, const char* t)
+{
+    s.erase(0, s.find_first_not_of(t));
+    return s;
+}
+
+inline std::string& trim(std::string& s, const char* t)
+{
+    return ltrim(rtrim(s, t), t);
+}
 
 // Writes a block of memory to a file
 int FileUtil::dump_file(void *source, size_t size, const char *new_file, bool overwrite)
@@ -240,8 +256,7 @@ int FileUtil::dump_file(void *source, size_t size, const char *new_file, bool ov
             file[c] = '\\';
 
     // Trim whitespace
-    extern void trim(std::string *, const char *);
-    trim(&file, " \r\n\t");
+    trim(file, " \r\n\t");
 
     // Remove leading slashes
     while (file[0] == '\\')

@@ -60,6 +60,9 @@
     <ClCompile Include="src\Param\Params.cpp">
       <Filter>Source Files\Param</Filter>
     </ClCompile>
+    <ClCompile Include="src\Save\aes.c">
+      <Filter>Source Files\Save</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\FileList.h">
@@ -253,6 +256,9 @@
     </ClInclude>
     <ClInclude Include="include\Param\Draw\ShadowBank.h">
       <Filter>Header Files\Param\Draw</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Save\aes.h">
+      <Filter>Header Files\Save</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

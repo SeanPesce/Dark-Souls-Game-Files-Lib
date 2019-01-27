@@ -4,6 +4,7 @@
     Contributors to this file:
         Sean Pesce  -  C++, reverse engineering of savegame files (.sl2)
         Tarvitz     -  Initial reverse engineering of savegame files (.sl2) (GitHub: https://github.com/tarvitz )
+        B3LYP       -  Reverse engineering of the save game encryption for Remastered edition (https://github.com/pawREP/Dark-Souls-Remastered-SL2-Unpacker)
 
 
     Save/Sl2.h
@@ -20,7 +21,6 @@
 */
 #pragma once
 
-#if 0
 
 #ifndef DS1_FILE_LIB_SL2_SAVE_FILE_H_
     #define DS1_FILE_LIB_SL2_SAVE_FILE_H_
@@ -29,7 +29,9 @@
 #include "GameEnum.h"
 #include "FileUtil.h"
 #include "Save/Enum.h"
-
+extern "C" {
+#include "aes.h"
+}
 #include <tuple>
 #include <vector>
 
@@ -85,11 +87,17 @@ public:
 
     // Header checksum value when all save slots are empty
     static const uint8_t CHECKSUM_HEADER_DEFAULT[16];
-    // Footer checksum value when all save slots are empty
-    static const uint8_t CHECKSUM_FOOTER_DEFAULT[16];
+    // Footer padding value when all save slots are empty
+    static const uint8_t SAVESLOT_FOOTER_DEFAULT[16];
 
-    static const uint32_t SAVE_SLOT_SIZE_DEFAULT = 393248;
-    static const uint32_t SAVE_FILE_SIZE_DEFAULT = 4326432;
+    static const uint8_t IV_HEADER_DEFAULT[16];
+
+    static const uint32_t SAVE_SLOT_SIZE_DEFAULT = 0x060030;
+    static const uint32_t SAVE_SLOT_SIZE_NO_IV = 0x060020;
+    static const uint32_t SAVE_FILE_SIZE_DEFAULT = 0x4204D0;
+    static const uint32_t BASE_SLOT_OFFSET = 0x02C0;
+    static const unsigned char SAVE_KEY[AES_KEYLEN];
+
 
     // Maximum number of attunement slots in unmodified game (10 from maxed Attunement stat + 1 each from Darkmoon & White Seance Rings)
     static const uint32_t ATTUNEMENT_MAX_DEFAULT = 12;
@@ -97,15 +105,14 @@ public:
     // File header structure
     typedef struct ArchiveHeader : Bnd4::Header {
         // Magic identifier bytes
-//      uint32_t magic32_0 = 0x34444E42; // "BND4"
+        //uint32_t magic32_0 = 0x34444E42; // "BND4", inherited with Bnd4::Header
         uint32_t magic32_1 = 0x00000000;
         uint32_t magic32_2 = 0x00010000; // Tarvitz speculated that this was a revision number
         uint32_t slot_count = Sl2SaveFile::SLOT_COUNT_DEFAULT; // Including the main menu data slot, so number of save slots is (slot_count - 1)
         const uint32_t const32b_0 = 0x00000040;
         const uint32_t const32b_1 = 0x00000000;
-        // Next 8 bytes are possibly a version string (Note: Not null-terminated)
-        const uint32_t const32b_2 = 0x30303030; // "0000"
-        const uint32_t const32b_3 = 0x31303030; // "0001"
+        const uint32_t const32b_2 = 0x00000000;
+        const uint32_t const32b_3 = 0x00000000;
         uint32_t slot_header_size = 0x00000020;
         const uint32_t const32b_4 = 0x00000000;
         uint32_t size = 0x000002C0; // Size of the file header in bytes (Including slot header array and title arrays)
@@ -118,11 +125,11 @@ public:
     typedef struct SaveSlotHeader {
         const uint32_t const32b_0 = 0x00000050;
         const uint32_t const32b_1 = 0xFFFFFFFF;
-        uint32_t slot_size = 0x00060014; // Size of save slot (not including 12 trailing 0 bytes); generally the same default size
+        const uint32_t slot_size = SAVE_SLOT_SIZE_DEFAULT; // Size of save slot (not including 12 trailing 0 bytes); generally the same default size
         const uint32_t const32b_2 = 0x00000000;
-        uint32_t offset = 0; // Offset (from start of file) of save slot struct
+        uint32_t offset = 0; // Offset (from start of file) of save slot struct. The header's size (0x2C0)
         uint32_t title_offset = 0; // Offset of title string (not the same as character name)
-        uint32_t padding_size = 0x0000000C; // Length of trailing padding between the current slot and the following slot
+        const uint32_t padding_size = 0x00000000; // Length of trailing padding between the current slot and the following slot
         const uint32_t const32b_3 = 0x00000000;
     } SaveHeader;
 
@@ -141,7 +148,7 @@ public:
     } SaveTitle;
 
 
-
+#if 0
     typedef class SaveSlot {
     public:
 
@@ -844,23 +851,35 @@ public:
             return true;
         }
 
-        // Constructor
-        SaveSlot(void *new_file_start, SaveHeader *new_header) : file_start(new_file_start), header(new_header)
+        // Constructor (can only read a full save slot as a single op, since each one is encrypted)
+        SaveSlot(void* file, uint8_t slot_i, SaveHeader *new_header) : header(new_header)
         {
-            start_data = (StartData*)(file_start_val() + header->offset);
-            title = (wchar_t*)(file_start_val() + header->title_offset);
-            multiplayer_data = MultiplayerData((void*)(file_start_val() + header->offset + sizeof(StartData)));
-            end_data = (EndData*)((((uint32_t)start_data) + header->slot_size) - 16);
+            //read this encrypted save from the file
+            raw_data = (uint8_t*)FileUtil::read_from_offset((char*)file, BASE_SLOT_OFFSET + slot_i * SAVE_SLOT_SIZE_DEFAULT, SAVE_SLOT_SIZE_DEFAULT, NULL, true);
+            //grab IV from the save slot head
+            unsigned char IV[AES_BLOCKLEN];
+            memcpy(IV, raw_data, AES_BLOCKLEN);
+            //Decrypt the save slot
+            AES_ctx ctx;
+            AES_init_ctx_iv(&ctx, Sl2SaveFile::SAVE_KEY, IV);
+            AES_CBC_decrypt_buffer(&ctx, reinterpret_cast<uint8_t*>(raw_data) + AES_BLOCKLEN, SAVE_SLOT_SIZE_NO_IV);
+
+            start_data = (StartData*)(raw_data + header->offset);
+            title = (wchar_t*)(raw_data + header->title_offset);
+            multiplayer_data = MultiplayerData((void*)(raw_data + header->offset + sizeof(StartData)));
+            end_data = (EndData*)((((uint64_t)start_data) + header->slot_size) - 16);
         }
         SaveSlot() {}
 
         // Destructor
         ~SaveSlot()
         {
+            free(raw_data);
         }
     } Save;
+#endif
 
-
+#if 0
     typedef class MainMenuSlot {
     public:
 
@@ -879,6 +898,7 @@ public:
         #pragma pack(pop)
 
         #pragma pack(push, 1)
+        //this should be size 0x190 for Remaster, but dunno what changed
         typedef struct CharacterData {
 
             typedef struct CharacterPreview {
@@ -959,6 +979,7 @@ public:
         {}
 
     } MainMenuData;
+#endif
 
 private:
 
@@ -966,6 +987,7 @@ private:
 
 public:
 
+#if 0
     Header *header;
     SaveHeader *slot_headers; // Array
     SaveTitle  *slot_titles;  // Array
@@ -979,7 +1001,7 @@ public:
     Sl2SaveFile(void *new_start): header((Header*)new_start), slot_headers((SaveHeader*)(&header[1])), slot_titles((SaveTitle*)(((uint32_t)new_start) + slot_headers[0].title_offset))
     {
         for (int i = 0; i < (int)(header->slot_count - 1); i++) {
-            saves.push_back(SaveSlot(new_start, &slot_headers[i]));
+            saves.push_back(SaveSlot(new_start, i, &slot_headers[i]));
         }
         main_menu = MainMenuData(new_start, &slot_headers[header->slot_count - 1]);
     };
@@ -991,11 +1013,25 @@ public:
     uint32_t total_size() {
         return slot_headers[header->slot_count - 1].offset + slot_headers[header->slot_count - 1].slot_size + slot_headers[header->slot_count - 1].padding_size;
     }
+#endif
 
-    bool write_to_file(const char *new_file_name) {
-        return (FileUtil::dump_file(header, total_size(), new_file_name) == ERROR_SUCCESS);
+    static uint8_t* load_and_decrypt_save_data(const char* file, uint8_t slot_i)
+    {
+        //read this encrypted save from the file
+        uint8_t* raw_data = (uint8_t*)FileUtil::read_from_offset((char*)file, BASE_SLOT_OFFSET + slot_i * SAVE_SLOT_SIZE_DEFAULT, SAVE_SLOT_SIZE_DEFAULT, NULL, true);
+        if (raw_data == NULL) {
+            return NULL;
+        }
+        //grab IV from the save slot head
+        unsigned char IV[AES_BLOCKLEN];
+        memcpy(IV, raw_data, AES_BLOCKLEN);
+        //Decrypt the save slot
+        AES_ctx ctx;
+        AES_init_ctx_iv(&ctx, Sl2SaveFile::SAVE_KEY, IV);
+        AES_CBC_decrypt_buffer(&ctx, reinterpret_cast<uint8_t*>(raw_data) + AES_BLOCKLEN, SAVE_SLOT_SIZE_NO_IV);
+
+        return raw_data;
     }
-
 
 
     /*
@@ -1051,8 +1087,8 @@ public:
     */
     static int get_occupied_slot_count_from_file(const char *filename, int *first_free = NULL) {
         int slot_count = 0;
-        Header header;
         uint8_t *slot_flags = NULL;
+        uint8_t *menu_data = NULL;
         uint32_t menu_slot_offset = 0;
         if (filename == NULL) {
             SetLastError(ERROR_INVALID_ADDRESS);
@@ -1065,40 +1101,36 @@ public:
             *first_free = -1;
         }
 
-        // Read save file size and slot count data
-        if (FileUtil::read_from_offset(filename, 0, sizeof(header), &header, false) == NULL) {
+        // Read menu slot offset from header
+        if (FileUtil::read_from_offset(filename, sizeof(Header) + 16 + (sizeof(SaveSlotHeader) * (Sl2SaveFile::SLOT_COUNT_DEFAULT - 1)), sizeof(menu_slot_offset), &menu_slot_offset, false) == NULL) {
             SetLastError(ERROR_READ_FAULT);
             return -1;
         }
-        slot_flags = (uint8_t*)CoTaskMemAlloc(sizeof(uint8_t) * (header.slot_count - 1));
-        if (slot_flags == NULL) {
+
+        // Find the AES block the save slot flags are in and decrypt
+        uint32_t save_slot_i = ((menu_slot_offset + 212) - BASE_SLOT_OFFSET) / SAVE_SLOT_SIZE_DEFAULT;
+        menu_data = load_and_decrypt_save_data(filename, save_slot_i);
+        if (menu_data == NULL) {
             SetLastError(ERROR_OUTOFMEMORY);
             return -1;
         }
 
-        // Read menu slot offset
-        if (FileUtil::read_from_offset(filename, sizeof(header) + 16 + (sizeof(SaveSlotHeader) * (header.slot_count - 1)), sizeof(menu_slot_offset), &menu_slot_offset, false) == NULL) {
-            SetLastError(ERROR_READ_FAULT);
-            CoTaskMemFree(slot_flags);
-            return -1;
-        }
-
         // Read save slot flags
-        if (FileUtil::read_from_offset(filename, menu_slot_offset + 40, sizeof(uint8_t) * (header.slot_count - 1), slot_flags, false) == NULL) {
-            SetLastError(ERROR_READ_FAULT);
-            CoTaskMemFree(slot_flags);
-            return -1;
-        }
+        slot_flags = (uint8_t*)((uint64_t)menu_data + 212);
 
         // Count occupied save slots
-        for (int i = 0; i < (int)(header.slot_count - 1); i++) {
-            if (slot_flags[i]) {
+        for (int i = 0; i < (Sl2SaveFile::SLOT_COUNT_DEFAULT - 1); i++) {
+            if (slot_flags[i] == 1) {
                 slot_count++;
-            } else if (first_free != NULL && *first_free < 0) {
+            } else if (slot_flags[i] == 0 && first_free != NULL && *first_free < 0) {
                 *first_free = i;
             }
+            //error out on invalid inputs
+            else if (slot_flags[i] != 1 && slot_flags[i] != 0) {
+                return -1;
+            }
         }
-        CoTaskMemFree(slot_flags);
+        CoTaskMemFree(menu_data);
         return slot_count;
     }
 
@@ -1107,8 +1139,8 @@ public:
         at the specified address
     */
     static int read_character_preview_data_from_file(const char *filename, void *buffer) {
-        Header header;
         uint32_t menu_slot_offset = 0;
+        uint8_t *char_prev_data = NULL;
         if (filename == NULL || buffer == NULL) {
             SetLastError(ERROR_INVALID_ADDRESS);
             return -1;
@@ -1117,22 +1149,24 @@ public:
             return -1;
         }
 
-        // Read save file size and slot count data
-        if (FileUtil::read_from_offset(filename, 0, sizeof(header), &header, false) == NULL) {
-            SetLastError(ERROR_READ_FAULT);
-            return -1;
-        }
         // Read menu slot offset
-        if (FileUtil::read_from_offset(filename, sizeof(header) + 16 + (sizeof(SaveSlotHeader) * (header.slot_count - 1)), sizeof(menu_slot_offset), &menu_slot_offset, false) == NULL) {
+        if (FileUtil::read_from_offset(filename, sizeof(Header) + 16 + (sizeof(SaveSlotHeader) * (Sl2SaveFile::SLOT_COUNT_DEFAULT - 1)), sizeof(menu_slot_offset), &menu_slot_offset, false) == NULL) {
             SetLastError(ERROR_READ_FAULT);
             return -1;
         }
 
-        // Read character preview data
-        if (FileUtil::read_from_offset(filename, menu_slot_offset + 40, 16 + (sizeof(MainMenuData::CharacterData) * 10), buffer, false) == NULL) {
-            SetLastError(ERROR_READ_FAULT);
+        // Find the AES block the character preview data is in and decrypt
+        uint32_t save_slot_i = ((menu_slot_offset + 212) - BASE_SLOT_OFFSET) / SAVE_SLOT_SIZE_DEFAULT;
+        char_prev_data = load_and_decrypt_save_data(filename, save_slot_i);
+        if (char_prev_data == NULL) {
+            SetLastError(ERROR_OUTOFMEMORY);
             return -1;
         }
+
+        // Read character preview data
+        memcpy(buffer, (uint8_t*)((uint64_t)char_prev_data + 212), 16 + (0x190 * 10));
+
+        CoTaskMemFree(char_prev_data);
         return ERROR_SUCCESS;
     }
 
@@ -1176,20 +1210,17 @@ public:
         tmp_save_header.offset = tmp_header.size;
         tmp_save_header.title_offset = sizeof(Sl2SaveFile::Header) + (sizeof(Sl2SaveFile::SaveSlotHeader) * Sl2SaveFile::SLOT_COUNT_DEFAULT);
         Sl2SaveFile::SaveSlotTitle tmp_save_title;
-        memcpy_s(buff, Sl2SaveFile::SAVE_FILE_SIZE_DEFAULT, &tmp_header, sizeof(Sl2SaveFile::Header));
-        uint32_t tmp_offset = sizeof(Sl2SaveFile::Header);
-        // Write non-zero data
+        //write the BND4 header
+        memcpy(buff, &tmp_header, sizeof(Sl2SaveFile::Header));
+
+        uint64_t cur_save_header_offset = (uint64_t)buff + sizeof(Sl2SaveFile::Header);
+
         for (int i = 0; i < Sl2SaveFile::SLOT_COUNT_DEFAULT; i++) {
             // Write save slot header data
-            if (i > 0) {
-                tmp_save_header.offset += Sl2SaveFile::SAVE_SLOT_SIZE_DEFAULT;
-                tmp_save_header.title_offset += sizeof(Sl2SaveFile::SaveSlotTitle);
-                memcpy_s((void*)(((uint32_t)buff) + (tmp_save_header.offset - (12 + sizeof(Sl2SaveFile::CHECKSUM_FOOTER_DEFAULT)))), Sl2SaveFile::SAVE_FILE_SIZE_DEFAULT - tmp_save_header.offset, Sl2SaveFile::CHECKSUM_FOOTER_DEFAULT, sizeof(Sl2SaveFile::CHECKSUM_FOOTER_DEFAULT));
-            }
-            memcpy_s((void*)(((uint32_t)buff) + tmp_offset), Sl2SaveFile::SAVE_FILE_SIZE_DEFAULT - tmp_offset, &tmp_save_header, sizeof(Sl2SaveFile::SaveSlotHeader));
-            tmp_offset += sizeof(Sl2SaveFile::SaveSlotHeader);
+            memcpy((void*)cur_save_header_offset, &tmp_save_header, sizeof(Sl2SaveFile::SaveSlotHeader));
+            cur_save_header_offset += sizeof(Sl2SaveFile::SaveSlotHeader);
 
-            // Write save slot title data
+            // Write save slot title data in header
             std::wstring index_str = L"0";
             if (i < 10) {
                 index_str += L"0";
@@ -1197,14 +1228,46 @@ public:
             index_str += std::to_wstring(i);
             tmp_save_title.index[1] = index_str.c_str()[1];
             tmp_save_title.index[2] = index_str.c_str()[2];
-            memcpy_s((void*)(((uint32_t)buff) + tmp_save_header.title_offset), Sl2SaveFile::SAVE_FILE_SIZE_DEFAULT - tmp_save_header.title_offset, &tmp_save_title, sizeof(Sl2SaveFile::SaveSlotTitle));
+            memcpy((void*)(((uint64_t)buff) + tmp_save_header.title_offset), &tmp_save_title, sizeof(Sl2SaveFile::SaveSlotTitle));
+            tmp_save_header.title_offset += sizeof(Sl2SaveFile::SaveSlotTitle);
 
-            memcpy_s((void*)(((uint32_t)buff) + tmp_save_header.offset), Sl2SaveFile::SAVE_FILE_SIZE_DEFAULT - tmp_save_header.offset, Sl2SaveFile::CHECKSUM_HEADER_DEFAULT, sizeof(Sl2SaveFile::CHECKSUM_HEADER_DEFAULT));
-            *(uint32_t*)(((uint32_t)buff) + tmp_save_header.offset + sizeof(Sl2SaveFile::CHECKSUM_HEADER_DEFAULT)) = (Sl2SaveFile::SAVE_SLOT_SIZE_DEFAULT - (sizeof(Sl2SaveFile::CHECKSUM_HEADER_DEFAULT) + sizeof(Sl2SaveFile::CHECKSUM_FOOTER_DEFAULT)));
+            //Write save slot entry iv
+            //This is included in the checksum, so a known matching IV and checksum is used
+            uint64_t cur_save_slot_iv_ptr = ((uint64_t)buff) + tmp_save_header.offset;
+            memcpy((void*)cur_save_slot_iv_ptr, Sl2SaveFile::IV_HEADER_DEFAULT, sizeof(Sl2SaveFile::IV_HEADER_DEFAULT));
+
+            // Write save slot entry checksum header
+            //The checksum included the IV, so the one included must match the checksum's
+            uint64_t cur_save_slot_checksum_ptr = cur_save_slot_iv_ptr + sizeof(Sl2SaveFile::IV_HEADER_DEFAULT);
+            memcpy((void*)cur_save_slot_checksum_ptr, Sl2SaveFile::CHECKSUM_HEADER_DEFAULT, sizeof(Sl2SaveFile::CHECKSUM_HEADER_DEFAULT));
+
+            // Write the remaining size of the save slot
+            uint64_t cur_save_slot_data_remaining = cur_save_slot_checksum_ptr + sizeof(Sl2SaveFile::CHECKSUM_HEADER_DEFAULT);
+            *(uint32_t*)cur_save_slot_data_remaining = Sl2SaveFile::SAVE_SLOT_SIZE_DEFAULT - (sizeof(Sl2SaveFile::IV_HEADER_DEFAULT) + sizeof(Sl2SaveFile::CHECKSUM_HEADER_DEFAULT) + sizeof(Sl2SaveFile::SAVESLOT_FOOTER_DEFAULT));
+
+            // Standard save slot
+            if (i < 10) {
+                // Write the footer padding
+                uint64_t save_slot_footer_ptr = cur_save_slot_iv_ptr + Sl2SaveFile::SAVE_SLOT_SIZE_DEFAULT - sizeof(Sl2SaveFile::SAVESLOT_FOOTER_DEFAULT);
+                memcpy((void*)save_slot_footer_ptr, Sl2SaveFile::SAVESLOT_FOOTER_DEFAULT, sizeof(Sl2SaveFile::SAVESLOT_FOOTER_DEFAULT));
+            }
+            // Write MainMenuSlot data. This is user settings and such.
+            // I don't know the data format, but it's ok to ignore setting it (leave it 0), because
+            // we only load this in memory manually after loading the 1st real save with correct settings,
+            // and those settings aren't overwritten
+            else {
+                uint64_t menu_save_slot_data = cur_save_slot_data_remaining + sizeof(uint32_t);
+                //memcpy((void*)menu_save_slot_data, SaveFile::MENUSLOT_RAW_DATA, sizeof(SaveFile::MENUSLOT_RAW_DATA));
+            }
+
+            //Encrypt the checksum, size, and save slot data
+            AES_ctx ctx;
+            AES_init_ctx_iv(&ctx, Sl2SaveFile::SAVE_KEY, Sl2SaveFile::IV_HEADER_DEFAULT);
+            AES_CBC_encrypt_buffer(&ctx, reinterpret_cast<uint8_t*>(cur_save_slot_checksum_ptr), SAVE_SLOT_SIZE_NO_IV);
+
+            //Next save slot
+            tmp_save_header.offset += Sl2SaveFile::SAVE_SLOT_SIZE_DEFAULT;
         }
-
-        // Write MainMenuSlot footer checksum
-        memcpy_s((void*)(((uint32_t)buff) + ((tmp_save_header.offset + Sl2SaveFile::SAVE_SLOT_SIZE_DEFAULT) - (12 + sizeof(Sl2SaveFile::CHECKSUM_FOOTER_DEFAULT)))), Sl2SaveFile::SAVE_FILE_SIZE_DEFAULT - tmp_save_header.offset, Sl2SaveFile::CHECKSUM_FOOTER_DEFAULT, sizeof(Sl2SaveFile::CHECKSUM_FOOTER_DEFAULT));
 
         FileUtil::dump_file(buff, Sl2SaveFile::SAVE_FILE_SIZE_DEFAULT, filename.c_str(), overwrite);
         CoTaskMemFree(buff);
@@ -1217,7 +1280,7 @@ public:
     */
     static uint32_t copy_save_file(const char *new_filename = NULL, int index = 0, bool overwrite = false) {
         std::string base_filename, old_filename, filename;
-        uint32_t file_size;
+        size_t file_size;
         if (new_filename == NULL) {
             base_filename = Sl2SaveFile::FILE_NAME_DEFAULT;
         } else {
@@ -1274,6 +1337,7 @@ public:
 
         If size is not NULL, the size (in bytes) of the generated save slot is stored.
     */
+#if 0
     static void *generate_empty_save_slot(void *buffer, uint32_t *size = NULL) {
         if (buffer == NULL) {
             buffer = CoTaskMemAlloc(Sl2SaveFile::SAVE_SLOT_SIZE_DEFAULT);
@@ -1304,11 +1368,12 @@ public:
 
         return buffer;
     }
-
+#endif
 
     /*
         EXPERIMENTAL FUNCTION (UNFINISHED)
     */
+#if 0
     bool insert_new_save_slot(const char *new_file_name) {
         if (new_file_name == NULL) {
             SetLastError(ERROR_INVALID_ADDRESS);
@@ -1396,10 +1461,9 @@ public:
         CoTaskMemFree(buffer);
         return true;
     }
+#endif
 
 } SaveFile;
 typedef Sl2SaveFile Sl2;
 
 #endif // DS1_FILE_LIB_SL2_SAVE_FILE_H_
-
-#endif
